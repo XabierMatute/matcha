@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<body class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h3 class="text-center">Registro</h3>
+                
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control", aria-label="Email") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label") }}
+                        {{ form.username(class="form-control", aria-label="Username") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.first_name.label(class="form-label") }}
+                        {{ form.first_name(class="form-control", aria-label="First Name") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.last_name.label(class="form-label") }}
+                        {{ form.last_name(class="form-control", aria-label="Last Name") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control", id="password", aria-label="Password") }}
+                        <span class="show-password" onclick="togglePasswordVisibility('password')">👁️</span>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.confirm_password.label(class="form-label") }}
+                        {{ form.confirm_password(class="form-control", id="confirm_password", aria-label="Confirm Password") }}
+                        <span class="show-password" onclick="togglePasswordVisibility('confirm_password')">👁️</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    function togglePasswordVisibility(id) {
+        const passwordInput = document.getElementById(id);
+        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    }
+</script>
+{% endblock %}

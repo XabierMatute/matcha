@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio de Sesión{% endblock %}
+
+{% block content %}
+<body class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <h3 class="text-center">Iniciar Sesión</h3>
+
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label") }}
+                        {{ form.username(class="form-control", placeholder="Nombre de usuario") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control", placeholder="Contraseña") }}
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ form.remember.label(class="form-check-label") }}
+                        {{ form.remember(class="form-check-input") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                </form>
+                <p class="text-center mt-3">¿No tienes una cuenta? <a href="{{ url_for('auth.register') }}">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,527 @@
+﻿{ "@context": { "@language": "en", "@vocab": "https://schema.org/", "citeAs": "cr:citeAs", "column": "cr:column", 
+"conformsTo": "dct:conformsTo", "cr": "http://mlcommons.org/croissant/", "data": { "@id": "cr:data", "@type": 
+"@json" }, "dataBiases": "cr:dataBiases", "dataCollection": "cr:dataCollection", "dataType": { "@id": "cr:dataType", 
+"@type": "@vocab" }, "dct": "http://purl.org/dc/terms/", "extract": "cr:extract", "field": "cr:field", "fileProperty": 
+"cr:fileProperty", "fileObject": "cr:fileObject", "fileSet": "cr:fileSet", "format": "cr:format", "includes": "cr:includes", 
+"isEnumeration": "cr:isEnumeration", "isLiveDataset": "cr:isLiveDataset", "jsonPath": "cr:jsonPath", "key": "cr:key", 
+"md5": "cr:md5", "parentField": "cr:parentField", "path": "cr:path", "personalSensitiveInformation": 
+"cr:personalSensitiveInformation", "recordSet": "cr:recordSet", "references": "cr:references", "regex": "cr:regex", 
+"repeated": "cr:repeated", "replace": "cr:replace", "sc": "https://schema.org/", "separator": "cr:separator", "source": 
+"cr:source", "subField": "cr:subField", "transform": "cr:transform", "wd": "https://www.wikidata.org/wiki/" }, 
+"alternateName": "Revealing popular user traits and behavior", "conformsTo": "http://mlcommons.org/croissant/1.0", 
+"license": { "@type": "sc:CreativeWork", "name": "CC0: Public Domain", "url": 
+"https://creativecommons.org/publicdomain/zero/1.0/" }, "distribution": [ { "contentUrl": 
+"https://www.kaggle.com/api/v1/datasets/download/thedevastator/lovoo-v3-dating-app-user-profiles-and-statistics? 
+datasetVersionNumber=2", "contentSize": "1.229 MB", "md5": "NK\u002BStI9JTwSUAGOtOoUINQ==", 
+"encodingFormat": "application/zip", "@id": "archive.zip", "@type": "cr:FileObject", "name": "archive.zip", 
+"description": "Archive containing all the contents of the Lovoo v3 Dating App User Profiles and Statistics dataset" }, 
+{ "contentUrl": "interests-of-users-by-age.csv", "containedIn": { "@id": "archive.zip" }, "encodingFormat": "text/csv", 
+"@id": "interests-of-users-by-age.csv_fileobject", "@type": "cr:FileObject", "name": "interests-of-users-by-age.csv", 
+"description": "This file contains user interests data from the Lovoo v3 dating app, including age and interests" }, 
+{ "contentUrl": "lovoo_v3_users_api-results.csv", "containedIn": { "@id": "archive.zip" }, "encodingFormat": 
+"text/csv", "@id": "lovoo_v3_users_api-results.csv_fileobject", "@type": "cr:FileObject", "name": "lovoo_v3_users_api- 
+results.csv", "description": "This dataset contains user profile information from the Lovoo v3 dating app, including 
+gender, age, location and other important metrics\n- gender: Gender of the user. (String)\n- genderLooking: Gender the 
+user is looking for. (String)\n- age: Age of the user. (Integer)\n- name: Name of the user. (String)\n- counts_details: 
+Number of details the user has provided. (Integer)\n- counts_pictures: Number of pictures the user has uploaded. 
+(Integer)\n- counts_profileVisits: Number of times the user\u0027s profile has been visited. (Integer)\n- counts_kisses: 
+Number of kisses the user has received. (Integer)\n- counts_fans: Number of fans the user has. (Integer)\n- counts_g: 
+Number of gifts the user has received. (Integer)\n- flirtInterests_chat: Whether the user is interested in chatting. 
+(Boolean)\n- flirtInterests_friends: Whether the user is interested in making friends. (Boolean)\n- flirtInterests_date: 
+Whether the user is interested in dating. (Boolean)\n- country: Country of the user. (String)\n- city: City of the user. 
+(String)\n- location: Location of the user. (String)\n- distance: Distance from the user. (Integer)\n- isFlirtstar: Whether 
+the user is a flirtstar. (Boolean)\n- isHighlighted: Whether the user is highlighted. (Boolean)\n- isInfluencer: Whether the 
+user is an influencer. (Boolean)\n- isMobile: Whether the user is using a mobile device. (Boolean)\n- isNew: Whether the 
+user is new to the app. (Boolean)\n- isOnline: Whether the user is currently online. (Boolean)\n- isVip: Whether the user 
+is a VIP. (Boolean)\n- lang_count: Number of languages the user speaks. (Integer)\n- lang_fr: Whether the user speaks 
+French. (Boolean)\n- lang_en: Whether the user speaks English. (Boolean)\n- lang_de: Whether the user speaks German. 
+(Boolean)\n- lang_it: Whether the user speaks Italian. (Boolean)\n- lang_es: Whether the user speaks Spanish. 
+(Boolean)\n- lang_pt: Whether the user speaks Portuguese. (Boo\n- verified: Whether the user is verified. (Boolean)\n- 
+shareProfileEnabled: Whether the user has enabled profile sharing. (Boolean)\n- lastOnlineDate: Date of the user\u0027s 
+last online activity. (Date)\n- lastOnlineTime: Time of the user\u0027s last online activity. (Time)\n- birthd: Date of birth 
+of the user. (Date)\n- crypt: Cryptographic hash of the user\u0027s profile. (String)\n- freetext: Free text field of the user 
+\u0027s profile. (String)\n- whazzup: What\u0027s up field of the user\u0027s profile. (String)\n- isSystemProfile: 
+Whether the user is a system profile. (Boolean)" }, { "contentUrl": "lovoo_v3_users_instances.csv", "containedIn": 
+{ "@id": "archive.zip" }, "encodingFormat": "text/csv", "@id": "lovoo_v3_users_instances.csv_fileobject", "@type": 
+"cr:FileObject", "name": "lovoo_v3_users_instances.csv", "description": "This dataset contains user profile information 
+from the Lovoo v3 dating app, including gender, age, location, and other metrics\n- gender: Gender of the user. 
+(String)\n- age: Age of the user. (Integer)\n- name: Name of the user. (String)\n- counts_pictures: Number of pictures the 
+user has uploaded. (Integer)\n- counts_profileVisits: Number of times the user\u0027s profile has been visited. 
+(Integer)\n- counts_kisses: Number of kisses the user has received. (Integer)\n- flirtInterests_chat: Whether the user is 
+interested in chatting. (Boolean)\n- flirtInterests_friends: Whether the user is interested in making friends. (Boolean)\n- 
+flirtInterests_date: Whether the user is interested in dating. (Boolean)\n- lang_count: Number of languages the user 
+speaks. (Integer)\n- lang_fr: Whether the user speaks French. (Boolean)\n- lang_en: Whether the user speaks English. 
+(Boolean)\n- lang_de: Whether the user speaks German. (Boolean)\n- lang_it: Whether the user speaks Italian. 
+(Boolean)\n- lang_es: Whether the user speaks Spanish. (Boolean)\n- lang_pt: Whether the user speaks Portuguese. (Boo 
+\n- city: City of the user. (String)\n- crypt: Cryptographic hash of the user\u0027s profile. (String)\n- distance: Distance 
+from the user. (Integer)\n- whazzup: What\u0027s up field of the user\u0027s profile. (String)\n- isSystemProfile: 
+Whether the user is a system profile. (Boolean)\n- connectedToFacebook: Whether the user is connected to Facebook. 
+(Boolean)\n- isVIP: Whether the user is a VIP. (Boolean)\n- isVerified: Whether the user is verified. (Boolean)\n- 
+lastOnline: Date and time of the user\u0027s last online activity. (String)\n- lastOnline: Date and time of the user\u0027s 
+last online activity. (String)\n- lastOnlineTs: Timestamp of the user\u0027s last online activity. (Integer)\n- locationCity: 
+
+
+City of the user. (String)\n- locationCitySub: Sub-region of the user\u0027s city. (String)\n- userInfo_visitDate: Date and 
+time of the user\u0027s last profile visit. (String)\n- countDetails: Number of details the user has provided. (Integer)\n- 
+flirtstar: Whether the user is a flirtstar. (Boolean)\n- freshman: Whether the user is a freshman. (Boolean)\n- hasBirthday: 
+Whether the user has provided their birthday. (Boolean)\n- highlighted: Whether the user is highlighted. (Boolean)\n- 
+locked: Whether the user\u0027s profile is locked. (Boolean)\n- mobile: Whether the user is using a mobile device. 
+(Boolean)" } ], "recordSet": [ { "field": [ { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "interests-of- 
+users-by-age.csv_fileobject" }, "extract": { "column": "index" } }, "@id": "interests-of-users-by-age.csv/index", 
+"@type": "cr:Field", "name": "index", "description": "Index" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": 
+{ "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "age" } }, "@id": "interests-of-users-by- 
+age.csv/age", "@type": "cr:Field", "name": "age", "description": "Age" }, { "dataType": [ "sc:Integer" ], "source": 
+{ "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "nbusers" } }, "@id": 
+"interests-of-users-by-age.csv/nbusers", "@type": "cr:Field", "name": "nbusers", "description": "Nbusers" }, 
+{ "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": 
+{ "column": "percentwantchats" } }, "@id": "interests-of-users-by-age.csv/percentwantchats", "@type": "cr:Field", 
+"name": "percentwantchats", "description": "Percentwantchats" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": 
+{ "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "percentwantfriends" } }, "@id": "interests- 
+of-users-by-age.csv/percentwantfriends", "@type": "cr:Field", "name": "percentwantfriends", "description": 
+"Percentwantfriends" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": "interests-of-users-by- 
+age.csv_fileobject" }, "extract": { "column": "percentwantdates" } }, "@id": "interests-of-users-by- 
+age.csv/percentwantdates", "@type": "cr:Field", "name": "percentwantdates", "description": "Percentwantdates" }, 
+{ "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": 
+{ "column": "meankissesreceived" } }, "@id": "interests-of-users-by-age.csv/meankissesreceived", "@type": "cr:Field", 
+"name": "meankissesreceived", "description": "Meankissesreceived" }, { "dataType": [ "sc:Float" ], "source": 
+{ "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "meanvisitsreceived" } }, 
+"@id": "interests-of-users-by-age.csv/meanvisitsreceived", "@type": "cr:Field", "name": "meanvisitsreceived", 
+"description": "Meanvisitsreceived" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": "interests-of-users- 
+by-age.csv_fileobject" }, "extract": { "column": "meanfollowers" } }, "@id": "interests-of-users-by- 
+age.csv/meanfollowers", "@type": "cr:Field", "name": "meanfollowers", "description": "Meanfollowers" }, 
+{ "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": 
+{ "column": "meanlanguagesknown" } }, "@id": "interests-of-users-by-age.csv/meanlanguagesknown", "@type": 
+"cr:Field", "name": "meanlanguagesknown", "description": "Meanlanguagesknown" }, { "dataType": [ "sc:Integer" ], 
+"source": { "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": { "column": 
+"totalwantchants" } }, "@id": "interests-of-users-by-age.csv/totalwantchants", "@type": "cr:Field", "name": 
+"totalwantchants", "description": "Totalwantchants" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "totalwantfriends" } }, "@id": "interests-of-users-by- 
+age.csv/totalwantfriends", "@type": "cr:Field", "name": "totalwantfriends", "description": "Totalwantfriends" }, 
+{ "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": 
+{ "column": "totalwantdates" } }, "@id": "interests-of-users-by-age.csv/totalwantdates", "@type": "cr:Field", "name": 
+"totalwantdates", "description": "Totalwantdates" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "totalkissesreceive" } }, "@id": "interests-of-users- 
+by-age.csv/totalkissesreceive", "@type": "cr:Field", "name": "totalkissesreceive", "description": "Totalkissesreceive" }, 
+{ "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": 
+{ "column": "totalvisitsreceived" } }, "@id": "interests-of-users-by-age.csv/totalvisitsreceived", "@type": "cr:Field", 
+"name": "totalvisitsreceived", "description": "Totalvisitsreceived" }, { "dataType": [ "sc:Integer" ], "source": 
+{ "fileObject": { "@id": "interests-of-users-by-age.csv_fileobject" }, "extract": { "column": "totalfollowers" } }, "@id": 
+"interests-of-users-by-age.csv/totalfollowers", "@type": "cr:Field", "name": "totalfollowers", "description": 
+"Totalfollowers" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "interests-of-users-by- 
+age.csv_fileobject" }, "extract": { "column": "totallanguagesspoken" } }, "@id": "interests-of-users-by- 
+age.csv/totallanguagesspoken", "@type": "cr:Field", "name": "totallanguagesspoken", "description": 
+"Totallanguagesspoken" } ], "@id": "interests-of-users-by-age.csv", "@type": "cr:RecordSet", "name": "interests-of- 
+users-by-age.csv", "description": "This file contains user interests data from the Lovoo v3 dating app, including age and 
+interests" }, { "field": [ { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "index" } }, "@id": "lovoo_v3_users_api-results.csv/index", "@type": 
+"cr:Field", "name": "index", "description": "Index" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "gender" } }, "@id": "lovoo_v3_users_api- 
+results.csv/gender", "@type": "cr:Field", "name": "gender", "description": "Gender of the user. (String)" }, { "dataType": 
+[ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": 
+"genderLooking" } }, "@id": "lovoo_v3_users_api-results.csv/genderLooking", "@type": "cr:Field", "name": 
+"genderLooking", "description": "Gender the user is looking for. (String)" }, { "dataType": [ "sc:Integer" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "age" } }, "@id": 
+"lovoo_v3_users_api-results.csv/age", "@type": "cr:Field", "name": "age", "description": "Age of the user. (Integer)" }, 
+{ "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": 
+
+
+{ "column": "name" } }, "@id": "lovoo_v3_users_api-results.csv/name", "@type": "cr:Field", "name": "name", 
+"description": "Name of the user. (String)" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "counts_details" } }, "@id": "lovoo_v3_users_api- 
+results.csv/counts_details", "@type": "cr:Field", "name": "counts_details", "description": "Number of details the user has 
+provided. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "counts_pictures" } }, "@id": "lovoo_v3_users_api- 
+results.csv/counts_pictures", "@type": "cr:Field", "name": "counts_pictures", "description": "Number of pictures the user 
+has uploaded. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "counts_profileVisits" } }, "@id": "lovoo_v3_users_api- 
+results.csv/counts_profileVisits", "@type": "cr:Field", "name": "counts_profileVisits", "description": "Number of times 
+the user\u0027s profile has been visited. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "counts_kisses" } }, "@id": "lovoo_v3_users_api- 
+results.csv/counts_kisses", "@type": "cr:Field", "name": "counts_kisses", "description": "Number of kisses the user has 
+received. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "counts_fans" } }, "@id": "lovoo_v3_users_api-results.csv/counts_fans", 
+"@type": "cr:Field", "name": "counts_fans", "description": "Number of fans the user has. (Integer)" }, { "dataType": 
+[ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": 
+"counts_g" } }, "@id": "lovoo_v3_users_api-results.csv/counts_g", "@type": "cr:Field", "name": "counts_g", 
+"description": "Number of gifts the user has received. (Integer)" }, { "dataType": [ "sc:Boolean" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "flirtInterests_chat" } }, 
+"@id": "lovoo_v3_users_api-results.csv/flirtInterests_chat", "@type": "cr:Field", "name": "flirtInterests_chat", 
+"description": "Whether the user is interested in chatting. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "flirtInterests_friends" } }, 
+"@id": "lovoo_v3_users_api-results.csv/flirtInterests_friends", "@type": "cr:Field", "name": "flirtInterests_friends", 
+"description": "Whether the user is interested in making friends. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "flirtInterests_date" } }, 
+"@id": "lovoo_v3_users_api-results.csv/flirtInterests_date", "@type": "cr:Field", "name": "flirtInterests_date", 
+"description": "Whether the user is interested in dating. (Boolean)" }, { "dataType": [ "sc:Text" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "country" } }, "@id": 
+"lovoo_v3_users_api-results.csv/country", "@type": "cr:Field", "name": "country", "description": "Country of the user. 
+(String)" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, 
+"extract": { "column": "city" } }, "@id": "lovoo_v3_users_api-results.csv/city", "@type": "cr:Field", "name": "city", 
+"description": "City of the user. (String)" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "location" } }, "@id": "lovoo_v3_users_api- 
+results.csv/location", "@type": "cr:Field", "name": "location", "description": "Location of the user. (String)" }, 
+{ "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": 
+{ "column": "distance" } }, "@id": "lovoo_v3_users_api-results.csv/distance", "@type": "cr:Field", "name": "distance", 
+"description": "Distance from the user. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "isFlirtstar" } }, "@id": "lovoo_v3_users_api- 
+results.csv/isFlirtstar", "@type": "cr:Field", "name": "isFlirtstar", "description": "Whether the user is a flirtstar. 
+(Boolean)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "isHighlighted" } }, "@id": "lovoo_v3_users_api- 
+results.csv/isHighlighted", "@type": "cr:Field", "name": "isHighlighted", "description": "Whether the user is highlighted. 
+(Boolean)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "isInfluencer" } }, "@id": "lovoo_v3_users_api-results.csv/isInfluencer", 
+"@type": "cr:Field", "name": "isInfluencer", "description": "Whether the user is an influencer. (Boolean)" }, 
+{ "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, 
+"extract": { "column": "isMobile" } }, "@id": "lovoo_v3_users_api-results.csv/isMobile", "@type": "cr:Field", "name": 
+"isMobile", "description": "Whether the user is using a mobile device. (Boolean)" }, { "dataType": [ "sc:Integer" ], 
+"source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "isNew" } }, 
+"@id": "lovoo_v3_users_api-results.csv/isNew", "@type": "cr:Field", "name": "isNew", "description": "Whether the user 
+is new to the app. (Boolean)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "isOnline" } }, "@id": "lovoo_v3_users_api-results.csv/isOnline", 
+"@type": "cr:Field", "name": "isOnline", "description": "Whether the user is currently online. (Boolean)" }, 
+{ "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, 
+"extract": { "column": "isVip" } }, "@id": "lovoo_v3_users_api-results.csv/isVip", "@type": "cr:Field", "name": "isVip", 
+"description": "Whether the user is a VIP. (Boolean)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "lang_count" } }, "@id": "lovoo_v3_users_api- 
+results.csv/lang_count", "@type": "cr:Field", "name": "lang_count", "description": "Number of languages the user 
+speaks. (Integer)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "lang_fr" } }, "@id": "lovoo_v3_users_api-results.csv/lang_fr", 
+"@type": "cr:Field", "name": "lang_fr", "description": "Whether the user speaks French. (Boolean)" }, { "dataType": 
+
+
+[ "sc:Boolean" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": 
+"lang_en" } }, "@id": "lovoo_v3_users_api-results.csv/lang_en", "@type": "cr:Field", "name": "lang_en", "description": 
+"Whether the user speaks English. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "lang_de" } }, "@id": "lovoo_v3_users_api- 
+results.csv/lang_de", "@type": "cr:Field", "name": "lang_de", "description": "Whether the user speaks German. 
+(Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "lang_it" } }, "@id": "lovoo_v3_users_api-results.csv/lang_it", "@type": 
+"cr:Field", "name": "lang_it", "description": "Whether the user speaks Italian. (Boolean)" }, { "dataType": 
+[ "sc:Boolean" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": 
+"lang_es" } }, "@id": "lovoo_v3_users_api-results.csv/lang_es", "@type": "cr:Field", "name": "lang_es", "description": 
+"Whether the user speaks Spanish. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "lang_pt" } }, "@id": "lovoo_v3_users_api- 
+results.csv/lang_pt", "@type": "cr:Field", "name": "lang_pt", "description": "Whether the user speaks Portuguese. 
+(Boo" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, 
+"extract": { "column": "verified" } }, "@id": "lovoo_v3_users_api-results.csv/verified", "@type": "cr:Field", "name": 
+"verified", "description": "Whether the user is verified. (Boolean)" }, { "dataType": [ "sc:Integer" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "shareProfileEnabled" } }, 
+"@id": "lovoo_v3_users_api-results.csv/shareProfileEnabled", "@type": "cr:Field", "name": "shareProfileEnabled", 
+"description": "Whether the user has enabled profile sharing. (Boolean)" }, { "dataType": [ "sc:Date" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "lastOnlineDate" } }, 
+"@id": "lovoo_v3_users_api-results.csv/lastOnlineDate", "@type": "cr:Field", "name": "lastOnlineDate", "description": 
+"Date of the user\u0027s last online activity. (Date)" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "lastOnlineTime" } }, "@id": 
+"lovoo_v3_users_api-results.csv/lastOnlineTime", "@type": "cr:Field", "name": "lastOnlineTime", "description": "Time 
+of the user\u0027s last online activity. (Time)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "birthd" } }, "@id": "lovoo_v3_users_api- 
+results.csv/birthd", "@type": "cr:Field", "name": "birthd", "description": "Date of birth of the user. (Date)" }, 
+{ "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": 
+{ "column": "crypt" } }, "@id": "lovoo_v3_users_api-results.csv/crypt", "@type": "cr:Field", "name": "crypt", 
+"description": "Cryptographic hash of the user\u0027s profile. (String)" }, { "dataType": [ "sc:Text" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "freetext" } }, "@id": 
+"lovoo_v3_users_api-results.csv/freetext", "@type": "cr:Field", "name": "freetext", "description": "Free text field of the 
+user\u0027s profile. (String)" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api- 
+results.csv_fileobject" }, "extract": { "column": "whazzup" } }, "@id": "lovoo_v3_users_api-results.csv/whazzup", 
+"@type": "cr:Field", "name": "whazzup", "description": "What\u0027s up field of the user\u0027s profile. (String)" }, 
+{ "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": 
+{ "column": "pictureId" } }, "@id": "lovoo_v3_users_api-results.csv/pictureId", "@type": "cr:Field", "name": 
+"pictureId", "description": "Picture Id" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": "userId" } }, "@id": "lovoo_v3_users_api- 
+results.csv/userId", "@type": "cr:Field", "name": "userId", "description": "User Id" }, { "dataType": [ "sc:Text" ], 
+"source": { "fileObject": { "@id": "lovoo_v3_users_api-results.csv_fileobject" }, "extract": { "column": 
+"isSystemProfile" } }, "@id": "lovoo_v3_users_api-results.csv/isSystemProfile", "@type": "cr:Field", "name": 
+"isSystemProfile", "description": "Whether the user is a system profile. (Boolean)" } ], "@id": "lovoo_v3_users_api- 
+results.csv", "@type": "cr:RecordSet", "name": "lovoo_v3_users_api-results.csv", "description": "This dataset contains 
+user profile information from the Lovoo v3 dating app, including gender, age, location and other important metrics\n- 
+gender: Gender of the user. (String)\n- genderLooking: Gender the user is looking for. (String)\n- age: Age of the user. 
+(Integer)\n- name: Name of the user. (String)\n- counts_details: Number of details the user has provided. (Integer)\n- 
+counts_pictures: Number of pictures the user has uploaded. (Integer)\n- counts_profileVisits: Number of times the user 
+\u0027s profile has been visited. (Integer)\n- counts_kisses: Number of kisses the user has received. (Integer)\n- 
+counts_fans: Number of fans the user has. (Integer)\n- counts_g: Number of gifts the user has received. (Integer)\n- 
+flirtInterests_chat: Whether the user is interested in chatting. (Boolean)\n- flirtInterests_friends: Whether the user is 
+interested in making friends. (Boolean)\n- flirtInterests_date: Whether the user is interested in dating. (Boolean)\n- 
+country: Country of the user. (String)\n- city: City of the user. (String)\n- location: Location of the user. (String)\n- 
+distance: Distance from the user. (Integer)\n- isFlirtstar: Whether the user is a flirtstar. (Boolean)\n- isHighlighted: 
+Whether the user is highlighted. (Boolean)\n- isInfluencer: Whether the user is an influencer. (Boolean)\n- isMobile: 
+Whether the user is using a mobile device. (Boolean)\n- isNew: Whether the user is new to the app. (Boolean)\n- 
+isOnline: Whether the user is currently online. (Boolean)\n- isVip: Whether the user is a VIP. (Boolean)\n- lang_count: 
+Number of languages the user speaks. (Integer)\n- lang_fr: Whether the user speaks French. (Boolean)\n- lang_en: 
+Whether the user speaks English. (Boolean)\n- lang_de: Whether the user speaks German. (Boolean)\n- lang_it: Whether 
+the user speaks Italian. (Boolean)\n- lang_es: Whether the user speaks Spanish. (Boolean)\n- lang_pt: Whether the user 
+speaks Portuguese. (Boo\n- verified: Whether the user is verified. (Boolean)\n- shareProfileEnabled: Whether the user 
+has enabled profile sharing. (Boolean)\n- lastOnlineDate: Date of the user\u0027s last online activity. (Date)\n- 
+
+
+lastOnlineTime: Time of the user\u0027s last online activity. (Time)\n- birthd: Date of birth of the user. (Date)\n- crypt: 
+Cryptographic hash of the user\u0027s profile. (String)\n- freetext: Free text field of the user\u0027s profile. (String)\n- 
+whazzup: What\u0027s up field of the user\u0027s profile. (String)\n- isSystemProfile: Whether the user is a system 
+profile. (Boolean)" }, { "field": [ { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "index" } }, "@id": 
+"lovoo_v3_users_instances.csv/index", "@type": "cr:Field", "name": "index", "description": "Index" }, { "dataType": 
+[ "sc:Boolean" ], "source": { "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": 
+"gender" } }, "@id": "lovoo_v3_users_instances.csv/gender", "@type": "cr:Field", "name": "gender", "description": 
+"Gender of the user. (String)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "age" } }, "@id": 
+"lovoo_v3_users_instances.csv/age", "@type": "cr:Field", "name": "age", "description": "Age of the user. (Integer)" }, 
+{ "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": 
+{ "column": "name" } }, "@id": "lovoo_v3_users_instances.csv/name", "@type": "cr:Field", "name": "name", 
+"description": "Name of the user. (String)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "counts_pictures" } }, "@id": 
+"lovoo_v3_users_instances.csv/counts_pictures", "@type": "cr:Field", "name": "counts_pictures", "description": 
+"Number of pictures the user has uploaded. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "counts_profileVisits" } }, "@id": 
+"lovoo_v3_users_instances.csv/counts_profileVisits", "@type": "cr:Field", "name": "counts_profileVisits", "description": 
+"Number of times the user\u0027s profile has been visited. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "counts_kisses" } }, "@id": 
+"lovoo_v3_users_instances.csv/counts_kisses", "@type": "cr:Field", "name": "counts_kisses", "description": "Number of 
+kisses the user has received. (Integer)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "flirtInterests_chat" } }, "@id": 
+"lovoo_v3_users_instances.csv/flirtInterests_chat", "@type": "cr:Field", "name": "flirtInterests_chat", "description": 
+"Whether the user is interested in chatting. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": 
+{ "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "flirtInterests_friends" } }, "@id": 
+"lovoo_v3_users_instances.csv/flirtInterests_friends", "@type": "cr:Field", "name": "flirtInterests_friends", 
+"description": "Whether the user is interested in making friends. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "flirtInterests_date" } }, 
+"@id": "lovoo_v3_users_instances.csv/flirtInterests_date", "@type": "cr:Field", "name": "flirtInterests_date", 
+"description": "Whether the user is interested in dating. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": 
+"connectedToFacebook" } }, "@id": "lovoo_v3_users_instances.csv/connectedToFacebook", "@type": "cr:Field", 
+"name": "connectedToFacebook", "description": "Whether the user is connected to Facebook. (Boolean)" }, 
+{ "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, 
+"extract": { "column": "isVIP" } }, "@id": "lovoo_v3_users_instances.csv/isVIP", "@type": "cr:Field", "name": "isVIP", 
+"description": "Whether the user is a VIP. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": 
+{ "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "isVerified" } }, "@id": 
+"lovoo_v3_users_instances.csv/isVerified", "@type": "cr:Field", "name": "isVerified", "description": "Whether the user 
+is verified. (Boolean)" }, { "dataType": [ "sc:Date" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lastOnline" } }, "@id": 
+"lovoo_v3_users_instances.csv/lastOnline", "@type": "cr:Field", "name": "lastOnline", "description": "Date and time of 
+the user\u0027s last online activity. (String)" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lastOnlineTs" } }, "@id": 
+"lovoo_v3_users_instances.csv/lastOnlineTs", "@type": "cr:Field", "name": "lastOnlineTs", "description": "Timestamp 
+of the user\u0027s last online activity. (Integer)" }, { "dataType": [ "sc:Integer" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_count" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_count", "@type": "cr:Field", "name": "lang_count", "description": "Number of 
+languages the user speaks. (Integer)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_fr" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_fr", "@type": "cr:Field", "name": "lang_fr", "description": "Whether the user 
+speaks French. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_en" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_en", "@type": "cr:Field", "name": "lang_en", "description": "Whether the user 
+speaks English. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_de" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_de", "@type": "cr:Field", "name": "lang_de", "description": "Whether the user 
+speaks German. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_it" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_it", "@type": "cr:Field", "name": "lang_it", "description": "Whether the user speaks 
+Italian. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+
+
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_es" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_es", "@type": "cr:Field", "name": "lang_es", "description": "Whether the user 
+speaks Spanish. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "lang_pt" } }, "@id": 
+"lovoo_v3_users_instances.csv/lang_pt", "@type": "cr:Field", "name": "lang_pt", "description": "Whether the user 
+speaks Portuguese. (Boo" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "city" } }, "@id": 
+"lovoo_v3_users_instances.csv/city", "@type": "cr:Field", "name": "city", "description": "City of the user. (String)" }, 
+{ "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": 
+{ "column": "locationCity" } }, "@id": "lovoo_v3_users_instances.csv/locationCity", "@type": "cr:Field", "name": 
+"locationCity", "description": "City of the user. (String)" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "locationCitySub" } }, "@id": 
+"lovoo_v3_users_instances.csv/locationCitySub", "@type": "cr:Field", "name": "locationCitySub", "description": "Sub- 
+region of the user\u0027s city. (String)" }, { "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "userInfo_visitDate" } }, "@id": 
+"lovoo_v3_users_instances.csv/userInfo_visitDate", "@type": "cr:Field", "name": "userInfo_visitDate", "description": 
+"Date and time of the user\u0027s last profile visit. (String)" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": 
+{ "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "countDetails" } }, "@id": 
+"lovoo_v3_users_instances.csv/countDetails", "@type": "cr:Field", "name": "countDetails", "description": "Number of 
+details the user has provided. (Integer)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "crypt" } }, "@id": 
+"lovoo_v3_users_instances.csv/crypt", "@type": "cr:Field", "name": "crypt", "description": "Cryptographic hash of the 
+user\u0027s profile. (String)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "flirtstar" } }, "@id": 
+"lovoo_v3_users_instances.csv/flirtstar", "@type": "cr:Field", "name": "flirtstar", "description": "Whether the user is a 
+flirtstar. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "freshman" } }, "@id": 
+"lovoo_v3_users_instances.csv/freshman", "@type": "cr:Field", "name": "freshman", "description": "Whether the user is 
+a freshman. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "hasBirthday" } }, "@id": 
+"lovoo_v3_users_instances.csv/hasBirthday", "@type": "cr:Field", "name": "hasBirthday", "description": "Whether the 
+user has provided their birthday. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "highlighted" } }, "@id": 
+"lovoo_v3_users_instances.csv/highlighted", "@type": "cr:Field", "name": "highlighted", "description": "Whether the 
+user is highlighted. (Boolean)" }, { "dataType": [ "sc:Float" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "distance" } }, "@id": 
+"lovoo_v3_users_instances.csv/distance", "@type": "cr:Field", "name": "distance", "description": "Distance from the 
+user. (Integer)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "locked" } }, "@id": 
+"lovoo_v3_users_instances.csv/locked", "@type": "cr:Field", "name": "locked", "description": "Whether the user\u0027s 
+profile is locked. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "mobile" } }, "@id": 
+"lovoo_v3_users_instances.csv/mobile", "@type": "cr:Field", "name": "mobile", "description": "Whether the user is 
+using a mobile device. (Boolean)" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "online" } }, "@id": 
+"lovoo_v3_users_instances.csv/online", "@type": "cr:Field", "name": "online", "description": "Online" }, { "dataType": [ 
+"sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": 
+"whazzup" } }, "@id": "lovoo_v3_users_instances.csv/whazzup", "@type": "cr:Field", "name": "whazzup", 
+"description": "What\u0027s up field of the user\u0027s profile. (String)" }, { "dataType": [ "sc:Text" ], "source": 
+{ "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "pictureId" } }, "@id": 
+"lovoo_v3_users_instances.csv/pictureId", "@type": "cr:Field", "name": "pictureId", "description": "Picture Id" }, 
+{ "dataType": [ "sc:Text" ], "source": { "fileObject": { "@id": "lovoo_v3_users_instances.csv_fileobject" }, "extract": 
+{ "column": "userId" } }, "@id": "lovoo_v3_users_instances.csv/userId", "@type": "cr:Field", "name": "userId", 
+"description": "User Id" }, { "dataType": [ "sc:Boolean" ], "source": { "fileObject": { "@id": 
+"lovoo_v3_users_instances.csv_fileobject" }, "extract": { "column": "isSystemProfile" } }, "@id": 
+"lovoo_v3_users_instances.csv/isSystemProfile", "@type": "cr:Field", "name": "isSystemProfile", "description": 
+"Whether the user is a system profile. (Boolean)" } ], "@id": "lovoo_v3_users_instances.csv", "@type": "cr:RecordSet", 
+"name": "lovoo_v3_users_instances.csv", "description": "This dataset contains user profile information from the Lovoo 
+v3 dating app, including gender, age, location, and other metrics\n- gender: Gender of the user. (String)\n- age: Age of 
+the user. (Integer)\n- name: Name of the user. (String)\n- counts_pictures: Number of pictures the user has uploaded. 
+(Integer)\n- counts_profileVisits: Number of times the user\u0027s profile has been visited. (Integer)\n- counts_kisses: 
+Number of kisses the user has received. (Integer)\n- flirtInterests_chat: Whether the user is interested in chatting. 
+
+
+(Boolean)\n- flirtInterests_friends: Whether the user is interested in making friends. (Boolean)\n- flirtInterests_date: 
+Whether the user is interested in dating. (Boolean)\n- lang_count: Number of languages the user speaks. (Integer)\n- 
+lang_fr: Whether the user speaks French. (Boolean)\n- lang_en: Whether the user speaks English. (Boolean)\n- lang_de: 
+Whether the user speaks German. (Boolean)\n- lang_it: Whether the user speaks Italian. (Boolean)\n- lang_es: Whether 
+the user speaks Spanish. (Boolean)\n- lang_pt: Whether the user speaks Portuguese. (Boo\n- city: City of the user. 
+(String)\n- crypt: Cryptographic hash of the user\u0027s profile. (String)\n- distance: Distance from the user. (Integer)\n- 
+whazzup: What\u0027s up field of the user\u0027s profile. (String)\n- isSystemProfile: Whether the user is a system 
+profile. (Boolean)\n- connectedToFacebook: Whether the user is connected to Facebook. (Boolean)\n- isVIP: Whether 
+the user is a VIP. (Boolean)\n- isVerified: Whether the user is verified. (Boolean)\n- lastOnline: Date and time of the user 
+\u0027s last online activity. (String)\n- lastOnline: Date and time of the user\u0027s last online activity. (String)\n- 
+lastOnlineTs: Timestamp of the user\u0027s last online activity. (Integer)\n- locationCity: City of the user. (String)\n- 
+locationCitySub: Sub-region of the user\u0027s city. (String)\n- userInfo_visitDate: Date and time of the user\u0027s 
+last profile visit. (String)\n- countDetails: Number of details the user has provided. (Integer)\n- flirtstar: Whether the user 
+is a flirtstar. (Boolean)\n- freshman: Whether the user is a freshman. (Boolean)\n- hasBirthday: Whether the user has 
+provided their birthday. (Boolean)\n- highlighted: Whether the user is highlighted. (Boolean)\n- locked: Whether the user 
+\u0027s profile is locked. (Boolean)\n- mobile: Whether the user is using a mobile device. (Boolean)" } ], "version": 2, 
+"keywords": [ "technique \u003E data visualization", "subject \u003E science and technology \u003E internet \u003E 
+online communities \u003E social networks", "subject \u003E science and technology \u003E internet \u003E online 
+communities", "subject \u003E science and technology \u003E computer science" ], "isAccessibleForFree": true, 
+"includedInDataCatalog": { "@type": "sc:DataCatalog", "name": "Kaggle", "url": "https://www.kaggle.com" }, 
+"creator": { "@type": "sc:Person", "name": "The Devastator", "url": "/thedevastator", "image": 
+"https://storage.googleapis.com/kaggle-avatars/thumbnails/10654180-kg.png" }, "publisher": { "@type": 
+"sc:Organization", "name": "Kaggle", "url": "https://www.kaggle.com/organizations/kaggle", "image": 
+"https://storage.googleapis.com/kaggle-organizations/4/thumbnail.png" }, "thumbnailUrl": 
+"https://storage.googleapis.com/kaggle-datasets-images/2814543/4855265/858f3f53b11d19fd0da6f29155f2ad29/dataset- 
+card.png?t=2023-01-15-14-50-17", "dateModified": "2023-01-15T13:47:25.803", "datePublished": "2023-01- 
+15T13:47:17.107", "@type": "sc:Dataset", "name": "Lovoo v3 Dating App User Profiles and Statistics", "url": 
+"https://www.kaggle.com/datasets/thedevastator/lovoo-v3-dating-app-user-profiles-and-statistics/versions/2", 
+"description": "_____\n# Lovoo v3 Dating App User Profiles and Statistics\n### Revealing popular user traits and 
+behavior\nBy Jeffrey Mvutu Mabilama [[source]](https://data.world/jfreex)\n_____\n\n### About this dataset\n\u003E 
+When Dating apps like Tinder began to become more popular, users wanted to create the best profiles possible in order to 
+maximize their chances of being noticed and gain more potential encounters. Unlike traditional dating platforms, these 
+new ones required mutual attraction before allowing two people to chat, making it all the more important for users to 
+create a great profile that would give them an advantage over others.\n\u003E \n\u003E It was amidst this scene that we 
+Humans began paying attention at how charismatic and inspiring people presented themselves online. The most 
+charismatic individuals tended to be the ones with the most followers or friends on social networks. This made us 
+question what makes a great user profile and how one could make a lasting first impression in order ensure finding true 
+love or even just some new friendships? How do we recognize a truly charismatic person from their presentation on 
+social media? Is there any way of quantifying charisma?\n\u003E \n\u003E In 2015 I set out with researching all this 
+using Lovoo\u0027s newest dating app version -V3 (the iOS version), gathering user profile data such as age 
+demographics, interest types (friendship, chatting or dating), language preferences etc., as well as usually unavailable 
+metrics like number of profile visits, kisses received etc. I was also able to collect pictures of those user profiles in order 
+discern any correlations between appeal and reputation that may have existed at that time amongst Lovoo\u0027s 
+population base. \n\u003E \n\u003E My goal is forthis dataset will help you answer those questions related not just 
+romantic success but also popularity/charisma censes/demographic studies and even detect influential figures both within 
+\u0026 outside Lovoo\u0027s platform . A starter analysis is available accompanying this dataset which can be used as a 
+reference point when working with the data here. Using this dataset you can your own investigations into: \n\u003E \n 
+\u003E * What type of person has attracted more visitors or potential matches than others? \n\u003E * Which criteria can 
+be used when determining someone\u2019s charm/likability among others ?\n\u003E * How does one optimize his/her 
+dating app profile visibility so he/she won\u2019t remain unseen among other users? \n\u003E \n\u003E Grab this 
+amazing opportunity now! Kick-start your journey towards understanding the inner workings behind success in online 
+relationships today!\n\n### More Datasets\n\u003E For more datasets, click [here] 
+(https://www.kaggle.com/thedevastator/datasets).\n\n### Featured Notebooks\n\u003E - \uD83D\uDEA8 **Your 
+notebook can be here!** \uD83D\uDEA8! \n\n### How to use the dataset\n\u003E \n\u003E To get started with this 
+dataset first you need to download it from Kaggle. Once downloaded you should take a look at the column names in 
+order to get an idea of what information is available. This data includes fields such as gender, age name (and nickname), 
+number of pictures uploaded/profile visits/kisses /fans/gifts received and flirt interests (chatting or making friends). It 
+also contains language specifics like detected languages for each user as well as country \u0026 city of residence. \n 
+\u003E \n\u003E The most interesting section for your research is likely the number of details that have been filled in for 
+each user \u2013 such as whether they are interested in chatting or making friends. Usually these information points 
+allow us to infer more about a person\u2019s character \u2013 from jokester to serious individualist (or anything else!). 
+The same holds true for their language preferences which might reveal aspects regarding their cultures orientation or 
+
+
+habits. \n\u003E \n\u003E You may also want collected data which was left out here - imagery associated with users 
+\u0027 profiles - so please contact JfreexDatasets_bot on Telegram if you would like access to this imagery that has not 
+yet been uploaded here on Kaggle but is intregral part of understanding what makes a great user profile attractive on 
+these platforms according Aesthetics Theory applied in an uthentic way when considering how each image adds 
+sentimental appeal value by its perspective content focus - be it visually descriptive; emotive narrative; personality 
+coupled with expression mood association.. etcetera... Or simple just download relevant images yourself using automated 
+scripts ready made via webiste Grammak where Github Repo exists: https://github.com/grammak580542008/Lovoo-v3- 
+Profiles-Data # 1 year ago...\n\u003E \n\u003E Finally moving ahead \u2014 keep in mind that there are other ways data 
+can be gathered possible besides just downloading it from Kaggle \u2013 such us Messenger Bots or Customer 
+Relationship Management systems which help companies serve better their customers using cognitive computing \u0026 
+machine learning algorithms under Knowledge Based Artificial Intelligence approach guiding users\u0027 interactions 
+online \u0026 gain trust\n\n### Research Ideas\n\u003E - Identifying influencers: The dataset can be used to identify 
+potential influencers and study their profile characteristics. By analyzing the different variables associated with each 
+user, such as the number of followers, profile visits, or interests, advertisers and promoters can find the most suitable 
+profiles for advertising campaigns or product promotion. \n\u003E - Analyzing first impression: The dataset can be used 
+to analyze what factors make people attractive in a dating app context and how one can create an attractive online dating 
+profile that stands out from the crowd. By investigating each column such as gender, age range, language spoken or 
+location one can better understand which combinations make someone more appealing to potential dates in Lovoo v3 
+platform. \n\u003E - Crafting personalized user experiences: The dataset contains a wealth of personal information 
+including details about gender, age range and location which helpfully provides important information about potential 
+user preferences that could be leveraged by creating personalized experiences tailored to individual Lovoo users. As an 
+example they could leverage this data to target ads related to food delivery services taking into account where people live 
+and send curated emails with local events nearby according to age range them may fit into\n\n### Acknowledgements\n 
+\u003E If you use this dataset in your research, please credit the original authors.\n\u003E [Data Source] 
+(https://data.world/jfreex)\n\u003E \n\u003E\n\n\n### License\n\u003E \n\u003E \n\u003E **License: [CC0 1.0 
+Universal (CC0 1.0) - Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/)**\n\u003E No 
+Copyright - You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking 
+permission. [See Other Information](https://creativecommons.org/publicdomain/zero/1.0/).\n\n### Columns\n\n**File: 
+lovoo_v3_users_api-results.csv**\n| Column name | Description |\n|:--------------------------- 
+|:---------------------------------------------------------------|\n| **gender** | Gender of the user. (String) |\n| 
+**genderLooking** | Gender the user is looking for. (String) |\n| **age** | Age of the user. (Integer) |\n| **name** | 
+Name of the user. (String) |\n| **counts_details** | Number of details the user has provided. (Integer) |\n| 
+**counts_pictures** | Number of pictures the user has uploaded. (Integer) |\n| **counts_profileVisits** | Number of 
+times the user\u0027s profile has been visited. (Integer) |\n| **counts_kisses** | Number of kisses the user has received. 
+(Integer) |\n| **counts_fans** | Number of fans the user has. (Integer) |\n| **counts_g** | Number of gifts the user has 
+received. (Integer) |\n| **flirtInterests_chat** | Whether the user is interested in chatting. (Boolean) |\n| 
+**flirtInterests_friends** | Whether the user is interested in making friends. (Boolean) |\n| **flirtInterests_date** | 
+Whether the user is interested in dating. (Boolean) |\n| **country** | Country of the user. (String) |\n| **city** | City of 
+the user. (String) |\n| **location** | Location of the user. (String) |\n| **distance** | Distance from the user. (Integer) |\n| 
+**isFlirtstar** | Whether the user is a flirtstar. (Boolean) |\n| **isHighlighted** | Whether the user is highlighted. 
+(Boolean) |\n| **isInfluencer** | Whether the user is an influencer. (Boolean) |\n| **isMobile** | Whether the user is 
+using a mobile device. (Boolean) |\n| **isNew** | Whether the user is new to the app. (Boolean) |\n| **isOnline** | 
+Whether the user is currently online. (Boolean) |\n| **isVip** | Whether the user is a VIP. (Boolean) |\n| **lang_count** | 
+Number of languages the user speaks. (Integer) |\n| **lang_fr** | Whether the user speaks French. (Boolean) |\n| 
+**lang_en** | Whether the user speaks English. (Boolean) |\n| **lang_de** | Whether the user speaks German. 
+(Boolean) |\n| **lang_it** | Whether the user speaks Italian. (Boolean) |\n| **lang_es** | Whether the user speaks 
+Spanish. (Boolean) |\n| **lang_pt** | Whether the user speaks Portuguese. (Boo |\n| **verified** | Whether the user is 
+verified. (Boolean) |\n| **shareProfileEnabled** | Whether the user has enabled profile sharing. (Boolean) |\n| 
+**lastOnlineDate** | Date of the user\u0027s last online activity. (Date) |\n| **lastOnlineTime** | Time of the user 
+\u0027s last online activity. (Time) |\n| **birthd** | Date of birth of the user. (Date) |\n| **crypt** | Cryptographic hash 
+of the user\u0027s profile. (String) |\n| **freetext** | Free text field of the user\u0027s profile. (String) |\n| **whazzup** 
+| What\u0027s up field of the user\u0027s profile. (String) |\n| **isSystemProfile** | Whether the user is a system profile. 
+(Boolean) |\n\n_____\n\n**File: lovoo_v3_users_instances.csv**\n| Column name | Description | 
+\n|:---------------------------|:---------------------------------------------------------------|\n| **gender** | Gender of the user. 
+(String) |\n| **age** | Age of the user. (Integer) |\n| **name** | Name of the user. (String) |\n| **counts_pictures** | 
+Number of pictures the user has uploaded. (Integer) |\n| **counts_profileVisits** | Number of times the user\u0027s 
+profile has been visited. (Integer) |\n| **counts_kisses** | Number of kisses the user has received. (Integer) |\n| 
+**flirtInterests_chat** | Whether the user is interested in chatting. (Boolean) |\n| **flirtInterests_friends** | Whether the 
+user is interested in making friends. (Boolean) |\n| **flirtInterests_date** | Whether the user is interested in dating. 
+(Boolean) |\n| **lang_count** | Number of languages the user speaks. (Integer) |\n| **lang_fr** | Whether the user 
+speaks French. (Boolean) |\n| **lang_en** | Whether the user speaks English. (Boolean) |\n| **lang_de** | Whether the 
+user speaks German. (Boolean) |\n| **lang_it** | Whether the user speaks Italian. (Boolean) |\n| **lang_es** | Whether 
+
+
+the user speaks Spanish. (Boolean) |\n| **lang_pt** | Whether the user speaks Portuguese. (Boo |\n| **city** | City of the 
+user. (String) |\n| **crypt** | Cryptographic hash of the user\u0027s profile. (String) |\n| **distance** | Distance from the 
+user. (Integer) |\n| **whazzup** | What\u0027s up field of the user\u0027s profile. (String) |\n| **isSystemProfile** | 
+Whether the user is a system profile. (Boolean) |\n| **connectedToFacebook** | Whether the user is connected to 
+Facebook. (Boolean) |\n| **isVIP** | Whether the user is a VIP. (Boolean) |\n| **isVerified** | Whether the user is 
+verified. (Boolean) |\n| **lastOnline** | Date and time of the user\u0027s last online activity. (String) |\n| 
+**lastOnlineTs** | Timestamp of the user\u0027s last online activity. (Integer) |\n| **locationCity** | City of the user. 
+(String) |\n| **locationCitySub** | Sub-region of the user\u0027s city. (String) |\n| **userInfo_visitDate** | Date and 
+time of the user\u0027s last profile visit. (String) |\n| **countDetails** | Number of details the user has provided. 
+(Integer) |\n| **flirtstar** | Whether the user is a flirtstar. (Boolean) |\n| **freshman** | Whether the user is a freshman. 
+(Boolean) |\n| **hasBirthday** | Whether the user has provided their birthday. (Boolean) |\n| **highlighted** | Whether 
+the user is highlighted. (Boolean) |\n| **locked** | Whether the user\u0027s profile is locked. (Boolean) |\n| **mobile** | 
+Whether the user is using a mobile device. (Boolean) |\n\n### Acknowledgements\n\u003E If you use this dataset in 
+your research, please credit the original authors.\n\u003E If you use this dataset in your research, please credit [Jeffrey 
+Mvutu Mabilama](https://data.world/jfreex).\n\n" } 
+
