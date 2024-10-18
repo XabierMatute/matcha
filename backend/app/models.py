@@ -1,8 +1,8 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app import db  # Ensure that db is already initialized here
+from app import db  # Asegúrate de que db ya esté inicializado aquí
 
-# User model representing each user in the application
+# Modelo de User que representa a cada usuario en la aplicación
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -13,18 +13,35 @@ class User(UserMixin, db.Model):
     gender = db.Column(db.String(10))  # e.g., Male, Female, Other
     sexual_preferences = db.Column(db.String(50))  # e.g., Heterosexual, Homosexual, Bisexual
     biography = db.Column(db.Text)
-    fame_rating = db.Column(db.Float, default=0.0)  # Define your fame rating logic
-    profile_picture = db.Column(db.String(200))  # URL or path to profile picture
-    location = db.Column(db.String(100))  # Store location as a string (e.g., neighborhood)
-    latitude = db.Column(db.Float)  # For GPS coordinates
-    longitude = db.Column(db.Float)  # For GPS coordinates
+    fame_rating = db.Column(db.Float, default=0.0)  # Lógica de fama
+    profile_picture = db.Column(db.String(200))  # URL o ruta a la foto de perfil
+    location = db.Column(db.String(100))  # Almacenar ubicación como string (e.g., vecindario)
+    latitude = db.Column(db.Float)  # Coordenadas GPS
+    longitude = db.Column(db.Float)  # Coordenadas GPS
     is_active = db.Column(db.Boolean, default=False)
-    # Updated relationship to allow many-to-many with interests
+    
+    # Relación many-to-many para intereses
     interests = db.relationship('Interest', secondary='user_interests', lazy='subquery',
                                 backref=db.backref('users', lazy=True))
     pictures = db.relationship('Picture', backref='user', lazy=True)
-    viewed_profiles = db.relationship('ProfileView', backref='viewer', lazy=True)
-    liked_profiles = db.relationship('Like', backref='liker', lazy=True)
+
+    # Especificar claves foráneas para evitar ambigüedades
+    viewed_profiles = db.relationship('ProfileView', 
+                                       foreign_keys='ProfileView.user_id',  # Quien está viendo
+                                       backref='viewer', 
+                                       lazy=True)
+    viewed_users = db.relationship('ProfileView', 
+                                    foreign_keys='ProfileView.viewed_user_id',  # Quien está siendo visto
+                                    backref='viewed', 
+                                    lazy=True)
+    liked_profiles = db.relationship('Like', 
+                                      foreign_keys='Like.user_id', 
+                                      backref='liker', 
+                                      lazy=True)
+    liked_by_profiles = db.relationship('Like', 
+                                         foreign_keys='Like.liked_user_id', 
+                                         backref='liked_user', 
+                                         lazy=True)
     notifications = db.relationship('Notification', backref='user', lazy=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
@@ -34,7 +51,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-# Many-to-many relationship for interests
+# Relación many-to-many para intereses
 user_interests = db.Table('user_interests',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('interest_id', db.Integer, db.ForeignKey('interest.id'), primary_key=True)
@@ -44,7 +61,6 @@ class Interest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tag = db.Column(db.String(50), unique=True, nullable=False)
 
-
 class Picture(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(200), nullable=False)
@@ -52,8 +68,8 @@ class Picture(db.Model):
 
 class ProfileView(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    viewed_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Quien está viendo
+    viewed_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Quien está siendo visto
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 class Like(db.Model):
@@ -80,6 +96,8 @@ class Chat(db.Model):
 
     def __repr__(self):
         return f'<Chat {self.id}: {self.message[:20]}>'
+
+
 
 
 

@@ -2,10 +2,13 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from wtforms import EmailField
-from .models import User  # Ensure your User model is defined correctly
+from app.models import User  # Asegúrate de que User esté correctamente definido aquí
 from flask_wtf.file import FileRequired, FileAllowed
 from PIL import Image
 import io
+
+# Aquí van las definiciones de RegistrationForm, LoginForm y ProfileForm
+
 
 class RegistrationForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(), Email(), Length(max=120)])

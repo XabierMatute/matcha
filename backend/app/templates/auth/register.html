@@ -3,7 +3,7 @@
 {% block title %}Registro{% endblock %}
 
 {% block content %}
-<body class="d-flex justify-content-center align-items-center vh-100">
+<div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -23,28 +23,28 @@
                     {{ form.hidden_tag() }}
                     <div class="mb-3">
                         {{ form.email.label(class="form-label") }}
-                        {{ form.email(class="form-control", aria-label="Email") }}
+                        {{ form.email(class="form-control", aria-label="Email", required=True) }}
                     </div>
                     <div class="mb-3">
                         {{ form.username.label(class="form-label") }}
-                        {{ form.username(class="form-control", aria-label="Username") }}
+                        {{ form.username(class="form-control", aria-label="Username", required=True) }}
                     </div>
                     <div class="mb-3">
                         {{ form.first_name.label(class="form-label") }}
-                        {{ form.first_name(class="form-control", aria-label="First Name") }}
+                        {{ form.first_name(class="form-control", aria-label="First Name", required=True) }}
                     </div>
                     <div class="mb-3">
                         {{ form.last_name.label(class="form-label") }}
-                        {{ form.last_name(class="form-control", aria-label="Last Name") }}
+                        {{ form.last_name(class="form-control", aria-label="Last Name", required=True) }}
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control", id="password", aria-label="Password") }}
+                        {{ form.password(class="form-control", id="password", aria-label="Password", required=True) }}
                         <span class="show-password" onclick="togglePasswordVisibility('password')">👁️</span>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         {{ form.confirm_password.label(class="form-label") }}
-                        {{ form.confirm_password(class="form-control", id="confirm_password", aria-label="Confirm Password") }}
+                        {{ form.confirm_password(class="form-control", id="confirm_password", aria-label="Confirm Password", required=True) }}
                         <span class="show-password" onclick="togglePasswordVisibility('confirm_password')">👁️</span>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Registrarse</button>
@@ -52,7 +52,7 @@
             </div>
         </div>
     </div>
-</body>
+</div>
 
 <script>
     function togglePasswordVisibility(id) {
@@ -61,3 +61,4 @@
     }
 </script>
 {% endblock %}
+

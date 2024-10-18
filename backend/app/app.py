@@ -14,7 +14,6 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configuración de la base de datos y otros parámetros
-# Cambia la URI a PostgreSQL, asegurándote de que DATABASE_URL esté definido en tu archivo .env
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://username:password@localhost:5432/database_name')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 
@@ -34,6 +33,7 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 
 if __name__ == "__main__":
     app.run(debug=True)  # Cambia a False en producción
+
 
 
 
