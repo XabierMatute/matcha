@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import os
@@ -16,37 +17,46 @@ migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail()
 csrf = CSRFProtect()
+jwt = JWTManager()  # Inicializa JWTManager
 
 def create_app():
-    # Inicializar Flask App
+    # Inicializar la aplicación Flask
     app = Flask(__name__)
 
     # Cargar la configuración según el entorno
-    if os.getenv('FLASK_ENV') == 'production':
-        app.config.from_object('config.ProductionConfig')
-    elif os.getenv('FLASK_ENV') == 'testing':
-        app.config.from_object('config.TestingConfig')
-    else:
-        app.config.from_object('config.DevelopmentConfig')
+    app.config.from_object(os.getenv('FLASK_CONFIG', 'config.DevelopmentConfig'))
+
+    # Configurar JWT
+    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # Asegúrate de que esto esté en tu .env
 
     # Inicializar extensiones con la app
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'  # Asegúrate de que la vista de login esté correctamente referenciada
+    login_manager.login_view = 'auth.login'
     mail.init_app(app)
     csrf.init_app(app)
+    jwt.init_app(app)  # Inicializa JWTManager
+
+    # Definir la ruta para el home
+    @app.route('/')
+    def home():
+        return "Finally Welcome to our MatchaXabi! :)"
 
     # Importar rutas y modelos dentro del contexto de la aplicación
     with app.app_context():
-        from . import models  # Importar modelos primero para que estén disponibles para migraciones
-        from .routes import register_auth  # Importar la función para registrar las rutas
+        from . import models  # Importar modelos para asegurar que se registren
+        from .auth import register_auth  # Importar la función para registrar las rutas
 
         register_auth(app)  # Registrar las rutas en la aplicación
 
-        db.create_all()  # Crear las tablas en la base de datos, si es necesario
-
     return app
+
+
+
+
+
+
 
 
 

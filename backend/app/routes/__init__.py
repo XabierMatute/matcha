@@ -1,10 +1,10 @@
-from app.auth.auth_routes import register_auth
+from flask import Blueprint
+
+auth_bp = Blueprint('auth', __name__)
+
+from .routes import *  # Importar las rutas definidas en routes.py
+
+def register_auth(app):
+    app.register_blueprint(auth_bp, url_prefix='/auth')  # Asegúrate de usar auth_bp
 
 
-def create_app():
-    app = Flask(__name__)
-    # Otras configuraciones...
-
-    register_auth(app)  # Asegúrate de que esto se llame después de inicializar app
-
-    return app

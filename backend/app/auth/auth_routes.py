@@ -50,7 +50,7 @@ def register_routes(auth_bp):
             if User.query.filter_by(email=form.email.data).first() or User.query.filter_by(username=form.username.data).first():
                 flash('El correo o nombre de usuario ya están en uso.', 'danger')
                 return redirect(url_for('auth.register'))
-            
+
             user = User(
                 email=form.email.data,
                 username=form.username.data,
@@ -122,5 +122,6 @@ def register_routes(auth_bp):
 def register_auth(app):
     register_routes(auth_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
+
 
 

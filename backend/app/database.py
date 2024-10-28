@@ -31,6 +31,15 @@ login_manager.login_view = 'login'  # Define la vista de inicio de sesión
 mail = Mail(app)
 csrf = CSRFProtect(app)
 
+# Función para inicializar la base de datos
+def init_db(app):
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()  # Crea todas las tablas
+
 # Importar rutas y modelos
-from app import routes, models
+from app import routes, models  # Mover al final para evitar importación circular
+
+
+
 

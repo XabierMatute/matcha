@@ -1,4 +1,4 @@
-version: '3.8'  # Asegúrate de definir la versión de Docker Compose
+version: '3.8'
 
 services:
   web:
@@ -13,6 +13,7 @@ services:
       - .:/app
     depends_on:
       - db
+    command: ["./wait-for-db.sh", "db", "flask", "run", "--host=0.0.0.0"]
 
   db:
     image: postgres:latest
@@ -23,7 +24,7 @@ services:
       POSTGRES_PASSWORD: Beaxabi12345
       POSTGRES_DB: matcha_dev
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -31,9 +32,9 @@ services:
     image: nginx:latest
     container_name: nginx_server
     ports:
-      - "6969:80"  # Escuchar en el puerto 80 del host
+      - "6969:80"
     volumes:
-      - ./backend/nginx.conf:/etc/nginx/conf.d/default.conf  # Ajusta la ruta
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
 
@@ -42,18 +43,12 @@ services:
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # Cambia esto a tu email
-      PGADMIN_DEFAULT_PASSWORD: admin  # Cambia esto a tu contraseña
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8080:80"  # Acceso a pgAdmin en el puerto 8080
+      - "8081:80"  # O el puerto que elijas
     depends_on:
       - db
 
 volumes:
   postgres_data:
-
-
-
-
-
-
