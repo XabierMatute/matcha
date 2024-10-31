@@ -2,13 +2,14 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Copia el requirements.txt
-COPY requirements.txt .
+# Instala el cliente de PostgreSQL
+RUN apt-get update && apt-get install -y postgresql-client && apt-get clean
 
-# Instala pip y las dependencias
+# Copia el requirements.txt e instala las dependencias
+COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copia el resto de tu código y el script al contenedor
+# Copia el resto de tu código al contenedor
 COPY . .
 
 # Copia el script de espera al contenedor y lo hace ejecutable
@@ -21,6 +22,8 @@ EXPOSE 5000
 # Comando para ejecutar tu aplicación con el script de espera
 ENTRYPOINT ["/wait-for-db.sh", "db"]
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+
+
 
 
 

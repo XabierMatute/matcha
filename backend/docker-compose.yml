@@ -13,7 +13,6 @@ services:
       - .:/app
     depends_on:
       - db
-    command: ["./wait-for-db.sh", "db", "flask", "run", "--host=0.0.0.0"]
 
   db:
     image: postgres:latest
@@ -24,7 +23,7 @@ services:
       POSTGRES_PASSWORD: Beaxabi12345
       POSTGRES_DB: matcha_dev
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -46,9 +45,10 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8081:80"  # O el puerto que elijas
+      - "8081:80"
     depends_on:
       - db
 
 volumes:
   postgres_data:
+

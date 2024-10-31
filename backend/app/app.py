@@ -31,10 +31,6 @@ def load_user(user_id):
 # Registrar el blueprint de autenticación
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
-# # Definir la ruta para el home
-# @app.route('/')
-# def home():
-#     return "¡Finally Welcome to your MatchaXabi !"
 
 # Manejo de errores
 @app.errorhandler(404)

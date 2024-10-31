@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -46,11 +46,20 @@ def create_app():
     # Importar rutas y modelos dentro del contexto de la aplicación
     with app.app_context():
         from . import models  # Importar modelos para asegurar que se registren
-        from .auth import register_auth  # Importar la función para registrar las rutas
+        from .routes import main_bp  # Importar el blueprint de rutas
 
-        register_auth(app)  # Registrar las rutas en la aplicación
+        # Registrar el blueprint de las rutas
+        app.register_blueprint(main_bp)  # Asegúrate de que el nombre coincida con el definido en routes.py
+
+        from .auth import register_auth  # Importar la función para registrar las rutas de autenticación
+        register_auth(app)  # Registrar las rutas de autenticación
 
     return app
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 
 

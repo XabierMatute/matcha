@@ -9,3 +9,4 @@ gunicorn
 Flask-Migrate
 flask-login
 flask-wtf
+Faker
