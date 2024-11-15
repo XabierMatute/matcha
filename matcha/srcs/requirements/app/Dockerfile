@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/15 12:48:46 by xmatute-          #+#    #+#              #
-#    Updated: 2024/11/15 18:31:57 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/11/15 18:51:17 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,12 @@ EXPOSE 5000
 
 WORKDIR /app
 
-COPY ./requirements.txt ./requirements.txt
+COPY ./requirements.txt ./tmp/requirements.txt
 
 # instalar flask
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install -r ./tmp/requirements.txt
+RUN rm -rf ./tmp
 
 # CMD  ["python3", "run.py"]
 ENV FLASK_APP=run.py
