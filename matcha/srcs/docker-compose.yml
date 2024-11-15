@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: BAXM_db
+    container_name: postgres_db
     image: postgres:alpine
     volumes:
       - database:/var/lib/postgresql/data
@@ -12,40 +12,28 @@ services:
     env_file:
       - .env
 
-  nginx:
-    container_name: BAXM_server
-    image: nginx:alpine
+  flask:
+    container_name: flask_app
+    image: flask
+    build: ./requirements/app
+    volumes:
+      - app:/app
+    environment:
+      FLASK_ENV: development
+    working_dir: /app
+    expose:
+      - 5000
     ports:
-      - "6969:80/tcp"
+      - "5000:5000"
     networks:
       - RedNet
     restart: always
     env_file:
       - .env
-    volumes: # añadir root?
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    # depends_on:
-    #   - backend
-    #   - frontend
+    depends_on:
+      - postgres
 
-  # backend:
-  #   container_name: BAXM_backend
-  #   image: python:3.10.12-alpine
-  #   volumes:
-  #     - ./backend:/app  # Aquí asumimos que el código Flask está en la carpeta backend
-  #   working_dir: /app
-  #   # command: flask run --host=0.0.0.0 --port=5000
-  #   command: cat
-    
-  #   ports:
-  #     - "5000:5000"
-  #   networks:
-  #     - RedNet
-  #   depends_on:
-  #     - postgres
-  #   # restart: always
-  #   env_file:
-  #     - .env
+# esto o pgadmin o nada
   admined:
     container_name: adminer
     image: adminer
@@ -54,19 +42,28 @@ services:
       - RedNet
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
 
 networks:
   RedNet:
     name: RedNet
     driver: bridge
 
-
 volumes:
   database:
     name: BAXM_db
+    driver: local
     driver_opts:
       type: volume
       device: ${PWD}/srcs/database # tienen que existir
+      o: bind
+  app:
+    name: BAXM_app
+    driver: local
+    driver_opts:
+      type: volume
+      device: ${PWD}/srcs/app # tienen que existir
       o: bind
 
 

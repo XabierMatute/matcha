@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/10/04 17:15:09 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/11/15 18:33:13 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,14 @@ all : $(DCYML)
 	docker volume ls
 	docker network ls
 
+down :
+	docker compose -f $(DCYML) down
+
+up :
+	docker compose -f $(DCYML) up
+
+reload : down all
+
 clean :
 	docker compose -f $(DCYML) down --volumes
 	@echo "$(RED)clean done...$(WHITE)"
@@ -64,4 +72,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re down up reload
