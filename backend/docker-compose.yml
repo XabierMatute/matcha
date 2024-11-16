@@ -1,54 +1,53 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
-    container_name: flask_app
-    ports:
-      - "5000:5000"
-    environment:
-      - FLASK_ENV=development
-      - DATABASE_URL=postgresql://Beaxabi:Beaxabi12345@db:5432/matcha_dev
-    volumes:
-      - .:/app
-    depends_on:
-      - db
-
+  # Contenedor de la base de datos PostgreSQL
   db:
     image: postgres:latest
-    container_name: postgres_db
-    restart: always
     environment:
       POSTGRES_USER: Beaxabi
       POSTGRES_PASSWORD: Beaxabi12345
       POSTGRES_DB: matcha_dev
     ports:
-      - "5433:5432"
+      - "5433:5432"  # Mapea el puerto 5432 del contenedor al puerto 5433 de tu máquina local
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - backend-db-data:/var/lib/postgresql/data  # Persistencia de datos de la base de datos
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx_server
-    ports:
-      - "6969:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - web
-
+  # Contenedor de pgAdmin para administración visual de PostgreSQL
   pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
+    image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8081:80"
+      - "5050:80"  # Expone el puerto 5050 en tu máquina local (acceso web)
+    depends_on:
+      - db  # Asegura que pgAdmin se inicie después de la base de datos
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin  # Persistencia de datos de pgAdmin
+
+  # Contenedor de la aplicación web (Flask)
+  web:
+    build: .
+    command: gunicorn -b 0.0.0.0:5000 app.app:app  # Usa Gunicorn en lugar de python app.py
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://Beaxabi:Beaxabi12345@db:5432/matcha_dev  # Pasando la URL de la base de datos
     depends_on:
       - db
 
 volumes:
-  postgres_data:
+  backend-db-data:  # Volumen para PostgreSQL
+  pgadmin-data:  # Volumen para pgAdmin
+
+
+
+
+
+
+
+
 

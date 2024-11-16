@@ -1,12 +1,15 @@
 Flask==2.3.3
-Flask-SQLAlchemy==2.5.1
-SQLAlchemy==1.4.47  # Asegúrate de incluir una versión compatible
-psycopg2-binary==2.9.6
+Flask-Login==0.6.3
 Flask-Mail==0.9.1
-python-dotenv==0.20.0  # Si usas un archivo .env
-Pillow
-gunicorn
-Flask-Migrate
-flask-login
-flask-wtf
-Faker
+Flask-WTF==1.2.1
+Flask-JWT-Extended==4.6.0
+psycopg[binary]==3.0.7  # Aquí está el psycopg3
+python-dotenv==0.20.0
+gunicorn==23.0.0
+greenlet==3.1.1
+MarkupSafe==2.1.5
+Jinja2==3.1.4
+alembic==1.13.3
+Pillow==8.4.0
+
+

@@ -2,10 +2,17 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, FileField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from wtforms import EmailField
-from app.models import User  # Asegúrate de que User esté correctamente definido aquí
 from flask_wtf.file import FileRequired, FileAllowed
 from PIL import Image
 import io
+import psycopg  # Usamos psycopg3 en lugar de psycopg2
+from app import app  # Para usar las configuraciones de la base de datos
+
+# Conexión a la base de datos (se usa en las validaciones)
+def get_db_connection():
+    # Utilizando psycopg3 (psycopg) para la conexión con la base de datos
+    conn = psycopg.connect(app.config['SQLALCHEMY_DATABASE_URI'])
+    return conn
 
 class RegistrationForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired(), Email(), Length(max=120)])
@@ -17,12 +24,24 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        # Realizar la consulta directamente para verificar si el email ya está registrado
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email.data,))
+            user = cursor.fetchone()
+        conn.close()
+
         if user:
             raise ValidationError('That email is already registered. Please choose a different one.')
 
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        # Realizar la consulta directamente para verificar si el username ya está tomado
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE username = %s", (username.data,))
+            user = cursor.fetchone()
+        conn.close()
+
         if user:
             raise ValidationError('That username is taken. Please choose a different one.')
 
@@ -33,7 +52,13 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        # Validar que el usuario exista en la base de datos
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM users WHERE username = %s", (username.data,))
+            user = cursor.fetchone()
+        conn.close()
+
         if not user:
             raise ValidationError('No account found with that username.')
 
@@ -42,30 +67,8 @@ class ProfileForm(FlaskForm):
     last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=30)])
     email = EmailField('Email', validators=[DataRequired(), Email(), Length(max=120)])
     gender = SelectField('Gender', choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], validators=[DataRequired()])
-    sexual_preferences = SelectField('Sexual Preferences', choices=[('M', 'Men'), ('F', 'Women'), ('B', 'Both')], validators=[DataRequired()])
-    
-    biography = TextAreaField('Biography', validators=[DataRequired(), Length(max=1200)])  # 200 words ~ 1200 characters
-    interests = StringField('Interests (e.g. #vegan, #geek)', validators=[DataRequired(), Length(max=100)])
-    
-    profile_picture = FileField('Profile Picture', validators=[
-        FileRequired('File was empty!'),
-        FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')
-    ])
-    
-    submit = SubmitField('Save')
+    sexual_preferences = SelectField('Sexual Preferences', choices=[('M', 'Male'), ('F', 'Female'), ('B', 'Both')], validators=[DataRequired()])
+    submit = SubmitField('Update Profile')
 
-    def validate_interests(self, interests):
-        if not all(tag.startswith('#') for tag in interests.data.split()):
-            raise ValidationError('All interests must start with a "#" (e.g. #vegan, #geek).')
 
-    def validate_profile_picture(self, profile_picture):
-        img_data = profile_picture.data.stream.read()  # Read the file stream
-        image = Image.open(io.BytesIO(img_data))  # Open the image using Pillow
-        
-        # Check dimensions
-        if image.width > 800 or image.height > 800:
-            raise ValidationError('Image dimensions must not exceed 800x800 pixels.')
-
-        # Cerrar el flujo de imagen
-        profile_picture.data.stream.seek(0)  # Resetear el flujo para permitir que se lea nuevamente en otro lugar
 
