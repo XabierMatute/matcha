@@ -1,0 +1,69 @@
+services:
+  postgres:
+    container_name: postgres_db
+    image: postgres:alpine
+    volumes:
+      - database:/var/lib/postgresql/data
+    ports:
+      - "5432:5432/tcp"
+    networks:
+      - RedNet
+    restart: always
+    env_file:
+      - .env
+
+  flask:
+    container_name: flask_app
+    image: flask
+    build: ./requirements/app
+    volumes:
+      - app:/app
+    environment:
+      FLASK_ENV: development
+    working_dir: /app
+    expose:
+      - 5000
+    ports:
+      - "5000:5000"
+    networks:
+      - RedNet
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
+# esto o pgadmin o nada
+  admined:
+    container_name: adminer
+    image: adminer
+    restart: always
+    networks:
+      - RedNet
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+networks:
+  RedNet:
+    name: RedNet
+    driver: bridge
+
+volumes:
+  database:
+    name: BAXM_db
+    driver: local
+    driver_opts:
+      type: volume
+      device: ${PWD}/srcs/database # tienen que existir
+      o: bind
+  app:
+    name: BAXM_app
+    driver: local
+    driver_opts:
+      type: volume
+      device: ${PWD}/srcs/app # tienen que existir
+      o: bind
+
+

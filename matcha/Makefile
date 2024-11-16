@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/10/04 15:02:14 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/11/16 10:58:37 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ CYAN = \033[0;36m
 GREEN = \033[0;32m
 MAGENTA = \033[0;35m
 
-all : $(DCYML) #$(DTB_DIR) $(WF_DIR)
+all : $(DCYML)
 	docker compose -f $(DCYML) config
 	@echo "making all..."
 	docker compose -f $(DCYML) up --build --detach
@@ -50,11 +50,13 @@ all : $(DCYML) #$(DTB_DIR) $(WF_DIR)
 	docker volume ls
 	docker network ls
 
-# $(DTB_DIR) :
-# 	mkdir -p $(DTB_DIR)
+down :
+	docker compose -f $(DCYML) down
 
-# $(WF_DIR) :
-# 	mkdir -p $(WF_DIR)
+up :
+	docker compose -f $(DCYML) up
+
+reload : down all
 
 clean :
 	docker compose -f $(DCYML) down --volumes
@@ -70,4 +72,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re down up reload

@@ -1,0 +1,6 @@
+# Python dependencies
+*.pyc
+__pycache__/
+
+# temporary files
+tmp/
