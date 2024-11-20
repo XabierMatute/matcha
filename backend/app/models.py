@@ -1,23 +1,25 @@
-import os
-import psycopg
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from dotenv import load_dotenv
+import psycopg
+import os
 import logging
-
-# Cargar variables de entorno (asegurándote de tener un archivo .env configurado)
-load_dotenv()
+from dotenv import load_dotenv
 
 # Configurar el logger
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 
 class User:
-    def __init__(self, id, email, username, first_name, last_name, password_hash, **kwargs):
+    def __init__(self, id, email, username, first_name, last_name, password_hash, birthdate, **kwargs):
+        if not birthdate:
+            raise ValueError("Birthdate is required")  # Si no se pasa birthdate, lanzamos un error
+        
         self.id = id
         self.email = email
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
         self.password_hash = password_hash
+        self.birthdate = birthdate  # Fecha de nacimiento
         self.gender = kwargs.get('gender')
         self.sexual_preferences = kwargs.get('sexual_preferences')
         self.biography = kwargs.get('biography')
@@ -36,68 +38,97 @@ class User:
         """Compara la contraseña ingresada con el hash almacenado."""
         return check_password_hash(self.password_hash, password)
 
+    def calculate_age(self):
+        """Calcula la edad del usuario basándose en su fecha de nacimiento."""
+        if self.birthdate:
+            today = datetime.today()
+            age = today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
+            return age
+        return None  # Si no tiene fecha de nacimiento, no se puede calcular la edad
+
     @staticmethod
     def get_db_connection():
         """Abre una conexión a la base de datos utilizando las variables de entorno."""
+        load_dotenv()  # Cargar las variables de entorno
         try:
-            connection = psycopg.connect(
-                database=os.getenv('DATABASE_NAME'),
-                user=os.getenv('DATABASE_USER'),
-                password=os.getenv('DATABASE_PASSWORD'),
-                host=os.getenv('DATABASE_HOST', 'localhost')
-            )
-            return connection
+            connection_string = os.getenv('DATABASE_URL')
+            return psycopg.connect(connection_string)
         except psycopg.Error as e:
-            logging.error(f"Error connecting to the database: {e}")
+            logging.error(f"Database connection failed: {e}")
             raise Exception("Database connection failed")
 
     @staticmethod
-    def get_user_by_id(user_id):
-        """Obtiene un usuario desde la base de datos usando su ID."""
-        query = "SELECT * FROM users WHERE id = %s"
-        try:
-            with User.get_db_connection() as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(query, (user_id,))
-                    result = cursor.fetchone()
-            return User(*result) if result else None
-        except psycopg.Error as e:
-            logging.error(f"Error fetching user by ID: {e}")
-            return None
-
-    @staticmethod
-    def create_user(email, username, password):
+    def create_user(email, username, password, birthdate, **kwargs):
         """Crea un nuevo usuario en la base de datos."""
         password_hash = generate_password_hash(password)
-        query = """INSERT INTO users (email, username, password_hash)
-                   VALUES (%s, %s, %s) RETURNING id, email, username"""
+        query = """INSERT INTO users (email, username, password_hash, birthdate, gender, sexual_preferences, biography, fame_rating, profile_picture, location, latitude, longitude, is_active)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, email, username, birthdate, gender, sexual_preferences, biography, fame_rating, profile_picture, location, latitude, longitude, is_active"""
         try:
             with User.get_db_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(query, (email, username, password_hash))
+                    cursor.execute(query, (email, username, password_hash, birthdate, kwargs.get('gender'), kwargs.get('sexual_preferences'), kwargs.get('biography'),
+                                           kwargs.get('fame_rating', 0.0), kwargs.get('profile_picture'), kwargs.get('location'), kwargs.get('latitude'), kwargs.get('longitude'), kwargs.get('is_active', False)))
                     result = cursor.fetchone()
                     connection.commit()
-            return User(*result)  # Retorna el objeto User completo
+            return User(*result)  # Retorna el objeto User creado
         except psycopg.Error as e:
             logging.error(f"Error creating user: {e}")
             raise Exception("Error creating user")
 
     @staticmethod
-    def user_exists(email=None, username=None):
-        """Verifica si el correo o el nombre de usuario ya están registrados."""
-        query = "SELECT id FROM users WHERE email = %s OR username = %s"
+    def create_notification(user_id, message, notification_type):
+        """Crea una nueva notificación para un usuario"""
+        query = '''
+            INSERT INTO notifications (user_id, message, type)
+            VALUES (%s, %s, %s) RETURNING id, user_id, message, type, timestamp
+        '''
         try:
             with User.get_db_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(query, (email, username))
+                    cursor.execute(query, (user_id, message, notification_type))
                     result = cursor.fetchone()
-            return result is not None
+                    connection.commit()
+            return result
         except psycopg.Error as e:
-            logging.error(f"Error checking if user exists: {e}")
-            return False
+            logging.error(f"Error creating notification: {e}")
+            raise Exception("Error creating notification")
 
+    @staticmethod
+    def get_notifications(user_id, is_read=False):
+        """Obtiene las notificaciones de un usuario, filtradas por 'is_read'."""
+        query = '''
+            SELECT id, message, type, timestamp
+            FROM notifications 
+            WHERE user_id = %s AND is_read = %s 
+            ORDER BY timestamp DESC
+        '''
+        try:
+            with User.get_db_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (user_id, is_read))
+                    results = cursor.fetchall()
+            return results
+        except psycopg.Error as e:
+            logging.error(f"Error fetching notifications for user {user_id}: {e}")
+            return []
 
-# Definición de otros modelos (Interest, Picture) como se hacía antes
+    @staticmethod
+    def mark_notification_as_read(notification_id):
+        """Marca una notificación como leída."""
+        query = '''
+            UPDATE notifications
+            SET is_read = TRUE
+            WHERE id = %s
+        '''
+        try:
+            with User.get_db_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (notification_id,))
+                    connection.commit()
+        except psycopg.Error as e:
+            logging.error(f"Error marking notification as read: {e}")
+            raise Exception("Error marking notification as read")
+
 
 class Interest:
     def __init__(self, id, tag):
@@ -122,6 +153,22 @@ class Interest:
             logging.error(f"Error fetching interests for user {user_id}: {e}")
             return []
 
+    @staticmethod
+    def create_interest(tag):
+        """Crea un nuevo interés en la base de datos."""
+        query = "INSERT INTO interests (tag) VALUES (%s) RETURNING id, tag"
+        try:
+            with User.get_db_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (tag,))
+                    result = cursor.fetchone()
+                    connection.commit()
+            return Interest(*result)
+        except psycopg.Error as e:
+            logging.error(f"Error creating interest: {e}")
+            raise Exception("Error creating interest")
+
+
 class Picture:
     def __init__(self, id, url, user_id):
         self.id = id
@@ -141,5 +188,21 @@ class Picture:
         except psycopg.Error as e:
             logging.error(f"Error fetching pictures for user {user_id}: {e}")
             return []
+
+    @staticmethod
+    def create_picture(url, user_id):
+        """Agrega una nueva imagen para un usuario."""
+        query = "INSERT INTO pictures (url, user_id) VALUES (%s, %s) RETURNING id, url"
+        try:
+            with User.get_db_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (url, user_id))
+                    result = cursor.fetchone()
+                    connection.commit()
+            return Picture(*result)
+        except psycopg.Error as e:
+            logging.error(f"Error creating picture: {e}")
+            raise Exception("Error creating picture")
+
 
 

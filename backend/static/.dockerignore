@@ -1,0 +1,39 @@
+# Ignorar archivos y carpetas sensibles
+.env
+
+# Ignorar migraciones si no son necesarias para la imagen final
+migrations/
+
+# Ignorar directorios de datos temporales (ajusta si es necesario)
+data/
+
+# Ignorar archivos estáticos si se gestionan por Nginx o de otra manera
+static/
+
+# Ignorar el directorio frontend si no es necesario en el contenedor de backend
+frontend/
+
+# Ignorar el archivo de configuración de Nginx si no lo usas en el contenedor de Flask
+nginx.conf
+
+# Ignorar archivos de Python no necesarios en producción
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar el directorio .git (para no copiar todo el repositorio)
+.git
+.gitignore
+
+# Ignorar archivos locales temporales
+*.bak
+*.swp
+*.log
+
+# Ignorar la carpeta de base de datos local si es solo para desarrollo
+*.db
+
+# Ignorar otros archivos de configuración de herramientas locales
+.vscode
+.idea

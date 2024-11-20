@@ -1,53 +1,49 @@
 version: '3.8'
 
 services:
-  # Contenedor de la base de datos PostgreSQL
   db:
-    image: postgres:latest
+    image: postgres:15
+    container_name: matcha_db
     environment:
       POSTGRES_USER: Beaxabi
       POSTGRES_PASSWORD: Beaxabi12345
       POSTGRES_DB: matcha_dev
     ports:
-      - "5433:5432"  # Mapea el puerto 5432 del contenedor al puerto 5433 de tu máquina local
+      - "5433:5432"  # Mapear el puerto 5432 del contenedor al puerto 5433 de la máquina local
     volumes:
-      - backend-db-data:/var/lib/postgresql/data  # Persistencia de datos de la base de datos
+      - postgres_data:/var/lib/postgresql/data
 
-  # Contenedor de pgAdmin para administración visual de PostgreSQL
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"  # Expone el puerto 5050 en tu máquina local (acceso web)
-    depends_on:
-      - db  # Asegura que pgAdmin se inicie después de la base de datos
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin  # Persistencia de datos de pgAdmin
-
-  # Contenedor de la aplicación web (Flask)
-  web:
-    build: .
-    command: gunicorn -b 0.0.0.0:5000 app.app:app  # Usa Gunicorn en lugar de python app.py
-    volumes:
-      - .:/app
-    ports:
-      - "5000:5000"
-    environment:
-      DATABASE_URL: postgresql://Beaxabi:Beaxabi12345@db:5432/matcha_dev  # Pasando la URL de la base de datos
+      - "5050:80"
     depends_on:
       - db
 
+  app:
+    build: .
+    container_name: matcha_app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app
+      - FLASK_ENV=development
+      - DATABASE_URL=${DATABASE_URL}  # Referencia a la variable en .env
+      - SECRET_KEY=${SECRET_KEY}  # Referencia a la variable en .env
+      - MAIL_USERNAME=${MAIL_USERNAME}  # Referencia a la variable en .env
+      - MAIL_PASSWORD=${MAIL_PASSWORD}  # Referencia a la variable en .env
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}  # Referencia a la variable en .env
+      - SECURITY_PASSWORD_SALT=${SECURITY_PASSWORD_SALT}  # Referencia a la variable en .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    command: bash -c "flask db upgrade && flask run --host=0.0.0.0"  # Ejecutar migraciones antes de iniciar la app
+
 volumes:
-  backend-db-data:  # Volumen para PostgreSQL
-  pgadmin-data:  # Volumen para pgAdmin
-
-
-
-
-
-
-
-
+  postgres_data:
 
