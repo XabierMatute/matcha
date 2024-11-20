@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/11/20 12:08:37 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/11/20 19:02:30 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,8 @@ DOCKER_APP := '/Applications/Docker.app'
 
 SRC_DIR :=	./srcs
 
+DATABASE_DIR := $(SRC_DIR)/database
+
 DCYML := $(SRC_DIR)/docker-compose.yml
 
 VLM_DIR := /home/xmatute-/data
@@ -41,7 +43,7 @@ CYAN = \033[0;36m
 GREEN = \033[0;32m
 MAGENTA = \033[0;35m
 
-all : $(DCYML)
+all : $(DCYML) $(DATABASE_DIR)
 	docker compose -f $(DCYML) config
 	@echo "making all..."
 	docker compose -f $(DCYML) up --build --detach
@@ -49,6 +51,9 @@ all : $(DCYML)
 	docker ps
 	docker volume ls
 	docker network ls
+
+$(DATABASE_DIR) :
+	mkdir -p $(DATABASE_DIR)
 
 down :
 	docker compose -f $(DCYML) down
