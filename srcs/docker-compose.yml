@@ -21,10 +21,9 @@ services:
     environment:
       FLASK_ENV: development
     working_dir: /app
-    expose:
-      - 5000
     ports:
       - "5000:5000"
+      - "6969:5000"
     networks:
       - RedNet
     restart: always
@@ -33,7 +32,6 @@ services:
     depends_on:
       - postgres
 
-# esto o pgadmin o nada
   admined:
     container_name: adminer
     image: adminer
@@ -42,6 +40,7 @@ services:
       - RedNet
     ports:
       - "8080:8080"
+      - "9876:8080"
     depends_on:
       - postgres
 
@@ -56,14 +55,14 @@ volumes:
     driver: local
     driver_opts:
       type: volume
-      device: ${PWD}/srcs/database # tienen que existir
+      device: ${PWD}/srcs/database
       o: bind
   app:
     name: BAXM_app
     driver: local
     driver_opts:
       type: volume
-      device: ${PWD}/srcs/app # tienen que existir
+      device: ${PWD}/srcs/flask
       o: bind
 
 
