@@ -1,41 +1,35 @@
-# Logs and databases
-*.log
-*.sql
-*.sqlite
+# Ignorar el entorno virtual
+venv/
+env/
 
-# OS generated files
+# Ignorar archivos de configuración local
+.env
+
+# Ignorar directorios de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar archivos de base de datos locales
+*.db
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar archivos de configuración del editor
+.idea/
+.vscode/
+
+# Ignorar archivos generados por el sistema operativo
 .DS_Store
 Thumbs.db
 
-# Node.js dependencies
-node_modules/
-
-# Python dependencies
-*.pyc
-__pycache__/
-
-# Java / Maven / Gradle dependencies
-target/
+# Ignorar directorios de compilación
 build/
+dist/
 
-# IDE generated files
-.idea/
-*.iml
-.vscode/
+# Ignorar el directorio de pruebas si no es necesario
+tests/
 
-# Compiled files
-*.o
-*.so
-*.dll
-*.class
-
-# Package files
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# Environment variables
-.env
+# Ignorar Docker-related
+docker-compose.override.yml

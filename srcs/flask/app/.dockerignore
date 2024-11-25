@@ -1,0 +1,14 @@
+# Ignorar control de versiones
+.git/
+
+# Ignorar entorno virtual de Python
+venv/
+
+# Ignorar archivos temporales y de log
+*.log
+*.swp
+*.bak
+
+# Ignorar el Dockerfile y cualquier archivo que no sea necesario
+Dockerfile
+.dockerignore

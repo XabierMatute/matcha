@@ -1,68 +1,46 @@
+version: '3.8'
+
 services:
-  postgres:
-    container_name: postgres_db
-    image: postgres:alpine
+  flask_app_v2:
+    build: .  # Cambiar a la raíz del proyecto
     volumes:
-      - database:/var/lib/postgresql/data
+      - ./srcs:/app  # Montar el código fuente desde srcs a /app dentro del contenedor
+      - ./srcs/.env:/app/.env  # Montar el archivo .env dentro del contenedor
     ports:
-      - "5432:5432/tcp"
-    networks:
-      - RedNet
-    restart: always
-    env_file:
-      - .env
-
-  flask:
-    container_name: flask_app
-    image: flask
-    build: ./requirements/app
-    volumes:
-      - app:/app
+      - "5000:5000"  # Puertos de la aplicación
     environment:
-      FLASK_ENV: development
-    working_dir: /app
-    ports:
-      - "5000:5000"
-      - "6969:5000"
-    networks:
-      - RedNet
-    restart: always
-    env_file:
-      - .env
+      - FLASK_ENV=development
     depends_on:
-      - postgres
+      - postgres_db
+      - adminer
 
-  admined:
-    container_name: adminer
+  postgres_db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  adminer:
     image: adminer
-    restart: always
-    networks:
-      - RedNet
     ports:
       - "8080:8080"
-      - "9876:8080"
-    depends_on:
-      - postgres
-
-networks:
-  RedNet:
-    name: RedNet
-    driver: bridge
 
 volumes:
-  database:
-    name: BAXM_db
-    driver: local
-    driver_opts:
-      type: volume
-      device: ${PWD}/srcs/database
-      o: bind
-  app:
-    name: BAXM_app
-    driver: local
-    driver_opts:
-      type: volume
-      device: ${PWD}/srcs/flask
-      o: bind
+  postgres_data:
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Bienvenido a Matcha</h1>
+    <p class="text-center">Conéctate con personas afines y comienza a crear relaciones significativas.</p>
+    <div class="text-center">
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Regístrate Ahora</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Iniciar Sesión</a>
+    </div>
+</div>
+{% endblock %}

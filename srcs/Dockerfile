@@ -6,33 +6,34 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/15 12:48:46 by xmatute-          #+#    #+#              #
-#    Updated: 2024/11/20 10:57:56 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/11/23 18:00:00 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+# Usa una imagen base ligera de Python
+FROM python:3.10-slim
 
-FROM python:3.10.12-alpine
-
-# Etiqueta del mantenedor
-LABEL maintainer="xmatute- <xmatute-@student.42.fr>"
-
-RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
-
-EXPOSE 5000
-
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-COPY ./requirements.txt ./tmp/requirements.txt
+# Copia el archivo requirements.txt y luego instálalo
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-# instalar flask
-RUN pip install --upgrade pip
-RUN pip install -r ./tmp/requirements.txt
-RUN rm -rf ./tmp
+# Copia todo el código fuente desde la carpeta srcs al contenedor en /app
+COPY ./flask /app
 
-# CMD  ["python3", "run.py"]
-ENV FLASK_APP=run.py
-ENV FLASK_ENV=development
+# Copia el archivo .env desde la carpeta srcs al contenedor en /app/.env
+COPY .env /app/.env
+
+# Expón el puerto que utilizará la aplicación Flask (por ejemplo, 5000)
+EXPOSE 5000
+
+# Comando para ejecutar la aplicación
+CMD ["python", "run.py"]
 
 
-# CMD [ "python3", "-m" , "flask", "--debug", "run", "--host=0.0.0.0"]
-ENTRYPOINT [ "python3" ]
-CMD [ "run.py"]
+
+
+
+
+
