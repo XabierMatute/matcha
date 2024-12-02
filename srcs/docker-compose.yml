@@ -51,7 +51,7 @@ networks:
 
 volumes:
   database:
-    name: BAXM_db
+    name: ${POSTGRES_DB}
     driver: local
     driver_opts:
       type: volume
