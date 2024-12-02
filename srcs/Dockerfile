@@ -36,3 +36,4 @@ ENV FLASK_ENV=development
 # CMD [ "python3", "-m" , "flask", "--debug", "run", "--host=0.0.0.0"]
 ENTRYPOINT [ "python3" ]
 CMD [ "run.py"]
+
