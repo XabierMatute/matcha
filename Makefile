@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/11/20 19:02:30 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/02 14:00:35 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,9 +78,11 @@ fclean : clean
 	docker container prune --force
 	docker volume prune --force
 	-docker volume rm $(docker volume ls -q) #puede dar error
-	rm -rf $(DTB_DIR) $(WF_DIR)
+	-docker rm -f $(docker ps -a -q) # Elimina todos los contenedores?
 	@echo "$(RED)fclean done...$(WHITE)"
 
-re : fclean all
+re : clean all
+
+hard_re : fclean all
 
 .PHONY : all clean fclean re down up reload flask_restart flask_logs
