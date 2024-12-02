@@ -1,7 +1,6 @@
 import psycopg
-import os
 import logging
-from config import DEBUG
+from config import DatabaseConfig as Config
 
 # Configurar el logger
 logging.basicConfig(level=logging.INFO)
@@ -9,20 +8,20 @@ logging.basicConfig(level=logging.INFO)
 # Función para obtener la conexión a la base de datos
 def get_db_connection():
     try:
-        postgres_db = os.getenv('POSTGRES_DB')
+        postgres_db = Config.POSTGRES_DB
         if not postgres_db:
             raise ValueError("POSTGRES_DB is not set")
-        postgres_user = os.getenv('POSTGRES_USER')
+        postgres_user = Config.POSTGRES_USER
         if not postgres_user:
             raise ValueError("POSTGRES_USER is not set")
-        postgres_password = os.getenv('POSTGRES_PASSWORD')
+        postgres_password = Config.POSTGRES_PASSWORD
         if not postgres_password:
             raise ValueError("POSTGRES_PASSWORD is not set")
-        postgres_host = os.getenv('POSTGRES_HOST')
+        postgres_host = Config.POSTGRES_HOST
         if not postgres_host:
-            raise ValueError("POSTGRES_DB is not set")
+            raise ValueError("POSTGRES_HOST is not set")
 
-        if DEBUG:
+        if Config.DEBUG:
             print(f"Connecting to database {postgres_db} as {postgres_user} ...")
             print(f"Password: {postgres_password}")
             print(f"Host: {postgres_db}")
