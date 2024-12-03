@@ -2,33 +2,44 @@ from .database import Database
 import logging
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Función utilitaria para validar parámetros
+def validate_parameters(*args):
+    """Valida que ninguno de los parámetros sea None o vacío."""
+    for arg in args:
+        if not arg:
+            raise ValueError(f"{arg} is required.")
+            
+# Función común para ejecutar una consulta
+def execute_query(query, params):
+    """Ejecuta una consulta SQL y maneja la conexión a la base de datos."""
+    try:
+        with Database.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query, params)
+                connection.commit()
+                return cursor.fetchall()  # Devuelve todos los resultados
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        raise Exception("Database operation failed.") from e
 
 def create_message(sender_id, receiver_id, message):
     """Crea un nuevo mensaje en el chat."""
-    if not sender_id or not receiver_id or not message:
-        raise ValueError("sender_id, receiver_id, and message are required to create a message.")
+    validate_parameters(sender_id, receiver_id, message)
     
     query = '''
         INSERT INTO chats (sender_id, receiver_id, message, timestamp)
         VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
         RETURNING id, sender_id, receiver_id, message, timestamp
     '''
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (sender_id, receiver_id, message))
-                connection.commit()
-                result = cursor.fetchone()
-                logging.info(f"Message created: {result}")
-                return result
-    except Exception as e:
-        logging.error(f"Error creating message from {sender_id} to {receiver_id}: {e}")
-        raise Exception("Error creating message") from e
+    result = execute_query(query, (sender_id, receiver_id, message))
+    logger.info(f"Message created: {result}")
+    return result
 
 def get_messages_between_users(user1_id, user2_id, limit=None):
     """Obtiene los mensajes entre dos usuarios."""
-    if not user1_id or not user2_id:
-        raise ValueError("Both user1_id and user2_id are required to fetch messages.")
+    validate_parameters(user1_id, user2_id)
     
     query = '''
         SELECT id, sender_id, receiver_id, message, timestamp
@@ -40,19 +51,13 @@ def get_messages_between_users(user1_id, user2_id, limit=None):
     if limit:
         query += f" LIMIT {limit}"
 
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (user1_id, user2_id, user2_id, user1_id))
-                return cursor.fetchall()
-    except Exception as e:
-        logging.error(f"Error fetching messages between {user1_id} and {user2_id}: {e}")
-        raise Exception("Error fetching messages") from e
+    result = execute_query(query, (user1_id, user2_id, user2_id, user1_id))
+    logger.info(f"Fetched {len(result)} messages between {user1_id} and {user2_id}")
+    return result
 
 def get_recent_messages(user_id, limit=10):
     """Obtiene los mensajes más recientes para un usuario."""
-    if not user_id:
-        raise ValueError("user_id is required to fetch recent messages.")
+    validate_parameters(user_id)
     
     query = '''
         SELECT id, sender_id, receiver_id, message, timestamp
@@ -61,38 +66,27 @@ def get_recent_messages(user_id, limit=10):
         ORDER BY timestamp DESC
         LIMIT %s
     '''
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (user_id, user_id, limit))
-                return cursor.fetchall()
-    except Exception as e:
-        logging.error(f"Error fetching recent messages for user ID {user_id}: {e}")
-        raise Exception("Error fetching recent messages") from e
+    result = execute_query(query, (user_id, user_id, limit))
+    logger.info(f"Fetched {len(result)} recent messages for user ID {user_id}")
+    return result
 
 def delete_message(message_id):
     """Elimina un mensaje por su ID."""
-    if not message_id:
-        raise ValueError("message_id is required to delete a message.")
+    validate_parameters(message_id)
     
     query = '''
         DELETE FROM chats
         WHERE id = %s
         RETURNING id, sender_id, receiver_id, message
     '''
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (message_id,))
-                result = cursor.fetchone()
-                connection.commit()
-                if result:
-                    logging.info(f"Message deleted: {result}")
-                else:
-                    logging.info("No message found to delete.")
-                return result
-    except Exception as e:
-        logging.error(f"Error deleting message ID {message_id}: {e}")
-        raise Exception("Error deleting message") from e
+    result = execute_query(query, (message_id,))
+    
+    if result:
+        logger.info(f"Message deleted: {result}")
+    else:
+        logger.info("No message found to delete.")
+    
+    return result
+
 
 

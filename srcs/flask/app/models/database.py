@@ -100,6 +100,15 @@ class Database:
                 message TEXT NOT NULL,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+            ''',
+            '''
+            CREATE TABLE IF NOT EXISTS pictures (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL,
+                image_id INTEGER NOT NULL,  -- Referencia a la imagen
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            );
             '''
         ]
         
@@ -120,5 +129,7 @@ if __name__ == "__main__":
         Database.create_tables()
         logging.info("Database setup completed.")
     except Exception as e:
+        logging.error(f"Database setup failed: {e}")
+
         logging.error(f"Database setup failed: {e}")
 
