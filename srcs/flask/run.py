@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/11/26 10:30:21 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/03 16:12:13 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ from config import RunConfig as Config
 
 from flask import Flask
 
-from database import create_tables
+from app.models.database import Database
 
 app = Flask(__name__)
 
@@ -49,8 +49,9 @@ def helloworld():
     return "Hola Bea!"
     
 if __name__ == "__main__":
-    create_tables()
+    Database.create_tables()
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
+
 
 
     
