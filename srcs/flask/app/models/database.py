@@ -1,7 +1,6 @@
-import os
 import logging
 import psycopg
-from config import DEBUG
+from config import DatabaseConfig as Config
 
 logging.basicConfig(level=logging.INFO)
 
@@ -10,25 +9,30 @@ class Database:
     
     @staticmethod
     def get_connection():
-        """Establece una conexión con la base de datos."""
         try:
-            postgres_db = os.getenv('POSTGRES_DB')
-            postgres_user = os.getenv('POSTGRES_USER')
-            postgres_password = os.getenv('POSTGRES_PASSWORD')
-            postgres_host = os.getenv('POSTGRES_HOST')
+            postgres_db = Config.POSTGRES_DB
+            if not postgres_db:
+                raise ValueError("POSTGRES_DB is not set")
+            postgres_user = Config.POSTGRES_USER
+            if not postgres_user:
+                raise ValueError("POSTGRES_USER is not set")
+            postgres_password = Config.POSTGRES_PASSWORD
+            if not postgres_password:
+                raise ValueError("POSTGRES_PASSWORD is not set")
+            postgres_host = Config.POSTGRES_HOST
+            if not postgres_host:
+                raise ValueError("POSTGRES_HOST is not set")
 
-            if DEBUG:
-                print(f"Connecting to database {postgres_db} at {postgres_host} as {postgres_user}")
+            if Config.DEBUG:
+                print(f"Connecting to database {postgres_db} as {postgres_user} ...")
+                print(f"Password: {postgres_password}")
+                print(f"Host: {postgres_db}")
 
-            return psycopg.connect(
-                dbname=postgres_db, 
-                user=postgres_user, 
-                password=postgres_password, 
-                host=postgres_host
-            )
+            return psycopg.connect(dbname=postgres_db, user=postgres_user, password=postgres_password, host=postgres_host)
+
         except (psycopg.Error, ValueError) as e:
             logging.error(f"Error connecting to the database: {e}")
-            raise Exception("Database connection failed") from e
+            raise Exception(f"Database connection failed: {e}")
 
     @staticmethod
     def create_tables():
