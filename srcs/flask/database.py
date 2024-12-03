@@ -142,3 +142,5 @@ def add_like(user_id, liked_user_id):
     except psycopg.Error as e:
         logging.error(f"Error adding like: {e}")
         raise Exception("Error adding like")
+
+# Archivo movido a srcs/flask/app/models/database.py
