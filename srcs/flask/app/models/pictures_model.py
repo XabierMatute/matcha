@@ -1,5 +1,5 @@
-import logging
 from .database import Database
+import logging
 
 # Configura el logger
 logging.basicConfig(level=logging.INFO)

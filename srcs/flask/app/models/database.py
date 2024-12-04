@@ -1,38 +1,44 @@
 import logging
 import psycopg
+from psycopg.rows import dict_row  # Opcional: para trabajar con resultados como diccionarios
 from config import DatabaseConfig as Config
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Database:
     """Clase para manejar la conexión y la creación de tablas en la base de datos."""
-    
+
+    @staticmethod
+    def validate_config():
+        """Valida que las variables de configuración estén definidas."""
+        required_vars = ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"]
+        for var in required_vars:
+            if not getattr(Config, var, None):
+                raise ValueError(f"{var} is not set")
+
     @staticmethod
     def get_connection():
+        """Obtiene una conexión a la base de datos."""
         try:
-            postgres_db = Config.POSTGRES_DB
-            if not postgres_db:
-                raise ValueError("POSTGRES_DB is not set")
-            postgres_user = Config.POSTGRES_USER
-            if not postgres_user:
-                raise ValueError("POSTGRES_USER is not set")
-            postgres_password = Config.POSTGRES_PASSWORD
-            if not postgres_password:
-                raise ValueError("POSTGRES_PASSWORD is not set")
-            postgres_host = Config.POSTGRES_HOST
-            if not postgres_host:
-                raise ValueError("POSTGRES_HOST is not set")
+            Database.validate_config()
 
             if Config.DEBUG:
-                print(f"Connecting to database {postgres_db} as {postgres_user} ...")
-                print(f"Password: {postgres_password}")
-                print(f"Host: {postgres_db}")
+                logging.debug(
+                    f"Connecting to database {Config.POSTGRES_DB} as {Config.POSTGRES_USER} at {Config.POSTGRES_HOST}"
+                )
 
-            return psycopg.connect(dbname=postgres_db, user=postgres_user, password=postgres_password, host=postgres_host)
+            return psycopg.connect(
+                dbname=Config.POSTGRES_DB,
+                user=Config.POSTGRES_USER,
+                password=Config.POSTGRES_PASSWORD,
+                host=Config.POSTGRES_HOST,
+                row_factory=dict_row,  # Opcional: devuelve resultados como diccionarios
+            )
 
         except (psycopg.Error, ValueError) as e:
             logging.error(f"Error connecting to the database: {e}")
-            raise Exception(f"Database connection failed: {e}")
+            raise Exception(f"Database connection failed: {e}") from e
 
     @staticmethod
     def create_tables():
@@ -105,13 +111,13 @@ class Database:
             CREATE TABLE IF NOT EXISTS pictures (
                 id SERIAL PRIMARY KEY,
                 user_id INTEGER NOT NULL,
-                image_id INTEGER NOT NULL,  -- Referencia a la imagen
+                image_id INTEGER NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             );
             '''
         ]
-        
+
         try:
             with Database.get_connection() as connection:
                 with connection.cursor() as cursor:
@@ -123,6 +129,7 @@ class Database:
             logging.error(f"Error during table creation: {e}")
             raise Exception("Error creating tables") from e
 
+
 # Llamar a create_tables() si se ejecuta directamente
 if __name__ == "__main__":
     try:
@@ -131,5 +138,4 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Database setup failed: {e}")
 
-        logging.error(f"Database setup failed: {e}")
 
