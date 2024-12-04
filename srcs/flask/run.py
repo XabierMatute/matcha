@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/03 16:12:13 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/04 14:51:59 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ from config import RunConfig as Config
 
 from flask import Flask
 
-from app.models.database import Database
+from models.database import Database
 
 app = Flask(__name__)
 
