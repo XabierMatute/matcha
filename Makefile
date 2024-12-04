@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/02 14:00:35 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/04 18:59:28 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,6 +51,8 @@ all : $(DCYML) $(DATABASE_DIR)
 	docker ps
 	docker volume ls
 	docker network ls
+	@echo "web: http://localhost:5000"
+	@echo "adminer: http://localhost:8080"
 
 $(DATABASE_DIR) :
 	mkdir -p $(DATABASE_DIR)
