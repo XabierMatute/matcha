@@ -30,7 +30,7 @@ services:
     depends_on:
       - postgres
 
-  admined:
+  adminer:
     container_name: adminer
     image: adminer
     restart: always
