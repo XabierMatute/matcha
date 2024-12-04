@@ -23,7 +23,7 @@ def create_notification(user_id, notification_type, message):
         logging.error(f"Error creating notification for user ID {user_id}: {e}")
         raise Exception("Error creating notification") from e
 
-def get_notifications_for_user(user_id):
+def get_notifications(user_id):
     """Obtiene todas las notificaciones de un usuario."""
     if not user_id:
         raise ValueError("user_id is required to fetch notifications.")
@@ -37,6 +37,7 @@ def get_notifications_for_user(user_id):
     except Exception as e:
         logging.error(f"Error fetching notifications for user ID {user_id}: {e}")
         raise Exception("Error fetching notifications") from e
+
 
 def get_unread_notifications(user_id):
     """Obtiene todas las notificaciones no leídas de un usuario."""
@@ -53,7 +54,7 @@ def get_unread_notifications(user_id):
         logging.error(f"Error fetching unread notifications for user ID {user_id}: {e}")
         raise Exception("Error fetching unread notifications") from e
 
-def mark_notification_as_read(notification_id):
+def mark_as_read(notification_id):
     """Marca una notificación como leída."""
     if not notification_id:
         raise ValueError("notification_id is required to mark notification as read.")
@@ -73,7 +74,6 @@ def mark_notification_as_read(notification_id):
     except Exception as e:
         logging.error(f"Error marking notification ID {notification_id} as read: {e}")
         raise Exception("Error marking notification as read") from e
-
 def delete_notification(notification_id):
     """Elimina una notificación."""
     if not notification_id:
