@@ -1,50 +1,49 @@
 from .database import Database
 import logging
+from typing import Optional, Dict, Tuple
 
 logging.basicConfig(level=logging.INFO)
 
-def get_user_by_id(user_id):
+# Función auxiliar para ejecutar consultas y manejar errores
+def execute_query(query: str, params: Tuple = (), fetchone: bool = True) -> Optional[dict]:
+    """Ejecuta una consulta en la base de datos y maneja el cursor."""
+    try:
+        with Database.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query, params)
+                if fetchone:
+                    return cursor.fetchone()
+                return cursor.fetchall()
+    except Exception as e:
+        logging.error(f"Error executing query: {query}, params: {params}, error: {e}")
+        raise Exception("Database query error") from e
+
+# Obtener usuario por ID
+def get_user_by_id(user_id: int) -> Optional[Dict]:
     """Obtiene un usuario por su ID."""
     query = "SELECT * FROM users WHERE id = %s"
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (user_id,))
-                return cursor.fetchone()
-    except Exception as e:
-        logging.error(f"Error fetching user by ID: {e}")
-        raise Exception("Error fetching user by ID") from e
+    return execute_query(query, (user_id,))
 
-def get_user_by_username(username):
+# Obtener usuario por nombre de usuario
+def get_user_by_username(username: str) -> Optional[Dict]:
     """Obtiene un usuario por su nombre de usuario."""
     query = "SELECT * FROM users WHERE username = %s"
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (username,))
-                return cursor.fetchone()
-    except Exception as e:
-        logging.error(f"Error fetching user by username: {e}")
-        raise Exception("Error fetching user by username") from e
+    return execute_query(query, (username,))
 
-def create_user(username, email, password_hash, birthdate, first_name=None, last_name=None):
+# Crear un nuevo usuario
+def create_user(username: str, email: str, password_hash: str, birthdate: str, 
+                first_name: Optional[str] = None, last_name: Optional[str] = None) -> Dict:
     """Crea un nuevo usuario."""
     query = '''
         INSERT INTO users (username, email, password_hash, birthdate, first_name, last_name)
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING id, username, email, birthdate, first_name, last_name
     '''
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (username, email, password_hash, birthdate, first_name, last_name))
-                connection.commit()
-                return cursor.fetchone()
-    except Exception as e:
-        logging.error(f"Error creating user: {e}")
-        raise Exception("Error creating user") from e
+    return execute_query(query, (username, email, password_hash, birthdate, first_name, last_name))
 
-def update_user(user_id, username=None, email=None, first_name=None, last_name=None):
+# Actualizar datos del usuario
+def update_user(user_id: int, username: Optional[str] = None, email: Optional[str] = None, 
+                first_name: Optional[str] = None, last_name: Optional[str] = None) -> Optional[Dict]:
     """Actualiza los datos de un usuario."""
     updates = []
     params = []
@@ -68,25 +67,11 @@ def update_user(user_id, username=None, email=None, first_name=None, last_name=N
     query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s RETURNING id, username, email, first_name, last_name"
     params.append(user_id)
 
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, tuple(params))
-                connection.commit()
-                return cursor.fetchone()
-    except Exception as e:
-        logging.error(f"Error updating user: {e}")
-        raise Exception("Error updating user") from e
+    return execute_query(query, tuple(params))
 
-def delete_user(user_id):
+# Eliminar un usuario
+def delete_user(user_id: int) -> Optional[Dict]:
     """Elimina un usuario por su ID."""
     query = "DELETE FROM users WHERE id = %s RETURNING id"
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, (user_id,))
-                connection.commit()
-                return cursor.fetchone()
-    except Exception as e:
-        logging.error(f"Error deleting user: {e}")
-        raise Exception("Error deleting user") from e
+    return execute_query(query, (user_id,))
+
