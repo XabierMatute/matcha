@@ -106,6 +106,25 @@ def set_profile_picture(picture_id, user_id):
         logger.error(f"Error al establecer la foto de perfil con ID {picture_id}: {e}")
         return error_response("Error al establecer la foto de perfil.")
 
+def count_pictures(user_id):
+    """
+    Cuenta el número de imágenes asociadas a un usuario.
+    """
+    validate_id(user_id, "user_id")
+    query = '''
+        SELECT COUNT(*)
+        FROM pictures
+        WHERE user_id = %s
+    '''
+    try:
+        with Database.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, (user_id,))
+                count = cursor.fetchone()
+        return count[0] if count else 0
+    except Exception as e:
+        logger.error(f"Error al contar imágenes para el usuario {user_id}: {e}")
+        raise Exception("Error al contar imágenes") from e
 
 
 

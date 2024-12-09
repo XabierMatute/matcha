@@ -6,7 +6,8 @@ from manager.profile_manager import (
     update_user_location
 )
 from manager.interests_manager import get_user_interests, update_user_interests
-from manager.pictures_manager import add_profile_picture, get_user_pictures
+from manager.pictures_manager import upload_picture, fetch_user_pictures
+
 
 profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
 

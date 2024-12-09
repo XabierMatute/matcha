@@ -4,8 +4,8 @@ from models.profile_model import (
     get_location,
     update_location
 )
-from models.interests_model import get_user_interests, update_user_interests
-from models.pictures_model import add_profile_picture, get_user_pictures
+from models.interests_model import list_interests as get_user_interests, add_interests as update_user_interests
+from models.pictures_model import get_pictures_by_user as get_user_pictures, set_profile_picture as add_profile_picture
 from flask import current_app
 
 

@@ -18,9 +18,9 @@ from blueprints.users import users_bp
 from blueprints.likes import likes_bp
 from blueprints.notifications import notifications_bp
 from blueprints.interests import interests_bp
-# from blueprints.chat import chat_bp
-# from blueprints.profile import profile_bp
-# from blueprints.pictures import pictures_bp
+from blueprints.chat import chat_bp
+from blueprints.profile import profile_bp
+from blueprints.pictures import pictures_bp
 from models.database import Database
 
 app = Flask(__name__)
@@ -30,9 +30,9 @@ app.register_blueprint(users_bp)
 app.register_blueprint(likes_bp)
 app.register_blueprint(notifications_bp)
 app.register_blueprint(interests_bp)
-# app.register_blueprint(chat_bp)
-# app.register_blueprint(profile_bp)
-# app.register_blueprint(pictures_bp)
+app.register_blueprint(chat_bp)
+app.register_blueprint(profile_bp)
+app.register_blueprint(pictures_bp)
 from utils.list_routes import list_routes as list_routex
 
 @app.route("/")

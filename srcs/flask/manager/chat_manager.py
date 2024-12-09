@@ -12,20 +12,20 @@ def send_message(sender_id, receiver_id, message):
     Returns:
         dict: Detalles del mensaje guardado.
     """
-    if not sender_id or not receiver_id or not message:
-        raise ValueError("Invalid sender, receiver, or message")
+    if not sender_id or not receiver_id or not message.strip():
+        raise ValueError("Sender ID, Receiver ID, and Message are required.")
 
     try:
-        # Guardar mensaje en la base de datos
-        saved_message = save_message(sender_id, receiver_id, message)
+        saved_message = save_message(sender_id, receiver_id, message.strip())
         return {
             "success": True,
             "message": saved_message
         }
     except ValueError as ve:
-        raise ValueError(f"Validation failed: {str(ve)}")
+        raise ValueError(f"Validation error: {str(ve)}")
     except Exception as e:
-        raise Exception(f"Failed to send message: {str(e)}")
+        raise Exception(f"An error occurred while sending the message: {str(e)}")
+
 
 def fetch_chat_history(user1_id, user2_id):
     """
@@ -39,19 +39,19 @@ def fetch_chat_history(user1_id, user2_id):
         dict: Lista de mensajes intercambiados entre los usuarios.
     """
     if not user1_id or not user2_id:
-        raise ValueError("Invalid user IDs")
+        raise ValueError("Both User IDs are required.")
 
     try:
-        # Obtener mensajes de la base de datos
         messages = get_messages_between(user1_id, user2_id)
         return {
             "success": True,
-            "messages": messages
+            "messages": messages if messages else []
         }
     except ValueError as ve:
-        raise ValueError(f"Validation failed: {str(ve)}")
+        raise ValueError(f"Validation error: {str(ve)}")
     except Exception as e:
-        raise Exception(f"Failed to fetch chat history: {str(e)}")
+        raise Exception(f"An error occurred while fetching the chat history: {str(e)}")
+
 
 
 
