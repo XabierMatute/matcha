@@ -4,26 +4,11 @@ from typing import Optional, Dict, Tuple
 
 logging.basicConfig(level=logging.INFO)
 
-# Función auxiliar para ejecutar consultas y manejar errores
-# PQ no está en database.py?
-def execute_query(query: str, params: Tuple = (), fetchone: bool = True) -> Optional[Dict]:
-    """Ejecuta una consulta en la base de datos y maneja el cursor."""
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query, params)
-                if cursor.description:  # Solo intenta obtener resultados si la consulta los devuelve.
-                    return cursor.fetchone() if fetchone else cursor.fetchall()
-                connection.commit()  # Confirma transacción en INSERT, UPDATE o DELETE.
-    except Exception as e:
-        logging.error(f"Error executing query: {query}, params: {params}, error: {e}")
-        raise Exception("Database query error") from e
-
 # Obtener usuario por ID
 def get_user_by_id(user_id: int) -> Optional[Dict]:
     """Obtiene un usuario por su ID."""
     query = "SELECT * FROM users WHERE id = %s"
-    user = execute_query(query, (user_id,))
+    user = Database.execute_query(query, (user_id,))
     if not user:
         logging.info(f"User with ID {user_id} not found.")
     return user
@@ -32,7 +17,7 @@ def get_user_by_id(user_id: int) -> Optional[Dict]:
 def get_user_by_username(username: str) -> Optional[Dict]:
     """Obtiene un usuario por su nombre de usuario."""
     query = "SELECT * FROM users WHERE username = %s"
-    user = execute_query(query, (username,))
+    user = Database.execute_query(query, (username,))
     if not user:
         logging.info(f"User with username {username} not found.")
     return user
@@ -59,6 +44,7 @@ def create_user(username: str, email: str, password_hash: str,
                 first_name: Optional[str] = None, last_name: Optional[str] = None) -> Dict:
     """Crea un nuevo usuario."""
     # Verificar si el username o email ya existen
+
     if get_user_by_username(username):
         raise ValueError("Username already exists.")
     if get_user_by_email(email):
@@ -71,7 +57,8 @@ def create_user(username: str, email: str, password_hash: str,
         VALUES (%s, %s, %s, %s, %s)
         RETURNING id, username, email, birthdate, first_name, last_name
     '''
-    return execute_query(query, (username, email, password_hash, first_name, last_name))
+
+    return Database.execute_query(query, (username, email, password_hash, birthdate, first_name, last_name))
 
 # Actualizar datos del usuario
 def update_user(user_id: int, username: Optional[str] = None, email: Optional[str] = None, 
@@ -103,7 +90,7 @@ def update_user(user_id: int, username: Optional[str] = None, email: Optional[st
     query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s RETURNING id, username, email, first_name, last_name"
     params.append(user_id)
 
-    return execute_query(query, tuple(params))
+    return Database.execute_query(query, tuple(params))
 
 # Eliminar un usuario
 def delete_user(user_id: int) -> Optional[Dict]:
@@ -113,5 +100,5 @@ def delete_user(user_id: int) -> Optional[Dict]:
         raise ValueError("User ID does not exist.")
 
     query = "DELETE FROM users WHERE id = %s RETURNING id"
-    return execute_query(query, (user_id,))
+    return Database.execute_query(query, (user_id,))
 
