@@ -81,7 +81,7 @@ class Database:
                 password_hash TEXT NOT NULL,
                 first_name VARCHAR(50),
                 last_name VARCHAR(50),
-                birthdate DATE ,
+                birthdate DATE,
                 gender VARCHAR(10),
                 sexual_preferences VARCHAR(100),
                 biography TEXT,
@@ -92,7 +92,8 @@ class Database:
                 longitude DOUBLE PRECISION,
                 is_active BOOLEAN DEFAULT FALSE,
                 last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_online BOOLEAN DEFAULT FALSE
+                is_online BOOLEAN DEFAULT FALSE,
+                is_verified BOOLEAN DEFAULT FALSE
             );
             ''',
             '''

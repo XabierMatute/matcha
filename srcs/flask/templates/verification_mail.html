@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Cuenta - Matcha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .header h1 {
+            color: #ff4081;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #ff4081;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bienvenido a Matcha</h1>
+        </div>
+        <div class="content">
+            <p>Hola {{ username }},</p>
+            <p>Gracias por registrarte en Matcha. Estamos emocionados de tenerte con nosotros.</p>
+            <p>Por favor, verifica tu cuenta haciendo clic en el siguiente enlace:</p>
+            <a href="{{ verification_link }}" class="button">Verificar Cuenta</a>
+            <p>Si no te has registrado en Matcha, por favor ignora este correo.</p>
+            <p>Tu correo electrónico registrado es: {{ email }}</p>
+            <p>¡Esperamos que disfrutes de tu experiencia en Matcha!</p>
+        </div>
+    </div>
+</body>
+</html>
