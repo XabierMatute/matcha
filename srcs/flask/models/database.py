@@ -2,12 +2,13 @@ import logging
 import psycopg
 from psycopg.rows import dict_row  # Opcional: para trabajar con resultados como diccionarios
 from config import DatabaseConfig as Config
+from typing import Tuple, Optional, Dict, Any, Union, List
 
 logging.basicConfig(level=logging.INFO)
 
 
 class Database:
-    """Clase para manejar la conexión y la creación de tablas en la base de datos."""
+    """Clase para manejar la conexión, creación de tablas y consultas en la base de datos."""
 
     @staticmethod
     def validate_config():
@@ -41,6 +42,34 @@ class Database:
             raise Exception(f"Database connection failed: {e}") from e
 
     @staticmethod
+    def execute_query(
+        query: str,
+        params: Union[Tuple, List] = (),
+        fetchone: bool = True
+    ) -> Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]:
+        """
+        Ejecuta una consulta en la base de datos y maneja el cursor.
+        
+        Args:
+            query (str): Consulta SQL a ejecutar.
+            params (Tuple | List): Parámetros para la consulta SQL.
+            fetchone (bool): Si es True, devuelve una fila; de lo contrario, devuelve todas las filas.
+
+        Returns:
+            Optional[Dict | List[Dict]]: Resultados de la consulta (si aplica).
+        """
+        try:
+            with Database.get_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, params)
+                    if cursor.description:  # Solo intenta obtener resultados si la consulta los devuelve.
+                        return cursor.fetchone() if fetchone else cursor.fetchall()
+                    connection.commit()  # Confirma transacción en INSERT, UPDATE o DELETE.
+        except Exception as e:
+            logging.error(f"Error executing query: {query}, params: {params}, error: {e}")
+            raise Exception("Database query error") from e
+
+    @staticmethod
     def create_tables():
         """Crea las tablas necesarias para la aplicación."""
         queries = [
@@ -52,7 +81,7 @@ class Database:
                 password_hash TEXT NOT NULL,
                 first_name VARCHAR(50),
                 last_name VARCHAR(50),
-                birthdate DATE NOT NULL,
+                birthdate DATE ,
                 gender VARCHAR(10),
                 sexual_preferences VARCHAR(100),
                 biography TEXT,
@@ -137,5 +166,6 @@ if __name__ == "__main__":
         logging.info("Database setup completed.")
     except Exception as e:
         logging.error(f"Database setup failed: {e}")
+
 
 
