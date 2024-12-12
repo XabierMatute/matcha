@@ -62,6 +62,57 @@ def remove_interests(interest_ids):
         WHERE id = ANY(%s)
     '''
     return execute_query(query, (interest_ids,))
+def update_user_interests(user_id, new_interests):
+    """
+    Actualiza los intereses de un usuario.
+    Reemplaza los intereses existentes con los proporcionados.
+    """
+    if not new_interests or not all(isinstance(tag, str) and tag.strip() for tag in new_interests):
+        raise ValueError("New interests must be a non-empty list of strings.")
+
+    # Eliminar intereses actuales
+    delete_query = '''
+        DELETE FROM user_interests
+        WHERE user_id = %s
+    '''
+
+    # Insertar nuevos intereses
+    insert_query = '''
+        INSERT INTO user_interests (user_id, interest_id)
+        VALUES %s
+    '''
+
+    # Asegúrate de que los nuevos intereses existan en la tabla de intereses
+    get_interest_ids_query = '''
+        SELECT id
+        FROM interests
+        WHERE tag = ANY(%s)
+    '''
+
+    try:
+        with Database.get_connection() as connection:
+            with connection.cursor() as cursor:
+                # Eliminar intereses actuales
+                cursor.execute(delete_query, (user_id,))
+
+                # Obtener IDs de los nuevos intereses
+                cursor.execute(get_interest_ids_query, (new_interests,))
+                interest_ids = cursor.fetchall()
+
+                if not interest_ids:
+                    raise ValueError("None of the provided interests exist in the database.")
+
+                # Formatear datos para la inserción
+                interest_values = [(user_id, interest_id[0]) for interest_id in interest_ids]
+
+                # Insertar nuevos intereses
+                execute_values(cursor, insert_query, interest_values)
+                connection.commit()
+
+                return {"success": True, "message": "User interests updated successfully."}
+    except Exception as e:
+        logging.error(f"Error updating interests for user ID {user_id}: {e}")
+        raise Exception("Error updating user interests") from e
 
 
 

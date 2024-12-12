@@ -1,6 +1,7 @@
 from models.interests_model import (
     create_interest,
     list_interests,
+    update_user_interests,
     get_interest_by_id,
     add_interests,
     remove_interests

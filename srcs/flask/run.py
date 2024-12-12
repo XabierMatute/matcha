@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/12 12:31:45 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/12 16:58:27 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,9 +19,9 @@ from blueprints.users import users_bp
 from blueprints.likes import likes_bp
 from blueprints.notifications import notifications_bp
 from blueprints.interests import interests_bp
-# from blueprints.chat import chat_bp
-# from blueprints.profile import profile_bp
-# from blueprints.pictures import pictures_bp
+from blueprints.chat import chat_bp
+from blueprints.profile import profile_bp
+from blueprints.pictures import pictures_bp
 from models.database import Database
 
 app = Flask(__name__)
@@ -71,6 +71,10 @@ from config import UserConfig
 if UserConfig.TESTING:
     from testing.user_testing1 import test_user_bp
     app.register_blueprint(test_user_bp)
+
+# app.register_blueprint(chat_bp)
+# app.register_blueprint(profile_bp)
+# app.register_blueprint(pictures_bp)
 
 from utils.list_routes import list_routes as list_routex
 

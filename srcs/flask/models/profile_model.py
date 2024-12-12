@@ -7,6 +7,9 @@ def get_profile_by_user_id(user_id):
     """
     Obtiene el perfil completo de un usuario por su ID.
     """
+    if not isinstance(user_id, int) or user_id <= 0:
+        raise ValueError("Invalid user ID. It must be a positive integer.")
+
     query = '''
         SELECT id, username, email, first_name, last_name, gender, sexual_preferences,
                biography, fame_rating, profile_picture, location, latitude, longitude, is_active
@@ -20,10 +23,28 @@ def get_profile_by_user_id(user_id):
                 profile = cursor.fetchone()
                 if not profile:
                     raise ValueError("Profile not found for the given user ID.")
-                return profile
+                
+                # Estructurar el retorno
+                return {
+                    "id": profile[0],
+                    "username": profile[1],
+                    "email": profile[2],
+                    "first_name": profile[3],
+                    "last_name": profile[4],
+                    "gender": profile[5],
+                    "sexual_preferences": profile[6],
+                    "biography": profile[7],
+                    "fame_rating": profile[8],
+                    "profile_picture": profile[9],
+                    "location": profile[10],
+                    "latitude": profile[11],
+                    "longitude": profile[12],
+                    "is_active": profile[13],
+                }
     except Exception as e:
         logging.error(f"Error fetching profile for user ID {user_id}: {e}")
         raise Exception("Error fetching profile") from e
+
 
 
 def update_profile(user_id, **fields):
