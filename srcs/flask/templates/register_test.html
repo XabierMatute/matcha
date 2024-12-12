@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuario</title>
+    <title>User Registration</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,6 +57,16 @@
             transform: translateY(-50%);
             cursor: pointer;
         }
+        .login-link {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .login-link:hover {
+            text-decoration: underline;
+        }
     </style>
     <script>
         function generateExampleData() {
@@ -85,31 +95,32 @@
 </head>
 <body>
     <div class="container">
-        <h2>Registro de Usuario</h2>
+        <h2>User Registration</h2>
         {% if error_message %}
             <div class="error-message">{{ error_message }}</div>
         {% endif %}
         <form action="/test_user/register" method="POST">
             <div class="form-group">
-                <label for="username">Nombre de Usuario</label>
+                <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="email">Correo Electrónico</label>
+                <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group password-container">
-                <label for="password">Contraseña</label>
+                <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
                 <span id="password-toggle" class="toggle-password" onclick="togglePasswordVisibility('password')">👁️</span>
             </div>
             <div class="form-group">
-                <button type="button" onclick="generateExampleData()">Generar Datos de Ejemplo</button>
+                <button type="button" onclick="generateExampleData()">Generate Example Data</button>
             </div>
             <div class="form-group">
-                <button type="submit">Registrarse</button>
+                <button type="submit">Register</button>
             </div>
         </form>
+        <a href="{{ url_for('users.login_form') }}" class="login-link">Do you have an account? Login here</a>
     </div>
 </body>
 </html>
