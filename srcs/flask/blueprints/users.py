@@ -22,13 +22,11 @@ def send_verification_email(user):
     except Exception as e:
         raise ValueError(f"Error al enviar el correo: {str(e)}")
 
-# Página de registro: Muestra el formulario
 @users_bp.route('/register', methods=['GET'])
 def register_form():
-    """
-    Muestra el formulario de registro.
-    """
     return render_template('register.html')
+
+from config import DEBUG
 
 # Manejo del registro de usuario
 @users_bp.route('/register', methods=['POST'])
@@ -44,7 +42,10 @@ def register_user_route():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": "Internal Server Error"}), 500
+        if DEBUG:
+            error_message = str(e)
+            return jsonify({f"error": error_message}), 500
+        return jsonify({f"error": "Internal Server Error"}), 500
 
 # Página de inicio de sesión: Muestra el formulario
 @users_bp.route('/login', methods=['GET'])
