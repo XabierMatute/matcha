@@ -10,10 +10,17 @@
 #                                                                              #
 # **************************************************************************** #
 
-from config import RunConfig as Config
+import sys
+import os
+from config import RunConfig as Config, SecretConfig, MailConfig, UserConfig
 from flask import Flask
+from flask_mail import Mail, Message
+from models.database import Database
 
-# Importa todos los blueprints de la carpeta blueprints
+# Agregar el directorio raíz al sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
+# Importación de blueprints
 from blueprints.users import users_bp
 from blueprints.likes import likes_bp
 from blueprints.notifications import notifications_bp
@@ -21,17 +28,13 @@ from blueprints.interests import interests_bp
 from blueprints.chat import chat_bp
 from blueprints.profile import profile_bp
 from blueprints.pictures import pictures_bp
-from models.database import Database
+from blueprints.database_bp import database_bp
 
+# Inicialización de la app Flask
 app = Flask(__name__)
-
-from config import SecretConfig
 app.config.update(SecretConfig.config)
 
-from flask_mail import Mail, Message
-
 # Configuración del correo
-from config import MailConfig
 mail = None
 if MailConfig.ACTIVE:
     app.config.update(MailConfig.config)
@@ -39,8 +42,10 @@ if MailConfig.ACTIVE:
     from blueprints.mail import mail_bp
     app.register_blueprint(mail_bp)
 
+
 @app.route('/mail')
 def send_test_mail():
+    """Ruta de prueba para enviar un correo."""
     try:
         msg = Message(
             subject="¡Hola desde Flask!",
@@ -52,31 +57,23 @@ def send_test_mail():
     except Exception as e:
         return f"Error enviando correo: {e}"
 
-# Registra todos los blueprints
+
+# Registro de todos los blueprints
 app.register_blueprint(users_bp)
 app.register_blueprint(likes_bp)
 app.register_blueprint(notifications_bp)
 app.register_blueprint(interests_bp)
+app.register_blueprint(database_bp)
 app.register_blueprint(chat_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(pictures_bp)
 
-from config import UserConfig
+# Registro de rutas de prueba si el modo TESTING está habilitado
 if UserConfig.TESTING:
     from testing.user_testing1 import test_user_bp
     app.register_blueprint(test_user_bp)
 
-from utils.list_routes import list_routes as list_routex
-
-@app.route("/")
-def helloworld():
-    return list_routex(app)
-
-if __name__ == "__main__":
-    # Crea las tablas si es necesario
-    Database.create_tables()
-    # Ejecuta la aplicación
-    app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
+# Ruta para listar todas las rutas registr
 
 
 

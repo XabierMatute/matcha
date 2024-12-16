@@ -4,10 +4,9 @@ from models.profile_model import (
     get_location,
     update_location
 )
-from models.interests_model import list_interests as get_user_interests, add_interests as update_user_interests
-from models.pictures_model import get_pictures_by_user as get_user_pictures, set_profile_picture as add_profile_picture
+from models.interests_model import list_interests as fetch_user_interests, add_interests as update_user_interests
+from models.pictures_model import get_pictures_by_user as fetch_user_pictures, set_profile_picture as upload_profile_picture
 from flask import current_app
-
 
 def get_user_profile(user_id):
     """
@@ -18,8 +17,8 @@ def get_user_profile(user_id):
         if not profile:
             raise ValueError("User profile not found.")
 
-        interests = get_user_interests(user_id)
-        pictures = get_user_pictures(user_id)
+        interests = fetch_user_interests(user_id)
+        pictures = fetch_user_pictures(user_id)
 
         return {
             "profile": profile,
@@ -30,15 +29,14 @@ def get_user_profile(user_id):
         current_app.logger.error(f"Error fetching profile for user ID {user_id}: {e}")
         raise Exception("Failed to fetch user profile.") from e
 
-
 def update_user_profile(user_id, data):
     """
     Actualiza los datos básicos del perfil del usuario.
-    
+
     Args:
         user_id (int): ID del usuario.
         data (dict): Campos a actualizar en el perfil.
-    
+
     Returns:
         dict: Perfil actualizado.
     """
@@ -51,7 +49,6 @@ def update_user_profile(user_id, data):
     except Exception as e:
         current_app.logger.error(f"Error updating profile for user ID {user_id}: {e}")
         raise Exception("Failed to update user profile.") from e
-
 
 def get_user_location(user_id):
     """
@@ -66,7 +63,6 @@ def get_user_location(user_id):
         current_app.logger.error(f"Error fetching location for user ID {user_id}: {e}")
         raise Exception("Failed to fetch user location.") from e
 
-
 def update_user_location(user_id, location, latitude, longitude):
     """
     Actualiza la ubicación de un usuario.
@@ -78,15 +74,14 @@ def update_user_location(user_id, location, latitude, longitude):
         current_app.logger.error(f"Error updating location for user ID {user_id}: {e}")
         raise Exception("Failed to update user location.") from e
 
-
 def update_user_interests(user_id, interests):
     """
     Actualiza los intereses del usuario.
-    
+
     Args:
         user_id (int): ID del usuario.
         interests (list): Lista de intereses a actualizar.
-    
+
     Returns:
         list: Intereses actualizados.
     """
@@ -97,20 +92,19 @@ def update_user_interests(user_id, interests):
         current_app.logger.error(f"Error updating interests for user ID {user_id}: {e}")
         raise Exception("Failed to update user interests.") from e
 
-
 def update_user_profile_picture(user_id, picture_file):
     """
     Actualiza o agrega la foto de perfil del usuario.
-    
+
     Args:
         user_id (int): ID del usuario.
         picture_file (file): Archivo de la foto de perfil.
-    
+
     Returns:
         dict: Información de la foto de perfil actualizada.
     """
     try:
-        picture_info = add_profile_picture(user_id, picture_file)
+        picture_info = upload_profile_picture(user_id, picture_file)
         return picture_info
     except Exception as e:
         current_app.logger.error(f"Error updating profile picture for user ID {user_id}: {e}")

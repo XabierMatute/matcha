@@ -6,6 +6,8 @@ from models.notifications_model import (
     delete_notification,
     delete_notifications
 )
+from models.database import Database
+
 from typing import List, Dict
 import logging
 
@@ -17,9 +19,11 @@ def validate_required_field(field, field_name: str):
 def send_notification(user_id: int, notification_type: str, message: str) -> Dict:
     """Crea una nueva notificación para un usuario."""
     try:
-        validate_required_field(user_id, "User ID")
-        validate_required_field(notification_type, "Notification type")
-        validate_required_field(message, "Message")
+        # Validar todos los campos antes de intentar crear la notificación
+        for value, name in [(user_id, "User ID"), (notification_type, "Notification type"), (message, "Message")]:
+            validate_required_field(value, name)
+        
+        # Crear y devolver la notificación
         return create_notification(user_id, notification_type, message)
     except Exception as e:
         logging.error(f"Failed to send notification: {e}")
@@ -47,7 +51,7 @@ def remove_notification(notification_id: int) -> Dict:
 
 def remove_multiple_notifications(notification_ids: List[int]) -> List[Dict]:
     """Elimina múltiples notificaciones por sus IDs."""
-    if not notification_ids or len(notification_ids) == 0:
+    if not notification_ids:
         raise ValueError("Notification IDs are required to remove notifications.")
     return delete_notifications(notification_ids)
 
@@ -58,4 +62,3 @@ def group_notifications_by_type(user_id: int) -> Dict[str, List[Dict]]:
     for notification in notifications:
         grouped.setdefault(notification['type'], []).append(notification)
     return grouped
- 
