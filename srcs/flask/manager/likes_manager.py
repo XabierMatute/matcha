@@ -1,6 +1,9 @@
 from models.likes_model import like_user, unlike_user, get_liked_users, get_matches
 from models.notifications_model import create_notification
 from typing import List, Dict
+import logging
+
+logger = logging.getLogger(__name__)
 
 def send_like(user_id: int, liked_user_id: int) -> Dict:
     """
@@ -99,3 +102,4 @@ def send_match_notifications(user_id: int, match_user_id: int) -> None:
     """
     create_notification(user_id, "match", f"You matched with user {match_user_id}")
     create_notification(match_user_id, "match", f"You matched with user {user_id}")
+

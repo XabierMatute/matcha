@@ -10,47 +10,46 @@ from manager.notifications_manager import (
 
 notifications_bp = Blueprint('notifications', __name__, url_prefix='/notifications')
 
-def error_response(message, status_code=400, details=None):
+def success_response(data=None, message="Operation successful"):
+    """Genera una respuesta de éxito consistente."""
+    return {"success": True, "message": message, "data": data}
+
+def error_response(message="Operation failed", status_code=400, details=None):
     """Genera una respuesta de error consistente."""
-    response = {"error": message}
+    response = {"success": False, "message": message}
     if details:
         response["details"] = details
     return jsonify(response), status_code
 
-def validate_user_id(user_id):
-    """Valida que el 'user_id' esté presente y sea un número entero positivo."""
-    if not user_id:
-        raise ValueError("User ID is required")
-    if not isinstance(user_id, int) or user_id <= 0:
-        raise ValueError("User ID must be a positive integer")
+def validate_user_id():
+    """Valida y obtiene el 'user_id' del request."""
+    user_id = request.args.get('user_id', type=int)
+    if not user_id or user_id <= 0:
+        raise ValueError("User ID must be a positive integer.")
     return user_id
 
 @notifications_bp.route('/', methods=['GET'])
 def list_notifications():
     """Obtiene todas las notificaciones del usuario con soporte para paginación."""
-    user_id = request.args.get('user_id', type=int)
-    limit = request.args.get('limit', type=int, default=10)
-    offset = request.args.get('offset', type=int, default=0)
-
-    if not user_id:
-        return error_response("User ID is required")
-
     try:
+        user_id = validate_user_id()
+        limit = request.args.get('limit', type=int, default=10)
+        offset = request.args.get('offset', type=int, default=0)
+
         notifications = fetch_user_notifications(user_id, limit, offset)
-        return jsonify({"notifications": notifications}), 200
+        return jsonify(success_response(data=notifications, message="Notifications fetched successfully")), 200
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
         return error_response("Failed to fetch notifications", details=str(e))
 
-
 @notifications_bp.route('/unread', methods=['GET'])
 def list_unread_notifications():
     """Obtiene todas las notificaciones no leídas del usuario."""
     try:
-        user_id = validate_user_id(request.args.get('user_id', type=int))
+        user_id = validate_user_id()
         notifications = fetch_unread_notifications(user_id)
-        return jsonify({"notifications": notifications}), 200
+        return jsonify(success_response(data=notifications, message="Unread notifications fetched successfully")), 200
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
@@ -60,8 +59,11 @@ def list_unread_notifications():
 def mark_as_read_route(notification_id):
     """Marca una notificación como leída."""
     try:
+        if notification_id <= 0:
+            raise ValueError("Notification ID must be a positive integer.")
+
         notification = mark_notification_as_read(notification_id)
-        return jsonify({"message": "Notification marked as read", "notification": notification}), 200
+        return jsonify(success_response(data=notification, message="Notification marked as read")), 200
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
@@ -71,8 +73,11 @@ def mark_as_read_route(notification_id):
 def delete_notification_route(notification_id):
     """Elimina una notificación por su ID."""
     try:
+        if notification_id <= 0:
+            raise ValueError("Notification ID must be a positive integer.")
+
         deleted_notification = remove_notification(notification_id)
-        return jsonify({"message": "Notification deleted", "notification": deleted_notification}), 200
+        return jsonify(success_response(data=deleted_notification, message="Notification deleted successfully")), 200
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
@@ -85,19 +90,36 @@ def delete_notifications_batch():
         data = request.get_json()
         notification_ids = data.get('notification_ids')
 
-        # Validar que notification_ids sea una lista de enteros
-        if not notification_ids or not isinstance(notification_ids, list) or not all(isinstance(id, int) for id in notification_ids):
-            return error_response("A list of valid notification IDs is required")
+        if not notification_ids or not isinstance(notification_ids, list) or not all(isinstance(id, int) and id > 0 for id in notification_ids):
+            raise ValueError("A valid list of positive integer notification IDs is required.")
 
-        # Llamar a la función del manager para eliminar las notificaciones
         deleted_notifications = remove_multiple_notifications(notification_ids)
-        return jsonify({
-            "message": f"{len(deleted_notifications)} notifications deleted successfully"
-        }), 200
+        return jsonify(success_response(data={"deleted_ids": deleted_notifications}, message="Notifications deleted successfully")), 200
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
         return error_response("Failed to delete notifications", details=str(e))
+
+@notifications_bp.route('/send', methods=['POST'])
+def send_notification_route():
+    """Crea y envía una notificación a un usuario."""
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        notification_type = data.get("type")
+        message = data.get("message")
+
+        if not user_id or not notification_type or not message:
+            raise ValueError("User ID, notification type, and message are required.")
+
+        notification = send_notification(user_id, notification_type, message)
+        return jsonify(success_response(data=notification, message="Notification sent successfully")), 201
+    except ValueError as e:
+        return error_response(str(e))
+    except Exception as e:
+        return error_response("Failed to send notification", details=str(e))
+
+
 
 
 

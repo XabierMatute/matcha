@@ -2,6 +2,11 @@ from .database import Database
 import logging
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class DatabaseError(Exception):
+    """Excepción personalizada para errores de base de datos."""
+    pass
 
 ERROR_MESSAGES = {
     "missing_user_id": "user_id is required.",
@@ -10,7 +15,7 @@ ERROR_MESSAGES = {
 }
 
 def create_notification(user_id, notification_type, message):
-    if not user_id or not notification_type or not message:
+    if not isinstance(user_id, int) or not isinstance(notification_type, str) or not isinstance(message, str):
         raise ValueError(ERROR_MESSAGES["missing_required_fields"])
     query = '''
         INSERT INTO notifications (user_id, type, message)
@@ -20,8 +25,13 @@ def create_notification(user_id, notification_type, message):
     return _execute_query(query, (user_id, notification_type, message), fetchone=True)
 
 def get_all_notifications(user_id, limit=None, offset=None):
-    if not user_id:
+    if not isinstance(user_id, int):
         raise ValueError(ERROR_MESSAGES["missing_user_id"])
+    if limit is not None and (not isinstance(limit, int) or limit <= 0):
+        raise ValueError("Limit must be a positive integer.")
+    if offset is not None and (not isinstance(offset, int) or offset < 0):
+        raise ValueError("Offset must be a non-negative integer.")
+    
     query = '''
         SELECT * FROM notifications
         WHERE user_id = %s
@@ -34,7 +44,7 @@ def get_all_notifications(user_id, limit=None, offset=None):
     return _execute_query(query, tuple(params), fetchone=False)
 
 def get_unread_notifications(user_id):
-    if not user_id:
+    if not isinstance(user_id, int):
         raise ValueError(ERROR_MESSAGES["missing_user_id"])
     query = '''
         SELECT * FROM notifications
@@ -44,7 +54,7 @@ def get_unread_notifications(user_id):
     return _execute_query(query, (user_id,), fetchone=False)
 
 def mark_as_read(notification_id):
-    if not notification_id:
+    if not isinstance(notification_id, int):
         raise ValueError(ERROR_MESSAGES["missing_notification_id"])
     query = '''
         UPDATE notifications
@@ -55,14 +65,14 @@ def mark_as_read(notification_id):
     return _execute_query(query, (notification_id,), fetchone=True)
 
 def delete_notification(notification_id):
-    if not notification_id:
+    if not isinstance(notification_id, int):
         raise ValueError(ERROR_MESSAGES["missing_notification_id"])
     query = "DELETE FROM notifications WHERE id = %s RETURNING id"
     return _execute_query(query, (notification_id,), fetchone=True)
 
 def delete_notifications(notification_ids):
-    if not notification_ids:
-        raise ValueError("notification_ids cannot be empty.")
+    if not notification_ids or not all(isinstance(i, int) for i in notification_ids):
+        raise ValueError("notification_ids must be a non-empty list of integers.")
     query = '''
         DELETE FROM notifications
         WHERE id = ANY(%s)
@@ -80,7 +90,8 @@ def _execute_query(query, params, fetchone=False):
                     return cursor.fetchone()
                 return cursor.fetchall()
     except Exception as e:
-        logging.error(f"Database query error: {e}")
-        raise Exception("An unexpected error occurred") from e
+        logger.error(f"Database query failed. Query: {query}, Params: {params}, Error: {e}")
+        raise DatabaseError("Database query failed.") from e
+
 
 

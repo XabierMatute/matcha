@@ -3,12 +3,10 @@ from manager.likes_manager import send_like, remove_like, fetch_liked_users, fet
 
 likes_bp = Blueprint('likes', __name__, url_prefix='/likes')
 
+
 @likes_bp.route('/<int:liked_user_id>', methods=['POST'])
 def like(liked_user_id):
-    """
-    Da 'like' a un usuario.
-    Requiere: user_id en el cuerpo de la solicitud (JSON).
-    """
+    """Da 'like' a un usuario."""
     user_id = request.json.get('user_id')
     if not user_id or not isinstance(user_id, int):
         return jsonify({"error": "Valid user_id is required in the request body"}), 400
@@ -24,12 +22,10 @@ def like(liked_user_id):
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+
 @likes_bp.route('/<int:liked_user_id>', methods=['DELETE'])
 def unlike(liked_user_id):
-    """
-    Elimina el 'like' a un usuario.
-    Requiere: user_id en el cuerpo de la solicitud (JSON).
-    """
+    """Elimina el 'like' a un usuario."""
     user_id = request.json.get('user_id')
     if not user_id or not isinstance(user_id, int):
         return jsonify({"error": "Valid user_id is required in the request body"}), 400
@@ -45,12 +41,10 @@ def unlike(liked_user_id):
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+
 @likes_bp.route('/', methods=['GET'])
 def get_likes():
-    """
-    Obtiene la lista de usuarios a los que el usuario ha dado 'like'.
-    Requiere: user_id como parámetro en la URL.
-    """
+    """Obtiene la lista de usuarios a los que el usuario ha dado 'like'."""
     user_id = request.args.get('user_id', type=int)
     if not user_id:
         return jsonify({"error": "Valid user_id is required as a query parameter"}), 400
@@ -66,12 +60,10 @@ def get_likes():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+
 @likes_bp.route('/matches', methods=['GET'])
 def get_matches():
-    """
-    Obtiene la lista de usuarios con los que el usuario tiene un 'match'.
-    Requiere: user_id como parámetro en la URL.
-    """
+    """Obtiene la lista de usuarios con los que el usuario tiene un 'match'."""
     user_id = request.args.get('user_id', type=int)
     if not user_id:
         return jsonify({"error": "Valid user_id is required as a query parameter"}), 400
@@ -86,5 +78,4 @@ def get_matches():
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
 
