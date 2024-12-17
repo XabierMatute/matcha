@@ -11,4 +11,4 @@ from .test_notifications import *
 from .test_pictures import *
 from .test_profile import *
 from .test_user import *
-
+from .test_database import *
