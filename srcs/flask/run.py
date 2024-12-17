@@ -36,8 +36,8 @@ mail = None
 if MailConfig.ACTIVE:
     app.config.update(MailConfig.config)
     mail = Mail(app)
-    from blueprints.mail import mail_bp
-    app.register_blueprint(mail_bp)
+    # from blueprints.mail import mail_bp
+    # app.register_blueprint(mail_bp)
 
 @app.route('/mail')
 def send_test_mail():

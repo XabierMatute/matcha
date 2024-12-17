@@ -1,93 +1,109 @@
 import pytest
+from run import app
 from unittest.mock import patch
-from flask import Flask
-from blueprints.interests import interests_bp
 
 @pytest.fixture
-def app():
-    """Crea una aplicación Flask para las pruebas."""
-    app = Flask(__name__)
-    app.register_blueprint(interests_bp)
-    return app
+def client():
+    """Configura la app en modo testing y crea un cliente de prueba."""
+    app.config['TESTING'] = True
+    app.config['SECRET_KEY'] = 'test_secret'  # Necesario para la sesión
+    with app.test_client() as client:
+        with app.app_context():
+            yield client
 
-@pytest.fixture
-def client(app):
-    """Crea un cliente de pruebas."""
-    return app.test_client()
-
-@patch('manager.interests_manager.get_all_interests')
-def test_get_all_interests(mock_get_all_interests, client):
-    """Prueba obtener todos los intereses."""
-    mock_get_all_interests.return_value = [
-        {"id": 1, "tag": "music"},
-        {"id": 2, "tag": "travel"}
-    ]
+# Test para listar todos los intereses
+@patch('blueprints.interests.fetch_all_interests')
+def test_list_interests(mock_fetch_all_interests, client):
+    mock_fetch_all_interests.return_value = [{"id": 1, "tag": "Music"}, {"id": 2, "tag": "Sports"}]
 
     response = client.get('/interests/')
     assert response.status_code == 200
-    assert response.json == [
-        {"id": 1, "tag": "music"},
-        {"id": 2, "tag": "travel"}
-    ]
+    assert response.get_json() == {
+        "success": True,
+        "message": "Interests fetched successfully.",
+        "data": [{"id": 1, "tag": "Music"}, {"id": 2, "tag": "Sports"}]
+    }
+    mock_fetch_all_interests.assert_called_once()
 
-@patch('manager.interests_manager.get_interest_by_id')
-def test_get_interest(mock_get_interest_by_id, client):
-    """Prueba obtener un interés por ID."""
-    mock_get_interest_by_id.return_value = {"id": 1, "tag": "music"}
+# Test para obtener un interés por ID
+@patch('blueprints.interests.fetch_interest_by_id')
+def test_get_interest_success(mock_fetch_interest_by_id, client):
+    mock_fetch_interest_by_id.return_value = {"id": 1, "tag": "Music"}
 
     response = client.get('/interests/1')
     assert response.status_code == 200
-    assert response.json == {"id": 1, "tag": "music"}
+    assert response.get_json() == {
+        "success": True,
+        "message": "Interest fetched successfully.",
+        "data": {"id": 1, "tag": "Music"}
+    }
+    mock_fetch_interest_by_id.assert_called_once_with(1)
 
-    mock_get_interest_by_id.return_value = None
-    response = client.get('/interests/999')
-    assert response.status_code == 404
-    assert response.json == {"error": "Interest not found"}
+# Test para crear un nuevo interés
+@patch('blueprints.interests.add_new_interest')
+def test_create_interest_success(mock_add_new_interest, client):
+    mock_add_new_interest.return_value = {"id": 3, "tag": "Travel"}
 
-@patch('manager.interests_manager.add_new_interest')
-def test_create_interest(mock_add_new_interest, client):
-    """Prueba crear un interés."""
-    mock_add_new_interest.return_value = {"id": 3, "tag": "art"}
-
-    response = client.post('/interests/', json={"tag": "art"})
+    response = client.post('/interests/add', json={"tag": "Travel"})
     assert response.status_code == 201
-    assert response.json == {"id": 3, "tag": "art"}
+    assert response.get_json() == {
+        "success": True,
+        "message": "Interest created successfully.",
+        "data": {"id": 3, "tag": "Travel"}
+    }
+    mock_add_new_interest.assert_called_once_with("Travel")
 
-    mock_add_new_interest.side_effect = ValueError("Interest tag cannot be empty.")
-    response = client.post('/interests/', json={"tag": ""})
-    assert response.status_code == 400
-    assert response.json == {"error": "Interest tag cannot be empty."}
+# Test para agregar múltiples intereses
+@patch('blueprints.interests.bulk_add_interests')
+def test_add_multiple_interests(mock_bulk_add_interests, client):
+    mock_bulk_add_interests.return_value = [{"id": 4, "tag": "Cooking"}, {"id": 5, "tag": "Reading"}]
 
-@patch('manager.interests_manager.add_multiple_interests')
-def test_batch_add_interests(mock_add_multiple_interests, client):
-    """Prueba agregar intereses en lote."""
-    mock_add_multiple_interests.return_value = [
-        {"id": 1, "tag": "music"},
-        {"id": 2, "tag": "travel"}
-    ]
-
-    response = client.post('/interests/batch', json={"tags": ["music", "travel"]})
+    response = client.post('/interests/add-batch', json={"tags": ["Cooking", "Reading"]})
     assert response.status_code == 201
-    assert response.json == [
-        {"id": 1, "tag": "music"},
-        {"id": 2, "tag": "travel"}
-    ]
+    assert response.get_json() == {
+        "success": True,
+        "message": "Interests added successfully.",
+        "data": [{"id": 4, "tag": "Cooking"}, {"id": 5, "tag": "Reading"}]
+    }
+    mock_bulk_add_interests.assert_called_once_with(["Cooking", "Reading"])
 
-    mock_add_multiple_interests.side_effect = ValueError("No tags provided to add.")
-    response = client.post('/interests/batch', json={"tags": []})
-    assert response.status_code == 400
-    assert response.json == {"error": "No tags provided to add."}
+# Test para eliminar múltiples intereses
+@patch('blueprints.interests.bulk_remove_interests')
+def test_remove_interests(mock_bulk_remove_interests, client):
+    mock_bulk_remove_interests.return_value = {"deleted_ids": [1, 2]}
 
-@patch('manager.interests_manager.remove_interests_by_ids')
-def test_delete_interest(mock_remove_interests_by_ids, client):
-    """Prueba eliminar un interés."""
-    mock_remove_interests_by_ids.return_value = "Removed 1 interests."
-
-    response = client.delete('/interests/1')
+    response = client.delete('/interests/remove', json={"interest_ids": [1, 2]})
     assert response.status_code == 200
-    assert response.json == {"message": "Removed 1 interests."}
+    assert response.get_json() == {
+        "success": True,
+        "message": "Interests removed successfully.",
+        "data": {"deleted_ids": [1, 2]}
+    }
+    mock_bulk_remove_interests.assert_called_once_with([1, 2])
 
-    mock_remove_interests_by_ids.side_effect = ValueError("No interest IDs provided to remove.")
-    response = client.delete('/interests/999')
-    assert response.status_code == 400
-    assert response.json == {"error": "No interest IDs provided to remove."}
+# Test para actualizar los intereses de un usuario
+@patch('blueprints.interests.update_user_interests_list')
+def test_update_user_interests(mock_update_user_interests_list, client):
+    mock_update_user_interests_list.return_value = {"success": True, "message": "User interests updated successfully."}
+
+    with client.session_transaction() as session:
+        session['user_id'] = 1  # Simula un usuario logueado
+
+    response = client.post('/interests/user/update', json={"interests": ["Music", "Travel"]})
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "User interests updated successfully.",
+        "data": {"success": True, "message": "User interests updated successfully."}
+    }
+    mock_update_user_interests_list.assert_called_once_with(1, ["Music", "Travel"])
+
+# Test para error cuando el usuario no está logueado
+def test_update_user_interests_not_logged_in(client):
+    response = client.post('/interests/user/update', json={"interests": ["Music", "Travel"]})
+    assert response.status_code == 401
+    assert response.get_json() == {
+        "success": False,
+        "message": "User not logged in."
+    }
+

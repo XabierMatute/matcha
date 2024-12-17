@@ -1,73 +1,79 @@
 from models.interests_model import (
     create_interest,
     list_interests,
-    update_user_interests,
     get_interest_by_id,
     add_interests,
-    remove_interests
+    remove_interests,
+    update_user_interests
 )
-from models.user_model import get_user_by_id
-from typing import List, Dict
-import logging
-from models.database import Database
 
-def get_all_interests() -> List[Dict]:
+def add_new_interest(tag):
+    """
+    Crea un nuevo interés.
+
+    Args:
+        tag (str): El nombre del interés.
+
+    Returns:
+        dict: Información del interés creado.
+    """
+    return create_interest(tag)
+
+def fetch_all_interests():
+    """
+    Obtiene todos los intereses disponibles.
+
+    Returns:
+        list: Lista de intereses existentes.
+    """
     return list_interests()
 
-def add_new_interest(tag: str) -> Dict:
-    return create_interest(validate_tags([tag])[0])
+def fetch_interest_by_id(interest_id):
+    """
+    Obtiene un interés por su ID.
 
-def add_multiple_interests(tags: List[str]) -> List[Dict]:
-    return add_interests(validate_tags(tags))
+    Args:
+        interest_id (int): ID del interés.
 
-def remove_interests_by_ids(interest_ids: List[int]) -> str:
-    if not interest_ids:
-        raise ValueError("No interest IDs provided.")
+    Returns:
+        dict: Información del interés.
+    """
+    return get_interest_by_id(interest_id)
+
+def bulk_add_interests(tags):
+    """
+    Agrega múltiples intereses a la base de datos.
+
+    Args:
+        tags (list): Lista de nombres de intereses.
+
+    Returns:
+        list: Lista de intereses creados o existentes.
+    """
+    return add_interests(tags)
+
+def bulk_remove_interests(interest_ids):
+    """
+    Elimina múltiples intereses de la base de datos.
+
+    Args:
+        interest_ids (list): Lista de IDs de intereses a eliminar.
+
+    Returns:
+        dict: IDs de los intereses eliminados.
+    """
     return remove_interests(interest_ids)
 
-def assign_interests_to_user(user_id: int, tags: List[str]) -> List[Dict]:
-    user = get_user_by_id(user_id)
-    if not user:
-        raise ValueError("User not found.")
+def update_user_interests_list(user_id, new_interests):
+    """
+    Actualiza los intereses de un usuario.
 
-    cleaned_tags = validate_tags(tags)
-    interests = add_interests(cleaned_tags)
+    Args:
+        user_id (int): ID del usuario.
+        new_interests (list): Lista de nombres de los nuevos intereses.
 
-    query = '''
-        INSERT INTO user_interests (user_id, interest_id)
-        VALUES (%s, %s)
-        ON CONFLICT DO NOTHING
-    '''
-    try:
-        with Database.get_connection() as connection:
-            with connection.cursor() as cursor:
-                for interest in interests:
-                    cursor.execute(query, (user_id, interest['id']))
-                connection.commit()
-        return interests
-    except Exception as e:
-        logging.error(f"Error assigning interests to user {user_id}: {e}")
-        raise Exception("Error assigning interests") from e
-
-def get_user_interests(user_id: int) -> List[Dict]:
-    user = get_user_by_id(user_id)
-    if not user:
-        raise ValueError("User not found.")
-
-    query = '''
-        SELECT i.id, i.tag
-        FROM user_interests ui
-        INNER JOIN interests i ON ui.interest_id = i.id
-        WHERE ui.user_id = %s
-        ORDER BY i.tag ASC
-    '''
-    return execute_query(query, (user_id,), fetchone=False)
-
-def validate_tags(tags: List[str]) -> List[str]:
-    if not tags:
-        raise ValueError("Tags cannot be empty.")
-    cleaned_tags = [tag.strip() for tag in tags if tag.strip()]
-    if not cleaned_tags:
-        raise ValueError("No valid tags provided.")
-    return cleaned_tags
+    Returns:
+        dict: Confirmación de la actualización.
+    """
+    return update_user_interests(user_id, new_interests)
 
