@@ -1,112 +1,113 @@
-from unittest.mock import patch
 import pytest
-from flask import Flask
-from blueprints.notifications import notifications_bp
+from run import app
+from unittest.mock import patch
 
 @pytest.fixture
-def app():
-    """Configura la aplicación Flask para pruebas."""
-    app = Flask(__name__)
-    app.config['TESTING'] = True  # Modo prueba
-    app.register_blueprint(notifications_bp)
-    return app
+def client():
+    """Configura la app en modo testing y crea un cliente de prueba."""
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        with app.app_context():
+            yield client
 
-@pytest.fixture
-def client(app):
-    """Devuelve un cliente de prueba de Flask."""
-    return app.test_client()
+# Test para obtener todas las imágenes del usuario
+@patch('blueprints.pictures.fetch_user_pictures', return_value=[{"id": 1, "image_id": 123, "is_profile": False}])
+def test_get_pictures(mock_fetch_pictures, client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
 
-@pytest.fixture
-def sample_notifications():
-    """Datos simulados de notificaciones."""
-    return [
-        {"id": 1, "type": "message_received", "message": "You have a new message.", "is_read": False},
-        {"id": 2, "type": "liked", "message": "Someone liked your profile.", "is_read": True}
-    ]
-
-@patch('blueprints.notifications.fetch_user_notifications')
-def test_list_notifications(mock_fetch_user_notifications, client, sample_notifications):
-    """Test para listar todas las notificaciones."""
-    mock_fetch_user_notifications.return_value = sample_notifications
-    response = client.get('/notifications/', query_string={"user_id": 1, "limit": 10, "offset": 0})
+    response = client.get('/pictures/')
     assert response.status_code == 200
-    assert response.json == {
+    assert response.get_json() == {
         "success": True,
-        "message": "Notifications fetched successfully",
-        "data": sample_notifications
+        "message": "Pictures fetched successfully.",
+        "data": [{"id": 1, "image_id": 123, "is_profile": False}]
     }
-    mock_fetch_user_notifications.assert_called_once_with(1, 10, 0)
+    mock_fetch_pictures.assert_called_once_with(1)
 
-@patch('blueprints.notifications.fetch_unread_notifications')
-def test_list_unread_notifications(mock_fetch_unread_notifications, client, sample_notifications):
-    """Test para listar las notificaciones no leídas."""
-    mock_fetch_unread_notifications.return_value = [sample_notifications[0]]
-    response = client.get('/notifications/unread', query_string={"user_id": 1})
-    assert response.status_code == 200
-    assert response.json == {
-        "success": True,
-        "message": "Unread notifications fetched successfully",
-        "data": [sample_notifications[0]]
-    }
-    mock_fetch_unread_notifications.assert_called_once_with(1)
+# Test para subir una nueva imagen
+@patch('blueprints.pictures.upload_user_picture', return_value={"id": 2, "user_id": 1, "image_id": 456, "is_profile": False})
+def test_upload_picture(mock_upload_picture, client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
 
-@patch('blueprints.notifications.mark_notification_as_read')
-def test_mark_notification_as_read(mock_mark_as_read, client):
-    """Test para marcar una notificación como leída."""
-    mock_mark_as_read.return_value = {"id": 1, "type": "message_received", "is_read": True}
-    response = client.put('/notifications/1')
-    assert response.status_code == 200
-    assert response.json == {
-        "success": True,
-        "message": "Notification marked as read",
-        "data": {"id": 1, "type": "message_received", "is_read": True}
-    }
-    mock_mark_as_read.assert_called_once_with(1)
-
-@patch('blueprints.notifications.remove_notification')
-def test_delete_notification(mock_remove_notification, client):
-    """Test para eliminar una notificación."""
-    mock_remove_notification.return_value = {"id": 1}
-    response = client.delete('/notifications/1')
-    assert response.status_code == 200
-    assert response.json == {
-        "success": True,
-        "message": "Notification deleted successfully",
-        "data": {"id": 1}
-    }
-    mock_remove_notification.assert_called_once_with(1)
-
-@patch('blueprints.notifications.remove_multiple_notifications')
-def test_delete_notifications_batch(mock_remove_multiple_notifications, client):
-    """Test para eliminar múltiples notificaciones."""
-    mock_remove_multiple_notifications.return_value = [1, 2]
-    payload = {"notification_ids": [1, 2]}
-    response = client.delete('/notifications/batch', json=payload)
-    assert response.status_code == 200
-    assert response.json == {
-        "success": True,
-        "message": "Notifications deleted successfully",
-        "data": {"deleted_ids": [1, 2]}
-    }
-    mock_remove_multiple_notifications.assert_called_once_with([1, 2])
-
-@patch('blueprints.notifications.send_notification')
-def test_send_notification(mock_send_notification, client):
-    """Test para enviar una nueva notificación."""
-    mock_send_notification.return_value = {"id": 3, "type": "liked", "message": "Someone liked your profile."}
-    payload = {
-        "user_id": 1,
-        "type": "liked",
-        "message": "Someone liked your profile."
-    }
-    response = client.post('/notifications/send', json=payload)
+    response = client.post('/pictures/upload', json={"image_id": 456})
     assert response.status_code == 201
-    assert response.json == {
+    assert response.get_json() == {
         "success": True,
-        "message": "Notification sent successfully",
-        "data": {"id": 3, "type": "liked", "message": "Someone liked your profile."}
+        "message": "Picture uploaded successfully.",
+        "data": {"id": 2, "user_id": 1, "image_id": 456, "is_profile": False}
     }
-    mock_send_notification.assert_called_once_with(1, "liked", "Someone liked your profile.")
+    mock_upload_picture.assert_called_once_with(1, 456, False)
+
+# Test para error cuando se intenta subir más de 5 imágenes
+@patch('blueprints.pictures.upload_user_picture', return_value=None)
+def test_upload_picture_max_limit(mock_upload_picture, client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.post('/pictures/upload', json={"image_id": 456})
+    assert response.status_code == 400
+    assert response.get_json() == {
+        "success": False,
+        "message": "User already has 5 pictures."
+    }
+    mock_upload_picture.assert_called_once_with(1, 456, False)
+
+# Test para eliminar una imagen específica
+@patch('blueprints.pictures.remove_user_picture', return_value={"id": 1, "image_id": 123})
+def test_delete_picture(mock_remove_picture, client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.delete('/pictures/1')
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "Picture deleted successfully.",
+        "data": {"id": 1, "image_id": 123}
+    }
+    mock_remove_picture.assert_called_once_with(1, 1)
+
+# Test para establecer una imagen como foto de perfil
+@patch('blueprints.pictures.set_user_profile_picture', return_value={"id": 1, "image_id": 123, "is_profile": True})
+def test_set_profile_picture(mock_set_profile_picture, client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.put('/pictures/set-profile', json={"picture_id": 1})
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "Profile picture updated successfully.",
+        "data": {"id": 1, "image_id": 123, "is_profile": True}
+    }
+    mock_set_profile_picture.assert_called_once_with(1, 1)
+
+# Test para contar el número de imágenes del usuario
+@patch('blueprints.pictures.get_user_picture_count', return_value=3)
+def test_count_pictures(mock_count_pictures, client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.get('/pictures/count')
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "Picture count fetched successfully.",
+        "data": {"count": 3}
+    }
+    mock_count_pictures.assert_called_once_with(1)
+
+# Test cuando el usuario no está logueado
+def test_user_not_logged_in(client):
+    response = client.get('/pictures/')
+    assert response.status_code == 401
+    assert response.get_json() == {
+        "success": False,
+        "message": "User not logged in."
+    }
+
 
 
 
