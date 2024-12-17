@@ -1,95 +1,60 @@
-from unittest.mock import patch
 import pytest
-from flask import Flask
-from blueprints.likes import likes_bp
+from run import app
+from unittest.mock import patch
 
 @pytest.fixture
-def app():
-    app = Flask(__name__)
+def client():
+    """Configura la app en modo testing y crea un cliente de prueba."""
     app.config['TESTING'] = True
-    app.register_blueprint(likes_bp)
-    return app
+    with app.test_client() as client:
+        yield client
 
-@pytest.fixture
-def client(app):
-    return app.test_client()
-
-@pytest.fixture
-def sample_likes():
-    return [{"user_id": 1, "liked_user_id": 2}, {"user_id": 1, "liked_user_id": 3}]
-
-@pytest.fixture
-def sample_matches():
-    return [{"match_id": 2}, {"match_id": 3}]
-
-@patch('manager.likes_manager.send_like')  # Ruta correcta para el mock
-def test_like_user(mock_send_like, client):
-    mock_send_like.return_value = {"liked_user_id": 2, "status": "like_added"}
-    payload = {"user_id": 1}
-    response = client.post('/likes/2', json=payload)
-    assert response.status_code == 201
-    assert response.json == {
-        "message": "User liked successfully",
-        "like_status": {"liked_user_id": 2, "status": "like_added"}
-    }
+# Test para enviar un like
+@patch('blueprints.likes.send_like', return_value={"liked_user_id": 2, "status": "like_added", "match": False})
+def test_send_like(mock_send_like, client):
+    response = client.post('/likes/send', json={"user_id": 1, "liked_user_id": 2})
+    assert response.status_code == 200
+    assert response.get_json() == {"liked_user_id": 2, "status": "like_added", "match": False}
     mock_send_like.assert_called_once_with(1, 2)
 
-@patch('manager.likes_manager.remove_like')  # Ruta correcta para el mock
-def test_unlike_user(mock_remove_like, client):
-    mock_remove_like.return_value = {"liked_user_id": 2, "status": "like_removed"}
-    payload = {"user_id": 1}
-    response = client.delete('/likes/2', json=payload)
+# Test para eliminar un like
+@patch('blueprints.likes.remove_like', return_value={"liked_user_id": 2, "status": "like_removed"})
+def test_remove_like(mock_remove_like, client):
+    response = client.post('/likes/remove', json={"user_id": 1, "liked_user_id": 2})
     assert response.status_code == 200
-    assert response.json == {
-        "message": "Like removed successfully",
-        "like_status": {"liked_user_id": 2, "status": "like_removed"}
-    }
+    assert response.get_json() == {"liked_user_id": 2, "status": "like_removed"}
     mock_remove_like.assert_called_once_with(1, 2)
 
-@patch('manager.likes_manager.fetch_liked_users')  # Ruta correcta para el mock
-def test_get_likes(mock_fetch_liked_users, client):
-    mock_fetch_liked_users.return_value = [2, 3]
-    response = client.get('/likes/', query_string={"user_id": 1})
+# Test para obtener usuarios con likes
+@patch('blueprints.likes.fetch_liked_users', return_value=[2, 3, 4])
+def test_get_liked_users(mock_fetch_liked_users, client):
+    response = client.get('/likes/liked-users/1')
     assert response.status_code == 200
-    assert response.json == {
-        "message": "Fetched 2 liked users.",
-        "likes": [2, 3]
-    }
+    assert response.get_json() == {"liked_users": [2, 3, 4]}
     mock_fetch_liked_users.assert_called_once_with(1)
 
-@patch('manager.likes_manager.fetch_matches')  # Ruta correcta para el mock
+# Test para obtener matches
+@patch('blueprints.likes.fetch_matches', return_value=[2, 5])
 def test_get_matches(mock_fetch_matches, client):
-    mock_fetch_matches.return_value = [2, 3]
-    response = client.get('/likes/matches', query_string={"user_id": 1})
+    response = client.get('/likes/matches/1')
     assert response.status_code == 200
-    assert response.json == {
-        "message": "Fetched 2 matches.",
-        "matches": [2, 3]
-    }
+    assert response.get_json() == {"matches": [2, 5]}
     mock_fetch_matches.assert_called_once_with(1)
 
-# Casos negativos
-def test_like_user_invalid_user_id(client):
-    payload = {"user_id": "invalid"}
-    response = client.post('/likes/2', json=payload)
+# Test para error de validación
+def test_send_like_missing_params(client):
+    response = client.post('/likes/send', json={"user_id": 1})
     assert response.status_code == 400
-    assert response.json == {"error": "Valid user_id is required in the request body"}
+    assert response.get_json() == {"error": "Both user_id and liked_user_id are required."}
 
-def test_unlike_user_invalid_user_id(client):
-    payload = {"user_id": "invalid"}
-    response = client.delete('/likes/2', json=payload)
-    assert response.status_code == 400
-    assert response.json == {"error": "Valid user_id is required in the request body"}
+# Test para manejar errores inesperados
+@patch('blueprints.likes.send_like', side_effect=Exception("Unexpected Error"))
+def test_send_like_unexpected_error(mock_send_like, client):
+    response = client.post('/likes/send', json={"user_id": 1, "liked_user_id": 2})
+    assert response.status_code == 500
+    assert response.get_json() == {"error": "An unexpected error occurred."}
 
-def test_get_likes_missing_user_id(client):
-    response = client.get('/likes/')
-    assert response.status_code == 400
-    assert response.json == {"error": "Valid user_id is required as a query parameter"}
 
-def test_get_matches_missing_user_id(client):
-    response = client.get('/likes/matches')
-    assert response.status_code == 400
-    assert response.json == {"error": "Valid user_id is required as a query parameter"}
 
 
 

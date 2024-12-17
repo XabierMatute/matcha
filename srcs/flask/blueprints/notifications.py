@@ -7,6 +7,11 @@ from manager.notifications_manager import (
     remove_multiple_notifications,
     send_notification
 )
+import logging
+
+# Configuración del logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 notifications_bp = Blueprint('notifications', __name__, url_prefix='/notifications')
 
@@ -39,8 +44,10 @@ def list_notifications():
         notifications = fetch_user_notifications(user_id, limit, offset)
         return jsonify(success_response(data=notifications, message="Notifications fetched successfully")), 200
     except ValueError as e:
+        logger.error(f"Validation error: {e}")
         return error_response(str(e))
     except Exception as e:
+        logger.error(f"Failed to fetch notifications: {e}")
         return error_response("Failed to fetch notifications", details=str(e))
 
 @notifications_bp.route('/unread', methods=['GET'])
@@ -51,8 +58,10 @@ def list_unread_notifications():
         notifications = fetch_unread_notifications(user_id)
         return jsonify(success_response(data=notifications, message="Unread notifications fetched successfully")), 200
     except ValueError as e:
+        logger.error(f"Validation error: {e}")
         return error_response(str(e))
     except Exception as e:
+        logger.error(f"Failed to fetch unread notifications: {e}")
         return error_response("Failed to fetch unread notifications", details=str(e))
 
 @notifications_bp.route('/<int:notification_id>', methods=['PUT'])
@@ -65,8 +74,10 @@ def mark_as_read_route(notification_id):
         notification = mark_notification_as_read(notification_id)
         return jsonify(success_response(data=notification, message="Notification marked as read")), 200
     except ValueError as e:
+        logger.error(f"Validation error: {e}")
         return error_response(str(e))
     except Exception as e:
+        logger.error(f"Failed to mark notification as read: {e}")
         return error_response("Failed to mark notification as read", details=str(e))
 
 @notifications_bp.route('/<int:notification_id>', methods=['DELETE'])
@@ -79,8 +90,10 @@ def delete_notification_route(notification_id):
         deleted_notification = remove_notification(notification_id)
         return jsonify(success_response(data=deleted_notification, message="Notification deleted successfully")), 200
     except ValueError as e:
+        logger.error(f"Validation error: {e}")
         return error_response(str(e))
     except Exception as e:
+        logger.error(f"Failed to delete notification: {e}")
         return error_response("Failed to delete notification", details=str(e))
 
 @notifications_bp.route('/batch', methods=['DELETE'])
@@ -96,8 +109,10 @@ def delete_notifications_batch():
         deleted_notifications = remove_multiple_notifications(notification_ids)
         return jsonify(success_response(data={"deleted_ids": deleted_notifications}, message="Notifications deleted successfully")), 200
     except ValueError as e:
+        logger.error(f"Validation error: {e}")
         return error_response(str(e))
     except Exception as e:
+        logger.error(f"Failed to delete notifications: {e}")
         return error_response("Failed to delete notifications", details=str(e))
 
 @notifications_bp.route('/send', methods=['POST'])
@@ -115,8 +130,10 @@ def send_notification_route():
         notification = send_notification(user_id, notification_type, message)
         return jsonify(success_response(data=notification, message="Notification sent successfully")), 201
     except ValueError as e:
+        logger.error(f"Validation error: {e}")
         return error_response(str(e))
     except Exception as e:
+        logger.error(f"Failed to send notification: {e}")
         return error_response("Failed to send notification", details=str(e))
 
 

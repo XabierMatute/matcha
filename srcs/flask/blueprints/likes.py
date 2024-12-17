@@ -1,81 +1,106 @@
 from flask import Blueprint, request, jsonify
 from manager.likes_manager import send_like, remove_like, fetch_liked_users, fetch_matches
+import logging
 
+# Configuración del logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Crear Blueprint para likes
 likes_bp = Blueprint('likes', __name__, url_prefix='/likes')
 
+@likes_bp.route('/send', methods=['POST'])
+def send_like_route():
+    """
+    Endpoint para enviar un 'like' de un usuario a otro.
+    
+    JSON Payload:
+        - user_id (int): ID del usuario que da el 'like'.
+        - liked_user_id (int): ID del usuario que recibe el 'like'.
 
-@likes_bp.route('/<int:liked_user_id>', methods=['POST'])
-def like(liked_user_id):
-    """Da 'like' a un usuario."""
-    user_id = request.json.get('user_id')
-    if not user_id or not isinstance(user_id, int):
-        return jsonify({"error": "Valid user_id is required in the request body"}), 400
-
-    try:
-        result = send_like(user_id, liked_user_id)
-        return jsonify({
-            "message": "User liked successfully",
-            "like_status": result
-        }), 201
-    except ValueError as ve:
-        return jsonify({"error": str(ve)}), 400
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
-
-@likes_bp.route('/<int:liked_user_id>', methods=['DELETE'])
-def unlike(liked_user_id):
-    """Elimina el 'like' a un usuario."""
-    user_id = request.json.get('user_id')
-    if not user_id or not isinstance(user_id, int):
-        return jsonify({"error": "Valid user_id is required in the request body"}), 400
+    Returns:
+        JSON: Resultado del 'like', incluyendo si hubo un 'match'.
+    """
+    data = request.get_json()
+    if not data or 'user_id' not in data or 'liked_user_id' not in data:
+        return jsonify({"error": "Both user_id and liked_user_id are required."}), 400
 
     try:
-        result = remove_like(user_id, liked_user_id)
-        return jsonify({
-            "message": "Like removed successfully",
-            "like_status": result
-        }), 200
+        result = send_like(data['user_id'], data['liked_user_id'])
+        return jsonify(result), 200
     except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        logger.error(f"Unexpected error: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
 
+@likes_bp.route('/remove', methods=['POST'])
+def remove_like_route():
+    """
+    Endpoint para eliminar un 'like' entre usuarios.
+    
+    JSON Payload:
+        - user_id (int): ID del usuario que elimina el 'like'.
+        - liked_user_id (int): ID del usuario que recibió el 'like'.
 
-@likes_bp.route('/', methods=['GET'])
-def get_likes():
-    """Obtiene la lista de usuarios a los que el usuario ha dado 'like'."""
-    user_id = request.args.get('user_id', type=int)
-    if not user_id:
-        return jsonify({"error": "Valid user_id is required as a query parameter"}), 400
+    Returns:
+        JSON: Resultado de la eliminación del 'like'.
+    """
+    data = request.get_json()
+    if not data or 'user_id' not in data or 'liked_user_id' not in data:
+        return jsonify({"error": "Both user_id and liked_user_id are required."}), 400
 
     try:
-        likes = fetch_liked_users(user_id)
-        return jsonify({
-            "message": f"Fetched {len(likes)} liked users.",
-            "likes": likes
-        }), 200
+        result = remove_like(data['user_id'], data['liked_user_id'])
+        return jsonify(result), 200
     except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        logger.error(f"Unexpected error: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
 
+@likes_bp.route('/liked-users/<int:user_id>', methods=['GET'])
+def get_liked_users_route(user_id):
+    """
+    Endpoint para obtener los usuarios a los que un usuario ha dado 'like'.
 
-@likes_bp.route('/matches', methods=['GET'])
-def get_matches():
-    """Obtiene la lista de usuarios con los que el usuario tiene un 'match'."""
-    user_id = request.args.get('user_id', type=int)
-    if not user_id:
-        return jsonify({"error": "Valid user_id is required as a query parameter"}), 400
+    Args:
+        user_id (int): ID del usuario que realiza la consulta.
 
+    Returns:
+        JSON: Lista de IDs de usuarios que recibieron un 'like'.
+    """
+    try:
+        liked_users = fetch_liked_users(user_id)
+        return jsonify({"liked_users": liked_users}), 200
+    except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
+@likes_bp.route('/matches/<int:user_id>', methods=['GET'])
+def get_matches_route(user_id):
+    """
+    Endpoint para obtener los 'matches' de un usuario.
+
+    Args:
+        user_id (int): ID del usuario que realiza la consulta.
+
+    Returns:
+        JSON: Lista de IDs de usuarios con los que hay un 'match'.
+    """
     try:
         matches = fetch_matches(user_id)
-        return jsonify({
-            "message": f"Fetched {len(matches)} matches.",
-            "matches": matches
-        }), 200
+        return jsonify({"matches": matches}), 200
     except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        logger.error(f"Unexpected error: {e}")
+        return jsonify({"error": "An unexpected error occurred."}), 500
+
 
