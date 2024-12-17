@@ -1,83 +1,72 @@
 import logging
-from typing import Optional, Dict
-
+from typing import Optional, Dict, Any
 from .database import Database
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Get user by ID
-def get_user_by_id(user_id: int) -> Optional[Dict]:
-    """Gets a user by their ID."""
-    logging.info(f"Fetching user with ID {user_id}")
+def get_user_by_id(user_id: int) -> Optional[Dict[str, Any]]:
+    """Obtiene un usuario por su ID."""
+    if not isinstance(user_id, int) or user_id <= 0:
+        raise ValueError("User ID must be a positive integer.")
+    
+    logger.info(f"Fetching user with ID {user_id}")
     query = "SELECT * FROM users WHERE id = %s"
-    user = Database.execute_query(query, (user_id,))
-    if not user:
-        logging.info(f"User with ID {user_id} not found.")
-    return user
+    return Database.execute_query(query, (user_id,))
 
-# Get user by username
-def get_user_by_username(username: str) -> Optional[Dict]:
-    """Gets a user by their username."""
-    logging.info(f"Fetching user with username {username}")
+def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
+    """Obtiene un usuario por su nombre de usuario."""
+    if not username.strip():
+        raise ValueError("Username cannot be empty.")
+    
+    logger.info(f"Fetching user with username {username}")
     query = "SELECT * FROM users WHERE username = %s"
-    user = Database.execute_query(query, (username,))
-    if not user:
-        logging.info(f"User with username {username} not found.")
-    return user
+    return Database.execute_query(query, (username,))
 
-# Get user by email
-def get_user_by_email(email: str) -> Optional[Dict]:
-    """Gets a user by their email."""
-    logging.info(f"Fetching user with email {email}")
+def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
+    """Obtiene un usuario por su email."""
+    if not email.strip():
+        raise ValueError("Email cannot be empty.")
+    
+    logger.info(f"Fetching user with email {email}")
     query = "SELECT * FROM users WHERE email = %s"
-    user = Database.execute_query(query, (email,))
-    if not user:
-        logging.info(f"User with email {email} not found.")
-    return user
+    return Database.execute_query(query, (email,))
 
-# Validate user by email
-def validate_user(email: str) -> Optional[Dict]:
-    """Validates a user by their email."""
-    logging.info(f"Validating user with email {email}")
+def validate_user(email: str) -> Dict[str, Any]:
+    """Valida y verifica un usuario por su email."""
+    logger.info(f"Validating user with email {email}")
     user = get_user_by_email(email)
     if not user:
-        logging.error(f"No user with email {email} found.")
-        raise ValueError(f"No user with email {email} found.")
+        logger.error(f"No user found with email {email}")
+        raise ValueError("No user with this email exists.")
+    
     query = "UPDATE users SET is_verified = TRUE WHERE email = %s RETURNING id, username, email, first_name, last_name"
     return Database.execute_query(query, (email,))
 
-# Create a new user
-def create_user(username: str, email: str, password_hash: str, 
-                first_name: Optional[str] = None, last_name: Optional[str] = None) -> Dict:
-    """Creates a new user."""
-    logging.info(f"Creating user with username {username} and email {email}")
-    # Check if the username or email already exists
+def create_user(username: str, email: str, password_hash: str, first_name: Optional[str] = None, last_name: Optional[str] = None) -> Dict[str, Any]:
+    """Crea un nuevo usuario."""
+    logger.info(f"Creating user with username '{username}' and email '{email}'")
+
     if get_user_by_username(username):
-        logging.error(f"Username {username} already exists.")
+        logger.error(f"Username '{username}' already exists.")
         raise ValueError("Username already exists.")
     if get_user_by_email(email):
-        logging.error(f"Email {email} already in use.")
-        raise ValueError("Email already in use.") #TODO: make unverified accounts expire?? or something like that so someone can't compromise someone else's email
-    if Database.execute_query("SELECT * FROM users WHERE email = %s", (email,)):
-        logging.error(f"Email {email} already exists.")
+        logger.error(f"Email '{email}' already exists.")
         raise ValueError("Email already exists.")
-
+    
     query = '''
         INSERT INTO users (username, email, password_hash, first_name, last_name)
         VALUES (%s, %s, %s, %s, %s)
         RETURNING id, username, email, first_name, last_name
     '''
-
     return Database.execute_query(query, (username, email, password_hash, first_name, last_name))
 
-# Update user data
-def update_user(user_id: int, username: Optional[str] = None, email: Optional[str] = None, 
-                first_name: Optional[str] = None, last_name: Optional[str] = None) -> Optional[Dict]:
-    """Updates user data."""
-    logging.info(f"Updating user with ID {user_id}")
-    existing_user = get_user_by_id(user_id)
-    if not existing_user:
-        logging.error(f"User ID {user_id} does not exist.")
+def update_user(user_id: int, username: Optional[str] = None, email: Optional[str] = None,
+                first_name: Optional[str] = None, last_name: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Actualiza los datos de un usuario."""
+    logger.info(f"Updating user with ID {user_id}")
+    if not get_user_by_id(user_id):
+        logger.error(f"User ID {user_id} does not exist.")
         raise ValueError("User ID does not exist.")
 
     updates = []
@@ -97,7 +86,6 @@ def update_user(user_id: int, username: Optional[str] = None, email: Optional[st
         params.append(last_name)
 
     if not updates:
-        logging.error("No fields provided to update.")
         raise ValueError("No fields provided to update.")
 
     query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s RETURNING id, username, email, first_name, last_name"
@@ -105,13 +93,11 @@ def update_user(user_id: int, username: Optional[str] = None, email: Optional[st
 
     return Database.execute_query(query, tuple(params))
 
-# Delete a user
-def delete_user(user_id: int) -> Optional[Dict]:
-    """Deletes a user by their ID."""
-    logging.info(f"Deleting user with ID {user_id}")
-    existing_user = get_user_by_id(user_id)
-    if not existing_user:
-        logging.error(f"User ID {user_id} does not exist.")
+def delete_user(user_id: int) -> Optional[Dict[str, Any]]:
+    """Elimina un usuario por su ID."""
+    logger.info(f"Deleting user with ID {user_id}")
+    if not get_user_by_id(user_id):
+        logger.error(f"User ID {user_id} does not exist.")
         raise ValueError("User ID does not exist.")
 
     query = "DELETE FROM users WHERE id = %s RETURNING id"
