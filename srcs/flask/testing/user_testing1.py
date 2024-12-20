@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/09 18:00:03 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/12 16:45:26 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/19 18:56:38 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -391,3 +391,13 @@ def generate_example_data():
 @test_user_bp.route('/login', methods=['GET'])
 def login_form():
     return render_template('login_test.html')
+
+from flask import session
+
+@test_user_bp.route('/get_session', methods=['GET'])
+def get_session():
+    return jsonify(session)
+
+@test_user_bp.route('/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
+def AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA():
+    return jsonify(session['logged_in'])
