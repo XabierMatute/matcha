@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:26:45 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/12 15:27:44 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/20 10:48:54 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,3 +47,7 @@ class MailConfig:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
     config = {'MAIL_SERVER': MAIL_SERVER, 'MAIL_PORT': MAIL_PORT, 'MAIL_USE_TLS': MAIL_USE_TLS, 'MAIL_USERNAME': MAIL_USERNAME, 'MAIL_PASSWORD': MAIL_PASSWORD, 'MAIL_DEFAULT_SENDER': MAIL_DEFAULT_SENDER}
+
+class CookieConfig:
+    DEBUG = DEBUG
+    TESTING = True
