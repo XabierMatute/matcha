@@ -1,114 +1,83 @@
 import pytest
+from run import app
 from unittest.mock import patch
-from flask import Flask
-from blueprints.pictures import pictures_bp
 
 @pytest.fixture
-def app():
-    """Crea una aplicación Flask para las pruebas."""
-    app = Flask(__name__)
-    app.register_blueprint(pictures_bp)
-    return app
+def client():
+    """Configura la app en modo testing y crea un cliente de prueba."""
+    app.config['TESTING'] = True
+    app.config['SECRET_KEY'] = 'test_secret'  # Necesario para manejar la sesión
+    with app.test_client() as client:
+        with app.app_context():
+            yield client
 
-@pytest.fixture
-def client(app):
-    """Crea un cliente de pruebas."""
-    return app.test_client()
+# Test para obtener todas las imágenes del usuario
+@patch('blueprints.pictures.fetch_user_pictures')
+def test_get_pictures_success(mock_fetch_user_pictures, client):
+    mock_fetch_user_pictures.return_value = [{"id": 1, "image_id": 123, "is_profile": False}]
+    with client.session_transaction() as session:
+        session['user_id'] = 1  # Simula un usuario logueado
 
-@pytest.fixture
-def valid_picture_data():
-    """Fixture para datos válidos de imagen."""
-    return {
-        "user_id": 1,
-        "image_id": "image3.jpg",
-        "is_profile": True
-    }
-
-@pytest.fixture
-def valid_profile_data():
-    """Fixture para datos válidos de foto de perfil."""
-    return {
-        "user_id": 1,
-        "picture_id": 2
-    }
-
-@patch('manager.pictures_manager.fetch_user_pictures')
-def test_get_pictures(mock_fetch_user_pictures, client):
-    """Prueba el endpoint para obtener todas las fotos de un usuario."""
-    mock_fetch_user_pictures.return_value = {
-        "success": True,
-        "data": [
-            {"id": 1, "image_id": "image1.jpg", "is_profile": False, "created_at": "2024-01-01T12:00:00"},
-            {"id": 2, "image_id": "image2.jpg", "is_profile": True, "created_at": "2024-01-02T12:00:00"}
-        ],
-        "message": "Fetched pictures successfully."
-    }
-
-    response = client.get('/pictures/1')
+    response = client.get('/pictures/')
     assert response.status_code == 200
-    assert response.json == mock_fetch_user_pictures.return_value
+    assert response.get_json() == {
+        "success": True,
+        "message": "Pictures fetched successfully.",
+        "data": [{"id": 1, "image_id": 123, "is_profile": False}]
+    }
     mock_fetch_user_pictures.assert_called_once_with(1)
 
-@patch('manager.pictures_manager.upload_picture')
-def test_upload_picture(mock_upload_picture, client, valid_picture_data):
-    """Prueba el endpoint para subir una foto."""
-    mock_upload_picture.return_value = {
-        "success": True,
-        "data": {
-            "id": 3,
-            "user_id": 1,
-            "image_id": "image3.jpg",
-            "is_profile": True,
-            "created_at": "2024-01-03T12:00:00"
-        },
-        "message": "Picture uploaded successfully."
-    }
+# Test para subir una nueva imagen
+@patch('blueprints.pictures.upload_user_picture')
+def test_upload_picture_success(mock_upload_picture, client):
+    mock_upload_picture.return_value = {"id": 2, "user_id": 1, "image_id": 456, "is_profile": False}
+    with client.session_transaction() as session:
+        session['user_id'] = 1  # Simula un usuario logueado
 
-    response = client.post('/pictures/upload', json=valid_picture_data)
+    response = client.post('/pictures/upload', json={"image_id": 456, "is_profile": False})
     assert response.status_code == 201
-    assert response.json == mock_upload_picture.return_value
-    mock_upload_picture.assert_called_once_with(1, "image3.jpg", True)
-
-@patch('manager.pictures_manager.upload_picture')
-def test_upload_picture_invalid_data(mock_upload_picture, client):
-    """Prueba error al subir una foto con datos incompletos."""
-    response = client.post('/pictures/upload', json={"user_id": 1})
-    assert response.status_code == 400
-    assert response.json["success"] is False
-    assert "is required" in response.json["message"]
-    mock_upload_picture.assert_not_called()
-
-@patch('manager.pictures_manager.remove_picture')
-def test_delete_picture(mock_remove_picture, client):
-    """Prueba el endpoint para eliminar una foto."""
-    mock_remove_picture.return_value = {
+    assert response.get_json() == {
         "success": True,
-        "data": {"id": 1, "image_id": "image1.jpg"},
-        "message": "Picture removed successfully."
+        "message": "Picture uploaded successfully.",
+        "data": {"id": 2, "user_id": 1, "image_id": 456, "is_profile": False}
     }
+    mock_upload_picture.assert_called_once_with(1, 456, False)
 
-    response = client.delete('/pictures/1/1')
+# Test para eliminar una imagen específica
+@patch('blueprints.pictures.remove_user_picture')
+def test_delete_picture_success(mock_remove_user_picture, client):
+    mock_remove_user_picture.return_value = {"id": 1, "image_id": 123}
+    with client.session_transaction() as session:
+        session['user_id'] = 1  # Simula un usuario logueado
+
+    response = client.delete('/pictures/1')
     assert response.status_code == 200
-    assert response.json == mock_remove_picture.return_value
-    mock_remove_picture.assert_called_once_with(1, 1)
-
-@patch('manager.pictures_manager.change_profile_picture')
-def test_set_profile_picture(mock_change_profile_picture, client, valid_profile_data):
-    """Prueba el endpoint para establecer una foto como foto de perfil."""
-    mock_change_profile_picture.return_value = {
+    assert response.get_json() == {
         "success": True,
-        "data": {
-            "id": 2,
-            "image_id": "image2.jpg",
-            "is_profile": True
-        },
-        "message": "Profile picture updated successfully."
+        "message": "Picture deleted successfully.",
+        "data": {"id": 1, "image_id": 123}
     }
+    mock_remove_user_picture.assert_called_once_with(1, 1)
 
-    response = client.put('/pictures/set-profile', json=valid_profile_data)
+# Test para establecer una imagen como foto de perfil
+@patch('blueprints.pictures.set_user_profile_picture')
+def test_set_profile_picture_success(mock_set_profile_picture, client):
+    mock_set_profile_picture.return_value = {"id": 1, "image_id": 123, "is_profile": True}
+    with client.session_transaction() as session:
+        session['user_id'] = 1  # Simula un usuario logueado
+
+    response = client.put('/pictures/set-profile', json={"picture_id": 1})
     assert response.status_code == 200
-    assert response.json == mock_change_profile_picture.return_value
-    mock_change_profile_picture.assert_called_once_with(1, 2)
+    assert response.get_json() == {
+        "success": True,
+        "message": "Profile picture updated successfully.",
+        "data": {"id": 1, "image_id": 123, "is_profile": True}
+    }
+    mock_set_profile_picture.assert_called_once_with(1, 1)
+
+
+
+
 
 
 

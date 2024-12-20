@@ -1,80 +1,185 @@
 import logging
 from models.user_model import (
-    create_user,
     get_user_by_id,
     get_user_by_username,
+    get_user_by_email,
+    validate_user,
+    create_user,
     update_user,
     delete_user
 )
-from werkzeug.security import generate_password_hash, check_password_hash
-from typing import Dict, Optional
-from config import UserConfig as config
-from email_validator import validate_email, EmailNotValidError
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def register_user(data: Dict) -> Dict:
+def fetch_user_by_id(user_id, require_verified=False):
     """
-    Registers a new user in the system.
-    
+    Obtiene un usuario por su ID.
+
     Args:
-        data (Dict): Dictionary with fields 'username', 'email', 'password',
-                     'birthdate', 'first_name', and 'last_name'.
-                     
+        user_id (int): ID del usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
+
     Returns:
-        Dict: Registered user data.
-        
+        dict: Información del usuario.
+
     Raises:
-        ValueError: If any required field is missing or the email/username already exists.
+        ValueError: Si el usuario no está verificado y se requiere verificación.
     """
-    logger.info("Registering user with data: %s", data)
-    required_fields = ['username', 'email', 'password']
-    for field in required_fields:
-        if field not in data:
-            logger.error("Missing required field: %s", field)
-            raise ValueError(f"Missing required field: {field}")
-
-    # Additional validations
-    # username
-    username = data['username']
-    if not username:
-        logger.error("No username provided.")
-        raise ValueError("No username provided.")
-    for i in username:
-        if not i.isalnum() and i != "_":
-            logger.error("Invalid username: %s", username)
-            raise ValueError("Username must contain only letters, numbers, and underscores.")
-    if len(username) < config.USERNAME_MIN_LENGTH:
-        logger.error("Username too short: %s", username)
-        raise ValueError(f"Username must be at least {config.USERNAME_MIN_LENGTH} characters long.")
-
-    # email
-    if not data['email']:
-        logger.error("No email provided.")
-        raise ValueError("No email provided.")
-    mail = data['email']
-
     try:
-        # validate and get info
-        v = validate_email(mail)
-        mail = v["email"]  # replace with normalized form
-    except EmailNotValidError as e:
-        # email is not valid, exception message is human-readable
-        logger.error("Invalid email: %s", mail)
-        if config.DEBUG:
-            logger.debug("Ignoring: %s", str(e))
-        else:
-            raise ValueError(f"Invalid email: {str(e)}")
+        user = get_user_by_id(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found.")
+        if require_verified and not user.get('is_verified', False):
+            raise ValueError(f"User with ID {user_id} is not verified.")
+        return user
+    except Exception as e:
+        logger.error(f"Error fetching user by ID {user_id}: {e}")
+        raise
 
-    if not data['password']:
-        logger.error("No password provided.")
-        raise ValueError("No password provided.")
-    password = data['password']
-    if len(password) < config.PASSWORD_MIN_LENGTH:
-        logger.error("Password too short.")
-        raise ValueError(f"Password must be at least {config.PASSWORD_MIN_LENGTH} characters long.")
+def fetch_user_by_username(username, require_verified=False):
+    """
+    Obtiene un usuario por su nombre de usuario.
+
+    Args:
+        username (str): Nombre del usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
+
+    Returns:
+        dict: Información del usuario.
+
+    Raises:
+        ValueError: Si el usuario no está verificado y se requiere verificación.
+    """
+    try:
+        user = get_user_by_username(username)
+        if not user:
+            raise ValueError(f"User '{username}' not found.")
+        if require_verified and not user.get('is_verified', False):
+            raise ValueError(f"User '{username}' is not verified.")
+        return user
+    except Exception as e:
+        logger.error(f"Error fetching user by username '{username}': {e}")
+        raise
+
+def fetch_user_by_email(email, require_verified=False):
+    """
+    Obtiene un usuario por su email.
+
+    Args:
+        email (str): Email del usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
+
+    Returns:
+        dict: Información del usuario.
+
+    Raises:
+        ValueError: Si el usuario no está verificado y se requiere verificación.
+    """
+    try:
+        user = get_user_by_email(email)
+        if not user:
+            raise ValueError(f"User with email '{email}' not found.")
+        if require_verified and not user.get('is_verified', False):
+            raise ValueError(f"User with email '{email}' is not verified.")
+        return user
+    except Exception as e:
+        logger.error(f"Error fetching user by email '{email}': {e}")
+        raise
+
+def verify_user(email):
+    """
+    Verifica un usuario por su email.
+
+    Args:
+        email (str): Email del usuario.
+
+    Returns:
+        dict: Información del usuario verificado.
+    """
+    try:
+        return validate_user(email)
+    except Exception as e:
+        logger.error(f"Error verifying user by email '{email}': {e}")
+        raise
+
+def register_new_user(username, email, password_hash, first_name=None, last_name=None):
+    """
+    Crea un nuevo usuario.
+
+    Args:
+        username (str): Nombre de usuario.
+        email (str): Email del usuario.
+        password_hash (str): Hash de la contraseña.
+        first_name (str, optional): Nombre del usuario.
+        last_name (str, optional): Apellido del usuario.
+
+    Returns:
+        dict: Información del usuario creado.
+    """
+    try:
+        return create_user(username, email, password_hash, first_name, last_name)
+    except Exception as e:
+        logger.error(f"Error registering user '{username}' with email '{email}': {e}")
+        raise
+
+def modify_user(user_id, username=None, email=None, first_name=None, last_name=None):
+    """
+    Actualiza los datos de un usuario.
+
+    Args:
+        user_id (int): ID del usuario.
+        username (str, optional): Nuevo nombre de usuario.
+        email (str, optional): Nuevo email del usuario.
+        first_name (str, optional): Nuevo nombre.
+        last_name (str, optional): Nuevo apellido.
+
+    Returns:
+        dict: Información del usuario actualizado.
+    """
+    try:
+        return update_user(user_id, username, email, first_name, last_name)
+    except Exception as e:
+        logger.error(f"Error updating user with ID {user_id}: {e}")
+        raise
+
+def remove_user(user_id):
+    """
+    Elimina un usuario por su ID.
+
+    Args:
+        user_id (int): ID del usuario.
+
+    Returns:
+        dict: Información del usuario eliminado.
+    """
+    try:
+        return delete_user(user_id)
+    except Exception as e:
+        logger.error(f"Error deleting user with ID {user_id}: {e}")
+        raise
+
+def get_user_details(user_identifier, require_verified=False):
+    """
+    Obtiene los detalles de un usuario por ID o nombre de usuario.
+
+    Args:
+        user_identifier (int | str): ID del usuario o nombre de usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
+
+    Returns:
+        dict: Información del usuario.
+    """
+    try:
+        if isinstance(user_identifier, int):
+            return fetch_user_by_id(user_identifier, require_verified=require_verified)
+        elif isinstance(user_identifier, str):
+            return fetch_user_by_username(user_identifier, require_verified=require_verified)
+        else:
+            raise ValueError("Invalid user identifier. Must be an integer (ID) or string (username).")
+    except Exception as e:
+        logger.error(f"Error fetching user details for '{user_identifier}': {e}")
+        raise
 
     # Create password hash
     password_hash = generate_password_hash(data['password'])

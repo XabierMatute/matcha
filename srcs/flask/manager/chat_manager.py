@@ -12,8 +12,8 @@ def send_message(sender_id, receiver_id, message):
     Returns:
         dict: Detalles del mensaje guardado.
     """
-    if not sender_id or not receiver_id or not message.strip():
-        raise ValueError("Sender ID, Receiver ID, and Message are required.")
+    if not sender_id or not receiver_id or not message or not isinstance(message, str) or not message.strip():
+        raise ValueError("Sender ID, Receiver ID, and Message are required and Message must be a non-empty string.")
 
     try:
         saved_message = save_message(sender_id, receiver_id, message.strip())
@@ -51,6 +51,7 @@ def fetch_chat_history(user1_id, user2_id):
         raise ValueError(f"Validation error: {str(ve)}")
     except Exception as e:
         raise Exception(f"An error occurred while fetching the chat history: {str(e)}")
+
 
 
 

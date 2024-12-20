@@ -1,10 +1,11 @@
 import logging
-import psycopg
-from psycopg.rows import dict_row  # Opcional: para trabajar con resultados como diccionarios
+import psycopg2
+from psycopg2.extras import execute_values, DictCursor
 from config import DatabaseConfig as Config
 from typing import Tuple, Optional, Dict, Any, Union, List
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Database:
@@ -25,20 +26,20 @@ class Database:
             Database.validate_config()
 
             if Config.DEBUG:
-                logging.debug(
+                logger.debug(
                     f"Connecting to database {Config.POSTGRES_DB} as {Config.POSTGRES_USER} at {Config.POSTGRES_HOST}"
                 )
 
-            return psycopg.connect(
+            return psycopg2.connect(
                 dbname=Config.POSTGRES_DB,
                 user=Config.POSTGRES_USER,
                 password=Config.POSTGRES_PASSWORD,
                 host=Config.POSTGRES_HOST,
-                row_factory=dict_row,  # Opcional: devuelve resultados como diccionarios
+                cursor_factory=DictCursor  # Devuelve resultados como diccionarios
             )
 
-        except (psycopg.Error, ValueError) as e:
-            logging.error(f"Error connecting to the database: {e}")
+        except (psycopg2.Error, ValueError) as e:
+            logger.error(f"Error connecting to the database: {e}")
             raise Exception(f"Database connection failed: {e}") from e
 
     @staticmethod
@@ -49,7 +50,7 @@ class Database:
     ) -> Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]:
         """
         Ejecuta una consulta en la base de datos y maneja el cursor.
-        
+
         Args:
             query (str): Consulta SQL a ejecutar.
             params (Tuple | List): Parámetros para la consulta SQL.
@@ -62,11 +63,11 @@ class Database:
             with Database.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(query, params)
-                    if cursor.description:  # Solo intenta obtener resultados si la consulta los devuelve.
+                    if cursor.description:  # Solo intenta obtener resultados si la consulta devuelve algo
                         return cursor.fetchone() if fetchone else cursor.fetchall()
                     connection.commit()  # Confirma transacción en INSERT, UPDATE o DELETE.
         except Exception as e:
-            logging.error(f"Error executing query: {query}, params: {params}, error: {e}")
+            logger.error(f"Error executing query: {query}, params: {params}, error: {e}")
             raise Exception("Database query error") from e
 
     @staticmethod
@@ -154,9 +155,9 @@ class Database:
                     for query in queries:
                         cursor.execute(query)
                     connection.commit()
-                    logging.info("Tables created successfully.")
-        except psycopg.Error as e:
-            logging.error(f"Error during table creation: {e}")
+                    logger.info("Tables created successfully.")
+        except psycopg2.Error as e:
+            logger.error(f"Error during table creation: {e}")
             raise Exception("Error creating tables") from e
 
 
@@ -164,9 +165,10 @@ class Database:
 if __name__ == "__main__":
     try:
         Database.create_tables()
-        logging.info("Database setup completed.")
+        logger.info("Database setup completed.")
     except Exception as e:
-        logging.error(f"Database setup failed: {e}")
+        logger.error(f"Database setup failed: {e}")
+
 
 
 

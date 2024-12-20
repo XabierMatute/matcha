@@ -1,82 +1,167 @@
 import pytest
-from flask import Flask
-from flask.testing import FlaskClient
-from blueprints.profile import profile_bp
+from run import app
+from unittest.mock import patch
 
-# Configuración básica de prueba para Flask
 @pytest.fixture
-def app():
-    app = Flask(__name__)
+def client():
+    """Configura la app en modo testing y crea un cliente de prueba."""
     app.config['TESTING'] = True
-    app.register_blueprint(profile_bp)
-    return app
+    app.config['SECRET_KEY'] = 'test_secret'
+    app.config['SESSION_TYPE'] = 'filesystem'  # Configuración adicional para sesiones
+    with app.test_client() as client:
+        yield client
 
-@pytest.fixture
-def client(app) -> FlaskClient:
-    return app.test_client()
+# Test para obtener detalles de un usuario por ID
+@patch('blueprints.users.get_user_details')
+def test_get_user_details_by_id(mock_get_user_details, client):
+    mock_get_user_details.return_value = {"id": 1, "username": "testuser", "email": "test@example.com"}
 
-@pytest.fixture
-def authenticated_user(monkeypatch):
-    monkeypatch.setattr('flask.session', {'user_id': 1})  # Simula un usuario autenticado
-
-# Test: Obtener el perfil del usuario autenticado
-def test_get_my_profile(client, monkeypatch):
-    def mock_get_user_profile(user_id):
-        return {"id": 1, "username": "test_user", "biography": "Hello, world!"}
-    monkeypatch.setattr('manager.profile_manager.get_user_profile', mock_get_user_profile)
-
-    response = client.get('/profile/')
+    response = client.get('/users/details?user_id=1')
     assert response.status_code == 200
-    assert response.json['username'] == "test_user"
+    assert response.get_json() == {
+        "success": True,
+        "message": "User details fetched successfully.",
+        "data": {"id": 1, "username": "testuser", "email": "test@example.com"}
+    }
+    mock_get_user_details.assert_called_once_with(1, require_verified=True)
 
-# Test: Actualizar el perfil básico
-def test_update_my_profile(client, monkeypatch):
-    def mock_update_user_profile(user_id, data):
-        return {"id": 1, "biography": data.get("biography", "Default bio")}
-    monkeypatch.setattr('manager.profile_manager.update_user_profile', mock_update_user_profile)
+# Test para obtener detalles de un usuario por username
+@patch('blueprints.users.get_user_details')
+def test_get_user_details_by_username(mock_get_user_details, client):
+    mock_get_user_details.return_value = {"id": 2, "username": "john_doe", "email": "john@example.com"}
 
-    response = client.post('/profile/update', json={"biography": "New bio"})
+    response = client.get('/users/details?username=john_doe')
     assert response.status_code == 200
-    assert response.json['biography'] == "New bio"
+    assert response.get_json() == {
+        "success": True,
+        "message": "User details fetched successfully.",
+        "data": {"id": 2, "username": "john_doe", "email": "john@example.com"}
+    }
+    mock_get_user_details.assert_called_once_with("john_doe", require_verified=True)
 
-# Test: Actualizar la ubicación del usuario
-def test_update_my_location(client, monkeypatch):
-    def mock_update_user_location(user_id, location, latitude, longitude):
-        return {"id": 1, "location": location, "latitude": latitude, "longitude": longitude}
-    monkeypatch.setattr('manager.profile_manager.update_user_location', mock_update_user_location)
+# Test para registrar un nuevo usuario
+@patch('blueprints.users.register_new_user')
+def test_register_user(mock_register_new_user, client):
+    mock_register_new_user.return_value = {"id": 3, "username": "newuser", "email": "new@example.com"}
 
-    response = client.post('/profile/location/update', json={
-        "location": "New York",
-        "latitude": 40.7128,
-        "longitude": -74.0060
+    response = client.post('/users/register', json={
+        "username": "newuser",
+        "email": "new@example.com",
+        "password_hash": "securepassword"
+    })
+    assert response.status_code == 201
+    assert response.get_json() == {
+        "success": True,
+        "message": "User registered successfully.",
+        "data": {"id": 3, "username": "newuser", "email": "new@example.com"}
+    }
+    mock_register_new_user.assert_called_once_with("newuser", "new@example.com", "securepassword", None, None)
+
+# Test para actualizar un usuario
+@patch('blueprints.users.modify_user')
+def test_update_user(mock_modify_user, client):
+    mock_modify_user.return_value = {"id": 1, "username": "updateduser", "email": "updated@example.com"}
+
+    response = client.put('/users/update/1', json={
+        "username": "updateduser",
+        "email": "updated@example.com"
     })
     assert response.status_code == 200
-    assert response.json['location'] == "New York"
+    assert response.get_json() == {
+        "success": True,
+        "message": "User updated successfully.",
+        "data": {"id": 1, "username": "updateduser", "email": "updated@example.com"}
+    }
+    mock_modify_user.assert_called_once_with(1, "updateduser", "updated@example.com", None, None)
 
-# Test: Manejar datos malformados en ubicación
-def test_update_location_invalid_data(client):
-    response = client.post('/profile/location/update', json={
-        "location": "New York"
-    })
+# Test para eliminar un usuario
+@patch('blueprints.users.remove_user')
+def test_delete_user(mock_remove_user, client):
+    mock_remove_user.return_value = {"id": 1}
+
+    response = client.delete('/users/delete/1')
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "User deleted successfully.",
+        "data": {"id": 1}
+    }
+    mock_remove_user.assert_called_once_with(1)
+
+# Test para verificar un usuario por email
+@patch('blueprints.users.verify_user')
+def test_verify_user(mock_verify_user, client):
+    mock_verify_user.return_value = {"id": 1, "username": "verifieduser", "email": "verified@example.com"}
+
+    response = client.post('/users/verify', json={"email": "verified@example.com"})
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "User verified successfully.",
+        "data": {"id": 1, "username": "verifieduser", "email": "verified@example.com"}
+    }
+    mock_verify_user.assert_called_once_with("verified@example.com")
+
+# Test para error si no se proporciona email en verificación
+def test_verify_user_missing_email(client):
+    response = client.post('/users/verify', json={})
     assert response.status_code == 400
-    assert "error" in response.json
+    assert response.get_json() == {
+        "success": False,
+        "message": "Email is required."
+    }
 
-# Test: Obtener intereses del usuario
-def test_get_interests(client, monkeypatch):
-    def mock_get_user_interests(user_id):
-        return ["reading", "coding", "traveling"]
-    monkeypatch.setattr('manager.interests_manager.get_user_interests', mock_get_user_interests)
+# Test para error si no se proporciona ni ID ni username
+def test_get_user_details_missing_params(client):
+    response = client.get('/users/details')
+    assert response.status_code == 400
+    assert response.get_json() == {
+        "success": False,
+        "message": "Either 'user_id' or 'username' must be provided."
+    }
 
-    response = client.get('/profile/interests')
+# Test para actualizar la ubicación manualmente
+@patch('manager.profile_manager.update_user_location')
+def test_set_manual_location(mock_update_user_location, client):
+    mock_update_user_location.return_value = {
+        "location": "Bilbao",
+        "latitude": 43.262,
+        "longitude": -2.935
+    }
+
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.post('/profile/location/manual', json={
+        "location": "Bilbao",
+        "latitude": 43.262,
+        "longitude": -2.935
+    })
     assert response.status_code == 200
-    assert response.json == ["reading", "coding", "traveling"]
+    assert response.get_json() == {
+        "success": True,
+        "message": "Location updated successfully.",
+        "data": {
+            "location": "Bilbao",
+            "latitude": 43.262,
+            "longitude": -2.935
+        }
+    }
+    mock_update_user_location.assert_called_once_with(
+        1, "Bilbao", 43.262, -2.935
+    )
 
-# Test: Actualizar intereses del usuario
-def test_update_interests(client, monkeypatch):
-    def mock_update_user_interests(user_id, interests):
-        return interests
-    monkeypatch.setattr('manager.interests_manager.update_user_interests', mock_update_user_interests)
+# Test para error al actualizar ubicación sin datos
+def test_set_manual_location_missing_data(client):
+    with client.session_transaction() as session:
+        session['user_id'] = 1
 
-    response = client.post('/profile/interests/update', json={"interests": ["gaming", "music"]})
-    assert response.status_code == 200
-    assert response.json == ["gaming", "music"]
+    response = client.post('/profile/location/manual', json={})
+    assert response.status_code == 400
+    assert response.get_json() == {
+        "success": False,
+        "message": "Either location or latitude and longitude must be provided."
+    }
+
+
+

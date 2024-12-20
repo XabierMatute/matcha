@@ -28,18 +28,16 @@ app = Flask(__name__)
 from config import SecretConfig
 app.config.update(SecretConfig.config)
 
-
 from flask_mail import Mail, Message
 
 # Configuración del correo
-
 from config import MailConfig
 mail = None
 if MailConfig.ACTIVE:
     app.config.update(MailConfig.config)
     mail = Mail(app)
-    from blueprints.mail import mail_bp
-    app.register_blueprint(mail_bp)
+    # from blueprints.mail import mail_bp
+    # app.register_blueprint(mail_bp)
 
 from flask import render_template
 
@@ -47,23 +45,21 @@ from flask import render_template
 def example():
     return render_template('example.html')
 
-
-
-
 # Registra todos los blueprints
 app.register_blueprint(users_bp)
 app.register_blueprint(likes_bp)
 app.register_blueprint(notifications_bp)
 app.register_blueprint(interests_bp)
-# app.register_blueprint(chat_bp)
-# app.register_blueprint(profile_bp)
-# app.register_blueprint(pictures_bp)
+app.register_blueprint(chat_bp)
+app.register_blueprint(profile_bp)
+app.register_blueprint(pictures_bp)
 
 from config import UserConfig
 if UserConfig.TESTING:
     from testing.user_testing1 import test_user_bp
     app.register_blueprint(test_user_bp)
 
+<<<<<<< HEAD
 from config import CookieConfig
 if CookieConfig.TESTING:
     from testing.cookie_testing import test_cookie_bp
@@ -73,6 +69,8 @@ if CookieConfig.TESTING:
 # app.register_blueprint(profile_bp)
 # app.register_blueprint(pictures_bp)
 
+=======
+>>>>>>> origin/contablas
 from utils.list_routes import list_routes as list_routex
 
 @app.route("/")
@@ -113,6 +111,8 @@ if __name__ == "__main__":
     Database.create_tables()
     # Run the application
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
+
+
 
 
 
