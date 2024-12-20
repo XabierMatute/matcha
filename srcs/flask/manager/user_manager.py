@@ -111,6 +111,7 @@ def authenticate_user(username: str, password: str) -> Dict:
         logger.error("Invalid password for user: %s", username)
         raise ValueError("Invalid password")
     logger.info("User authenticated successfully: %s", username)
+    logger.info("User data: %s", user)
     return user
 
 def update_user_profile(user_id: int, updates: Dict) -> Optional[Dict]:
