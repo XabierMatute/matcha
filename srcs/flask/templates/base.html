@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Matcha{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Incluir el header -->
+    {% include 'header.html' %}
+    
+    <!-- Contenido específico de la página -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Incluir el footer -->
+    {% include 'footer.html' %}
+    
+    <!-- Bloque para scripts específicos de la página -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

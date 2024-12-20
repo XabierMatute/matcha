@@ -1,28 +1,306 @@
 body {
-    background: linear-gradient(to right, #ff758c, #ff7eb3);
-    color: #fff;
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
-.card {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
+header {
+    background-color: #ff4081;
+    color: white;
+    padding: 1em;
+    text-align: center;
 }
 
-.card-title {
-    color: #ff758c;
+nav ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-.form-control {
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 1em;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 2em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card {
+    border: 1px solid #ccc;
     border-radius: 10px;
+    padding: 1em;
+    margin-bottom: 1em;
+    text-align: center;
 }
 
-.btn-primary {
-    background-color: #b50421;
+.profile-card img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.profile-card h2 {
+    margin: 0.5em 0;
+}
+
+.profile-card p {
+    color: #666;
+}
+
+button {
+    background-color: #ff4081;
+    color: white;
     border: none;
-    border-radius: 10px;
+    padding: 0.75em 1.5em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.btn-primary:hover {
-    background-color: #ff7eb3;
+button:hover {
+    background-color: #e03570;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+footer {
+    padding: 1px;
+    margin: 0px;
+}
+
+footer p {
+    padding: 0px;
+    width: 100%;
+    margin: 0px;
+}
+
+footer a {
+    color: #ff4081;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* footer {
+    height: 10px;
+} */
+
+body {
+    margin-bottom: 10px;
+}
+
+h1 a {
+    text-decoration: none; /* Elimina el subrayado */
+    color: inherit; /* Usa el color del elemento padre */
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.header-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.title {
+    text-align: center;
+    flex-grow: 1;
+}
+
+nav {
+    position: absolute;
+    right: 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+}
+
+nav ul li a.button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a.login-button {
+    background-color: #ff4081;
+    border: 2px solid white; /* Especifica el grosor y el color del borde */
+    color: white;
+}
+
+nav ul li a.login-button:hover {
+    background-color: #0056b3;
+}
+
+nav ul li a.register-button {
+    background-color: white;
+    border: 2px solid gray; /* Especifica el grosor y el color del borde */
+    color: #FF1493;
+}
+
+nav ul li a.register-button:hover {
+    background-color: gold;
+}
+
+/* Estilos generales para enlaces */
+a {
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+/* Botón de login */
+nav ul li a.login-button {
+    background-color: #ff4081;
+    border: 2px solid white;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+}
+
+nav ul li a.login-button:hover {
+    background-color: #0056b3;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Botón de registro */
+nav ul li a.register-button {
+    background-color: white;
+    border: 2px solid gray;
+    color: #FF1493;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+}
+
+nav ul li a.register-button:hover {
+    background-color: gold;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h2 {
+    text-align: center;
+    color: #222;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff4081;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e03570;
+}
+
+.login-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #ff4081;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-link:hover {
+    color: #e03570;
 }
