@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 Not Found</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container text-center mt-5">
-        <h1>Not Found</h1>
-        <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}404 Not Found{% endblock %}
+
+{% block content %}
+<h2>Oops! Looks like you're lost in love...</h2>
+<p>Sorry, but the page you are looking for does not exist. Maybe it wasn't meant to be.</p>
+<p>But don't worry, love always finds a way! Let's get you back to where the magic happens:</p>
+<ul>
+    <li><a href="/">Home</a></li>
+</ul>
+<img src="https://http.cat/404" alt="404 Not Found" style="width: 100%; max-width: 600px; margin: 20px 0;">
+<p>If you continue to experience issues, please <a href="mailto:matcha.baxm@gmail.com">contact us</a>.</p>
+<p><strong>Note:</strong> This page is a work in progress (WIP).</p>
+{% endblock %}
