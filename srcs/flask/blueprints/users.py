@@ -37,7 +37,7 @@ def generate_verification_link(email):
     """
     logging.debug(f"Generating verification link for email: {email}")
     token = generate_verification_token(email)
-    link = url_for('test_user.verify', token=token, _external=True)
+    link = url_for('users.verify', token=token, _external=True)
     logging.debug(f"Generated verification link: {link}")
     return link
 
@@ -72,6 +72,23 @@ def send_verification_email(username: str, email: str):
     except Exception as e:
         logging.error(f"Error sending verification email: {e}")
         raise Exception("Error sending verification email") from e
+
+def generate_login_cookie(user_id):
+    """
+    Generates a login cookie for the given user ID.
+
+    Args:
+        user_id (int): The ID of the user to generate the cookie for.
+
+    Returns:
+        str: The generated login cookie.
+    """
+    logging.debug(f"Generating login cookie for user ID: {user_id}")
+    app = current_app._get_current_object()
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    cookie = serializer.dumps(user_id, salt=app.config['SECURITY_PASSWORD_SALT'])
+    logging.debug(f"Generated cookie: {cookie}")
+    return cookie
 
 @users_bp.route('/register', methods=['GET'])
 def register_form():
@@ -126,17 +143,71 @@ def login_user_route():
     Returns:
         Response: A redirect to the user's profile page or an error message.
     """
-    data = request.form  # Receive form data
+    data = request.form
     logging.info(f"Received login data: {data}")
     try:
-        # Attempt to authenticate the user
-        user = authenticate_user(data)
-        session['user_id'] = user.id  # Save the user's ID in the session
-        logging.info(f"User {user.id} authenticated successfully.")
-        return redirect(url_for('profile.profile_page'))  # Redirect to the user's profile
+        username = data['username']
+        password = data['password']
+        logging.info(f"Authenticating user {username}")
+        user = authenticate_user(username, password)
+        logging.info(f"User {user['id']} authenticated successfully.")
+        if not user['is_verified']:
+            logging.warning("User account not verified")
+            return render_template('login.html', error_message="Account not verified. Please check your email.")
+        session['user_id'] = user['id']
+        session['username'] = user['username']
+        session['logged_in'] = True
+        return user
     except ValueError as e:
         logging.warning(f"ValueError during login: {e}")
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        logging.error(f"Exception during login: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        return render_template('login.html', error_message=str(e))
+
+# @users_bp.route('/login', methods=['POST'])
+# def login_user_route():
+#     """
+#     Processes login form data.
+
+#     Returns:
+#         Response: A redirect to the user's profile page or an error message.
+#     """
+#     data = request.form  # Receive form data
+#     logging.info(f"Received login data: {data}")
+#     try:
+#         # Attempt to authenticate the user
+#         username = data['username']
+#         password = data['password']
+#         logging.info(f"Authenticating user {username}")
+#         user = authenticate_user(username, password)
+#         logging.info(f"User {user['id']} authenticated successfully.")
+#         session['user_id'] = user['id']  # Store user ID in session
+#         return redirect(url_for('profile.profile_page'))  # Redirect to the user's profile
+#     except ValueError as e:
+#         logging.warning(f"ValueError during login: {e}")
+#         return jsonify({"error": str(e)}), 400
+#     except Exception as e:
+#         logging.error(f"Exception during login: {e}")
+#         return jsonify({"error": "Internal Server Error"}), 500
+
+from models.user_model import validate_user
+
+def check_verification_token(token): #TOSO: dale una vuelta a esto
+    app = current_app._get_current_object()
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=3600)
+        return email
+    except SignatureExpired:
+        return "The token is expired."
+    except BadSignature:
+        return "The token is invalid."
+
+@users_bp.route('/verify/<token>', methods=['GET'])
+def verify(token):
+    email = check_verification_token(token)
+    if email == "The token is expired.":
+        return render_template('expired_token.html') # TODO: Crear template y  Añadir link para reenviar correo
+    elif email == "The token is invalid.":
+        return render_template('invalid_token.html') # TODO: Crear template
+    else:
+        validate_user(email)
+        return render_template('verified.html')
