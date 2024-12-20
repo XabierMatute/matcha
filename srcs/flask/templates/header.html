@@ -6,8 +6,16 @@
         </div>
         <nav>
             <ul>
-                <li><a href="/login" class="button login-button">Login</a></li>
-                <li><a href="/register" class="button register-button">Register</a></li>
+                {% if session.get('logged_in') %}
+                    <li>
+                        <img src="/static/YM.png" alt="Profile Picture" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+                        <a href="/account">{{ session.get('username') }}</a>
+                        <a href="/profile" class="profile-link">Profile</a>
+                    </li>
+                {% else %}
+                    <li><a href="/login" class="button login-button">Login</a></li>
+                    <li><a href="/register" class="button register-button">Register</a></li>
+                {% endif %}
             </ul>
         </nav>
     </div>
