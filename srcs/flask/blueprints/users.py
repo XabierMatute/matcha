@@ -40,15 +40,18 @@ def get_user_details_route():
 
     try:
         if user_id:
-            user = get_user_details(user_id)
+            user = get_user_details(user_id, require_verified=True)
         elif username:
-            user = get_user_details(username)
+            user = get_user_details(username, require_verified=True)
         else:
             return error_response("Either 'user_id' or 'username' must be provided.", 400)
 
         if not user:
             return error_response("User not found.", 404)
         return jsonify(success_response(data=user, message="User details fetched successfully.")), 200
+    except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
+        return error_response(str(ve), 400)
     except Exception as e:
         logger.error(f"Error fetching user details: {e}")
         return error_response("Failed to fetch user details.", 500, details=str(e))

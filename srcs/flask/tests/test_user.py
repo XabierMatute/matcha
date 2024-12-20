@@ -22,7 +22,7 @@ def test_get_user_details_by_id(mock_get_user_details, client):
         "message": "User details fetched successfully.",
         "data": {"id": 1, "username": "testuser", "email": "test@example.com"}
     }
-    mock_get_user_details.assert_called_once_with(1)
+    mock_get_user_details.assert_called_once_with(1, require_verified=True)
 
 # Test para obtener detalles de un usuario por username
 @patch('blueprints.users.get_user_details')
@@ -36,7 +36,7 @@ def test_get_user_details_by_username(mock_get_user_details, client):
         "message": "User details fetched successfully.",
         "data": {"id": 2, "username": "john_doe", "email": "john@example.com"}
     }
-    mock_get_user_details.assert_called_once_with("john_doe")
+    mock_get_user_details.assert_called_once_with("john_doe", require_verified=True)
 
 # Test para registrar un nuevo usuario
 @patch('blueprints.users.register_new_user')
@@ -118,6 +118,35 @@ def test_get_user_details_missing_params(client):
         "success": False,
         "message": "Either 'user_id' or 'username' must be provided."
     }
+
+# Test para obtener detalles de un usuario no verificado
+@patch('blueprints.users.get_user_details')
+def test_get_user_details_unverified(mock_get_user_details, client):
+    mock_get_user_details.side_effect = ValueError("User 'unverified_user' is not verified.")
+
+    response = client.get('/users/details?username=unverified_user')
+    assert response.status_code == 400
+    assert response.get_json() == {
+        "success": False,
+        "message": "User 'unverified_user' is not verified."
+    }
+    mock_get_user_details.assert_called_once_with("unverified_user", require_verified=True)
+
+# Test para obtener detalles de un usuario verificado
+@patch('blueprints.users.get_user_details')
+def test_get_user_details_verified(mock_get_user_details, client):
+    mock_get_user_details.return_value = {"id": 2, "username": "verified_user", "email": "verified@example.com"}
+
+    response = client.get('/users/details?username=verified_user')
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "message": "User details fetched successfully.",
+        "data": {"id": 2, "username": "verified_user", "email": "verified@example.com"}
+    }
+    mock_get_user_details.assert_called_once_with("verified_user", require_verified=True)
+
+
 
 
 

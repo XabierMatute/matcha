@@ -77,11 +77,12 @@ def get_location():
         logger.error(f"Error fetching location for user ID {user_id}: {e}")
         return error_response("Failed to fetch user location.", 500, details=str(e))
 
-# Ruta para actualizar la ubicación
-@profile_bp.route('/location/update', methods=['POST'])
-def update_location():
+# Ruta para actualizar la ubicación manualmente
+@profile_bp.route('/location/manual', methods=['POST'])
+def set_manual_location():
     """
-    Actualiza la ubicación del usuario.
+    Permite a los usuarios configurar su ubicación manualmente.
+    JSON Payload: { "location": "Bilbao", "latitude": 43.262, "longitude": -2.935 }
     """
     user_id = session.get('user_id')
     if not user_id:
@@ -92,8 +93,8 @@ def update_location():
     latitude = data.get("latitude")
     longitude = data.get("longitude")
 
-    if not location or latitude is None or longitude is None:
-        return error_response("Missing location data.", 400)
+    if not location and (latitude is None or longitude is None):
+        return error_response("Either location or latitude and longitude must be provided.", 400)
 
     try:
         updated_location = update_user_location(user_id, location, latitude, longitude)
@@ -104,6 +105,5 @@ def update_location():
     except Exception as e:
         logger.error(f"Error updating location for user ID {user_id}: {e}")
         return error_response("Failed to update user location.", 500, details=str(e))
-
 
 

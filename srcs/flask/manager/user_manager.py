@@ -12,50 +12,77 @@ from models.user_model import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def fetch_user_by_id(user_id):
+def fetch_user_by_id(user_id, require_verified=False):
     """
     Obtiene un usuario por su ID.
 
     Args:
         user_id (int): ID del usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
 
     Returns:
         dict: Información del usuario.
+
+    Raises:
+        ValueError: Si el usuario no está verificado y se requiere verificación.
     """
     try:
-        return get_user_by_id(user_id)
+        user = get_user_by_id(user_id)
+        if not user:
+            raise ValueError(f"User with ID {user_id} not found.")
+        if require_verified and not user.get('is_verified', False):
+            raise ValueError(f"User with ID {user_id} is not verified.")
+        return user
     except Exception as e:
         logger.error(f"Error fetching user by ID {user_id}: {e}")
         raise
 
-def fetch_user_by_username(username):
+def fetch_user_by_username(username, require_verified=False):
     """
     Obtiene un usuario por su nombre de usuario.
 
     Args:
         username (str): Nombre del usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
 
     Returns:
         dict: Información del usuario.
+
+    Raises:
+        ValueError: Si el usuario no está verificado y se requiere verificación.
     """
     try:
-        return get_user_by_username(username)
+        user = get_user_by_username(username)
+        if not user:
+            raise ValueError(f"User '{username}' not found.")
+        if require_verified and not user.get('is_verified', False):
+            raise ValueError(f"User '{username}' is not verified.")
+        return user
     except Exception as e:
         logger.error(f"Error fetching user by username '{username}': {e}")
         raise
 
-def fetch_user_by_email(email):
+def fetch_user_by_email(email, require_verified=False):
     """
     Obtiene un usuario por su email.
 
     Args:
         email (str): Email del usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
 
     Returns:
         dict: Información del usuario.
+
+    Raises:
+        ValueError: Si el usuario no está verificado y se requiere verificación.
     """
     try:
-        return get_user_by_email(email)
+        user = get_user_by_email(email)
+        if not user:
+            raise ValueError(f"User with email '{email}' not found.")
+        if require_verified and not user.get('is_verified', False):
+            raise ValueError(f"User with email '{email}' is not verified.")
+        return user
     except Exception as e:
         logger.error(f"Error fetching user by email '{email}': {e}")
         raise
@@ -132,24 +159,26 @@ def remove_user(user_id):
         logger.error(f"Error deleting user with ID {user_id}: {e}")
         raise
 
-def get_user_details(user_identifier):
+def get_user_details(user_identifier, require_verified=False):
     """
     Obtiene los detalles de un usuario por ID o nombre de usuario.
 
     Args:
         user_identifier (int | str): ID del usuario o nombre de usuario.
+        require_verified (bool): Si se debe validar que el usuario esté verificado.
 
     Returns:
         dict: Información del usuario.
     """
     try:
         if isinstance(user_identifier, int):
-            return get_user_by_id(user_identifier)
+            return fetch_user_by_id(user_identifier, require_verified=require_verified)
         elif isinstance(user_identifier, str):
-            return get_user_by_username(user_identifier)
+            return fetch_user_by_username(user_identifier, require_verified=require_verified)
         else:
             raise ValueError("Invalid user identifier. Must be an integer (ID) or string (username).")
     except Exception as e:
         logger.error(f"Error fetching user details for '{user_identifier}': {e}")
         raise
+
 
