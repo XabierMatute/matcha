@@ -12,6 +12,7 @@
                         <a href="/account">{{ session.get('username') }}</a>
                         <a href="/profile" class="profile-link">Profile</a>
                     </li>
+                    <li><a href="/logout" class="button logout-button">Logout</a></li>
                 {% else %}
                     <li><a href="/login" class="button login-button">Login</a></li>
                     <li><a href="/register" class="button register-button">Register</a></li>

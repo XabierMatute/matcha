@@ -6,6 +6,8 @@ import logging
 from manager.user_manager import register_user, authenticate_user, get_user_details
 from config import DEBUG
 
+
+
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 
 def generate_verification_token(email):
@@ -157,6 +159,7 @@ def login_user_route():
         session['user_id'] = user['id']
         session['username'] = user['username']
         session['logged_in'] = True
+        return redirect('/')
         return user
     except ValueError as e:
         logging.warning(f"ValueError during login: {e}")
@@ -188,26 +191,69 @@ def login_user_route():
 #         logging.error(f"Exception during login: {e}")
 #         return jsonify({"error": "Internal Server Error"}), 500
 
-from models.user_model import validate_user
+from itsdangerous import SignatureExpired, BadSignature
 
-def check_verification_token(token): #TOSO: dale una vuelta a esto
+def check_verification_token(token):
+    """
+    Check the verification token and return the associated email if valid.
+
+    Args:
+        token (str): The verification token.
+
+    Returns:
+        str: The email associated with the token if valid, or an error message if invalid or expired.
+    """
     app = current_app._get_current_object()
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     try:
         email = serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=3600)
+        logging.info("Token is valid for email: %s", email)
         return email
     except SignatureExpired:
+        logging.warning("The token is expired.")
         return "The token is expired."
     except BadSignature:
+        logging.warning("The token is invalid.")
         return "The token is invalid."
 
 @users_bp.route('/verify/<token>', methods=['GET'])
 def verify(token):
+    """
+    Verify the user account using the provided token.
+
+    Args:
+        token (str): The verification token.
+
+    Returns:
+        Response: The rendered template based on the token validation result.
+    """
     email = check_verification_token(token)
     if email == "The token is expired.":
-        return render_template('expired_token.html') # TODO: Crear template y  Añadir link para reenviar correo
+        logging.info("Rendering expired_token.html for expired token.")
+        return render_template('expired_token.html') # TODO: Create template and add link to resend email
     elif email == "The token is invalid.":
-        return render_template('invalid_token.html') # TODO: Crear template
+        logging.info("Rendering invalid_token.html for invalid token.")
+        return render_template('invalid_token.html') # TODO: Create template
     else:
         validate_user(email)
+        logging.info("User validated for email: %s", email)
         return render_template('verified.html')
+
+@users_bp.route('/logout', methods=['GET'])
+def logout():
+    session.clear()
+    return redirect('/')
+
+from manager.user_manager import get_user_by_username
+
+@users_bp.route('/account/<username>', methods=['GET'])
+def account(username):
+    if session.get('logged_in'):
+        if session.get('username') == username:
+            user = get_user_by_username(username)
+            return render_template('content.html', content=user)
+            return render_template('account.html', user=user)
+        else:
+            return redirect(url_for('users.account', username=session.get('username')))
+    else:
+        return redirect('/login')

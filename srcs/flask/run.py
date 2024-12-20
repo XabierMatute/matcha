@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/20 10:53:18 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/20 11:50:19 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,15 +79,30 @@ from utils.list_routes import list_routes as list_routex
 def list_routes():
     return render_template('content.html', content=list_routex(app))
 
-# from flask import redirect, url_for
+from flask import redirect, url_for
 
-# @app.route("/register")
-# def register():
-#     return redirect('users/register')
+@app.route("/register")
+def register():
+    return redirect('users/register')
 
-# @app.route("/login")
-# def login():
-#     return redirect('users/login')
+@app.route("/login")
+def login():
+    if session.get('logged_in'):
+        return redirect('users/account/' + session.get('username'))
+    return redirect('users/login')
+
+@app.route("/logout")
+def logout():
+    return redirect('users/logout')
+
+from flask import session
+
+@app.route("/account")
+def account():
+    if session.get('logged_in'):
+        return redirect('users/account/' + session.get('username'))
+    else:
+        return redirect('users/login')
 
 if __name__ == "__main__":
     # Create tables if necessary

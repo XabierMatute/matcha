@@ -220,6 +220,23 @@ nav ul li a.register-button:hover {
     transform: scale(1.05);
 }
 
+nav ul li a.logout-button {
+    background-color: rebeccapurple;
+    color: ghostwhite;
+    border: 0px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+}
+
+nav ul li a.logout-button:hover {
+    background-color: brown;
+    color: blanchedalmond;
+    border: 0px;
+    transform: scale(1.05);
+}
+
 /* Estilos generales */
 body {
     font-family: Arial, sans-serif;
