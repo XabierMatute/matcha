@@ -6,7 +6,7 @@ import logging
 from manager.user_manager import register_user, authenticate_user, get_user_details
 from config import DEBUG
 
-
+from models.user_model import validate_user
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -257,3 +257,55 @@ def account(username):
             return redirect(url_for('users.account', username=session.get('username')))
     else:
         return redirect('/login')
+
+
+
+
+
+
+
+
+
+
+
+def success_response(data=None, message="Operation successful"):
+    """Genera una respuesta de éxito consistente."""
+    return {"success": True, "message": message, "data": data}
+
+def error_response(message="Operation failed", status_code=400, details=None):
+    """Genera una respuesta de error consistente."""
+    response = {"success": False, "message": message}
+    if details:
+        response["details"] = details
+    return jsonify(response), status_code
+
+from flask import Blueprint, request, jsonify
+
+logger = logging.getLogger(__name__)
+
+@users_bp.route('/details', methods=['GET'])
+def get_user_details_route():
+    """
+    Obtiene detalles de usuario por ID o nombre de usuario.
+    Parámetros de consulta: ?user_id=<id> o ?username=<username>
+    """
+    user_id = request.args.get("user_id", type=int)
+    username = request.args.get("username", type=str)
+
+    try:
+        if user_id:
+            user = get_user_details(user_id, require_verified=True)
+        elif username:
+            user = get_user_details(username, require_verified=True)
+        else:
+            return error_response("Either 'user_id' or 'username' must be provided.", 400)
+
+        if not user:
+            return error_response("User not found.", 404)
+        return jsonify(success_response(data=user, message="User details fetched successfully.")), 200
+    except ValueError as ve:
+        logger.error(f"Validation error: {ve}")
+        return error_response(str(ve), 400)
+    except Exception as e:
+        logger.error(f"Error fetching user details: {e}")
+        return error_response("Failed to fetch user details.", 500, details=str(e))
