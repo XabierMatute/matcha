@@ -1,7 +1,6 @@
 from models.database import Database
 import logging
-from psycopg2.extras import execute_values
-
+from psycopg import sql
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -64,16 +63,17 @@ def add_interests(tags):
     if not tags or not all(isinstance(tag, str) and tag.strip() for tag in tags):
         raise ValueError("Tags must be a non-empty list of strings.")
 
-    query = '''
+    query = sql.SQL('''
         INSERT INTO interests (tag)
-        VALUES %s
+        VALUES {}
         ON CONFLICT (tag) DO NOTHING
         RETURNING id, tag
-    '''
+    ''').format(sql.SQL(',').join(map(sql.Literal, [(tag,) for tag in tags])))
+
     try:
         with Database.get_connection() as connection:
             with connection.cursor() as cursor:
-                execute_values(cursor, query, [(tag,) for tag in tags])
+                cursor.execute(query)
                 connection.commit()
                 interests = cursor.fetchall()
                 return [{"id": row[0], "tag": row[1]} for row in interests]
@@ -109,7 +109,7 @@ def update_user_interests(user_id, new_interests):
 
     delete_query = '''DELETE FROM user_interests WHERE user_id = %s'''
     get_interest_ids_query = '''SELECT id FROM interests WHERE tag = ANY(%s)'''
-    insert_query = '''INSERT INTO user_interests (user_id, interest_id) VALUES %s'''
+    insert_query = sql.SQL('''INSERT INTO user_interests (user_id, interest_id) VALUES {}''')
 
     try:
         with Database.get_connection() as connection:
@@ -122,15 +122,13 @@ def update_user_interests(user_id, new_interests):
                     raise ValueError("None of the provided interests exist in the database.")
 
                 interest_values = [(user_id, interest_id[0]) for interest_id in interest_ids]
-                execute_values(cursor, insert_query, interest_values)
+                formatted_insert_query = insert_query.format(
+                    sql.SQL(',').join(map(sql.Literal, interest_values))
+                )
+                cursor.execute(formatted_insert_query)
                 connection.commit()
 
                 return {"success": True, "message": "User interests updated successfully."}
     except Exception as e:
         logger.error(f"Error updating interests for user ID {user_id}: {e}")
         raise Exception("Error updating user interests") from e
-
-
-
-
-

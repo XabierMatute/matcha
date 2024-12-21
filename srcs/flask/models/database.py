@@ -1,12 +1,12 @@
 import logging
-import psycopg2
-from psycopg2.extras import execute_values, DictCursor
+import psycopg
+from psycopg.rows import dict_row
+from psycopg import sql
 from config import DatabaseConfig as Config
 from typing import Tuple, Optional, Dict, Any, Union, List
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 class Database:
     """Clase para manejar la conexión, creación de tablas y consultas en la base de datos."""
@@ -30,15 +30,15 @@ class Database:
                     f"Connecting to database {Config.POSTGRES_DB} as {Config.POSTGRES_USER} at {Config.POSTGRES_HOST}"
                 )
 
-            return psycopg2.connect(
+            return psycopg.connect(
                 dbname=Config.POSTGRES_DB,
                 user=Config.POSTGRES_USER,
                 password=Config.POSTGRES_PASSWORD,
                 host=Config.POSTGRES_HOST,
-                cursor_factory=DictCursor  # Devuelve resultados como diccionarios
+                row_factory=dict_row  # Devuelve resultados como diccionarios
             )
 
-        except (psycopg2.Error, ValueError) as e:
+        except (psycopg.Error, ValueError) as e:
             logger.error(f"Error connecting to the database: {e}")
             raise Exception(f"Database connection failed: {e}") from e
 
@@ -156,9 +156,24 @@ class Database:
                         cursor.execute(query)
                     connection.commit()
                     logger.info("Tables created successfully.")
-        except psycopg2.Error as e:
+        except psycopg.Error as e:
             logger.error(f"Error during table creation: {e}")
             raise Exception("Error creating tables") from e
+
+    @staticmethod
+    def insert_multiple_users(users: List[Tuple[int, str]]):
+        """Inserta múltiples usuarios en la base de datos."""
+        query = sql.SQL("INSERT INTO users (id, name) VALUES {}").format(
+            sql.SQL(',').join(map(sql.Literal, users))
+        )
+        try:
+            with Database.get_connection() as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query)
+                    connection.commit()
+        except Exception as e:
+            logger.error(f"Error inserting multiple users: {e}")
+            raise Exception("Error inserting multiple users") from e
 
 
 # Llamar a create_tables() si se ejecuta directamente
@@ -168,7 +183,3 @@ if __name__ == "__main__":
         logger.info("Database setup completed.")
     except Exception as e:
         logger.error(f"Database setup failed: {e}")
-
-
-
-
