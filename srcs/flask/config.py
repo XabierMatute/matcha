@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:26:45 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/20 15:35:14 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/21 12:23:16 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ import os
 DEBUG = True
 
 class SecretConfig:
+    ACTIVE = True
     SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')  # Valor por defecto si no está en .env
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT', 'default_salt')  # Corregido typo
     config = {'SECRET_KEY': SECRET_KEY, 'SECURITY_PASSWORD_SALT': SECURITY_PASSWORD_SALT}
@@ -57,12 +58,14 @@ class CookieConfig:
 
 class BlueprintConfig:
     DEBUG = DEBUG
-    USERS = False
-    LIKES = False
-    NOTIFICATIONS = False
-    INTERESTS = False
-    CHAT = False
-    PROFILE = False
-    PICTURES = False
+    USERS = True
+    LIKES = True
+    NOTIFICATIONS = True
+    INTERESTS = True
+    CHAT = True
+    PROFILE = True
+    PICTURES = True
     EXAMPLE = True
     CUSTOM_ERRORS = True
+    USER_TESTING = True
+    COOKIE_TESTING = True
