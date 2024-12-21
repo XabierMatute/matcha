@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/20 10:42:29 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/21 13:33:04 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,6 +74,9 @@ flask_logs :
 flask_freeze :
 	docker compose -f $(DCYML) exec flask pip freeze
 
+flask_test :
+	docker compose -f $(DCYML) exec flask pytest
+
 clean :
 	docker compose -f $(DCYML) down --volumes
 	@echo "$(RED)clean done...$(WHITE)"
@@ -86,4 +89,4 @@ re : clean all
 
 hard_re : fclean all
 
-.PHONY : all clean fclean re down up reload flask_restart flask_logs flask_freeze hard_re
+.PHONY : all clean fclean re down up reload flask_restart flask_logs flask_freeze hard_re flask_test
