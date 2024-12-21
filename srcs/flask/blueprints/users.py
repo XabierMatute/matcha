@@ -251,7 +251,7 @@ def account(username):
     if session.get('logged_in'):
         if session.get('username') == username:
             user = get_user_by_username(username)
-            return render_template('content.html', content=user)
+            # return render_template('content.html', content=user)
             return render_template('account.html', user=user)
         else:
             return redirect(url_for('users.account', username=session.get('username')))

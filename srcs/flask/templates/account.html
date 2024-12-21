@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Información de la Cuenta{% endblock %}
+
+{% block content %}
+<h2>Información de la Cuenta</h2>
+<div>
+    <p><strong>Nombre de usuario:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <!-- Add more user information as needed -->
+</div>
+<a href="/account/edit" class="btn btn-primary">Editar</a>
+{% endblock %}
