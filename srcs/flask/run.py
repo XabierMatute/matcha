@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/21 14:37:06 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/26 17:20:56 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,21 +15,9 @@ from config import DatabaseConfig, MailConfig, SecretConfig
 from config import RunConfig as Config
 from flask import Flask
 
-<<<<<<< HEAD
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-=======
-# Importa todos los blueprints de la carpeta blueprints
-from blueprints.users import users_bp
-from blueprints.likes import likes_bp, reports_bp
-from blueprints.notifications import notifications_bp
-from blueprints.interests import interests_bp
-from blueprints.chat import chat_bp
-from blueprints.profile import profile_bp
-from blueprints.pictures import pictures_bp
-from models.database import Database
->>>>>>> contablas
 
 # Create the Flask application
 app = Flask(__name__)
