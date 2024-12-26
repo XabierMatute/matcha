@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, session
 from manager.profile_manager import (
-    fetch_user_profile,
+    get_user_profile,
     update_user_profile,
-    fetch_user_location,
+    get_user_location,
     update_user_location
 )
 import logging
@@ -32,7 +32,7 @@ def get_profile():
     if not user_id:
         return error_response("User not logged in.", 401)
     try:
-        profile = fetch_user_profile(user_id)
+        profile = get_user_profile(user_id)
         return jsonify(success_response(data=profile, message="Profile fetched successfully.")), 200
     except Exception as e:
         logger.error(f"Error fetching profile for user ID {user_id}: {e}")
@@ -71,14 +71,14 @@ def get_location():
     if not user_id:
         return error_response("User not logged in.", 401)
     try:
-        location = fetch_user_location(user_id)
+        location = get_user_location(user_id)
         return jsonify(success_response(data=location, message="Location fetched successfully.")), 200
     except Exception as e:
         logger.error(f"Error fetching location for user ID {user_id}: {e}")
         return error_response("Failed to fetch user location.", 500)
 
 # Ruta para actualizar la ubicación manualmente
-@profile_bp.route('/location/manual', methods=['POST'])
+@profile_bp.route('/location/update', methods=['POST'])
 def set_manual_location():
     """
     Permite a los usuarios configurar su ubicación manualmente.

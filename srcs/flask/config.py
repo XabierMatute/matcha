@@ -67,5 +67,5 @@ class BlueprintConfig:
     PICTURES = True
     EXAMPLE = True
     CUSTOM_ERRORS = True
-    USER_TESTING = True
+    USER_TESTING = False
     COOKIE_TESTING = True
