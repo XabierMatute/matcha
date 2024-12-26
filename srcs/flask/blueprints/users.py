@@ -1,3 +1,4 @@
+from faker import Faker
 from flask import Blueprint, request, jsonify
 from manager.user_manager import (
     fetch_user_by_id,
@@ -144,3 +145,54 @@ def verify_user_email():
     except Exception as e:
         logger.error(f"Error verifying user with email '{email}': {e}")
         return error_response("Failed to verify user.", 500, details=str(e))
+
+@users_bp.route('/generate_example_data', methods=['POST'])
+def generate_example_data():
+    try:
+        example_user = {
+            "username": "exampleuser",
+            "email": "example@example.com",
+            "password_hash": "examplepassword",
+            "first_name": "Example",
+            "last_name": "User"
+        }
+        register_new_user(
+            example_user["username"],
+            example_user["email"],
+            example_user["password_hash"],
+            example_user["first_name"],
+            example_user["last_name"]
+        )
+        return jsonify({"success": True, "message": "Example user generated."}), 201
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@users_bp.route('/generate_fake_users', methods=['POST'])
+def generate_fake_users():
+    """
+    Genera 10 usuarios ficticios y los inserta en la base de datos.
+    """
+    fake = Faker()
+    created_users = []
+    
+    try:
+        for _ in range(10):
+            username = fake.user_name()
+            email = fake.email()
+            password_hash = fake.password()  # Genera un hash ficticio
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+
+            # Inserta el usuario en la base de datos
+            new_user = register_new_user(
+                username=username,
+                email=email,
+                password_hash=password_hash,
+                first_name=first_name,
+                last_name=last_name
+            )
+            created_users.append(new_user)
+        
+        return jsonify({"success": True, "message": "10 fake users generated.", "users": created_users}), 201
+    except Exception as e:
+        return jsonify({"success": False, "message": "Failed to generate users.", "details": str(e)}), 500

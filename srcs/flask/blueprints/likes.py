@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from manager.likes_manager import send_like, remove_like, fetch_liked_users, fetch_matches, send_report, block_user_account
 import logging
 
@@ -6,9 +6,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Crear Blueprint para likes y reportes
+# Crear Blueprint para likes ,reportes y registro
 likes_bp = Blueprint('likes', __name__, url_prefix='/likes')
 reports_bp = Blueprint('reports', __name__, url_prefix='/reports')
+register_bp = Blueprint('register', __name__, url_prefix='/register')
+
+@register_bp.route('/', methods=['GET'])
+def show_register_form():
+    """
+    Renderiza el formulario de registro de usuarios.
+    """
+    return render_template('register.html')
 
 @likes_bp.route('/send', methods=['POST'])
 def send_like_route():
