@@ -41,18 +41,52 @@ def test_get_matches(mock_fetch_matches, client):
     assert response.get_json() == {"matches": [2, 5]}
     mock_fetch_matches.assert_called_once_with(1)
 
-# Test para error de validación
+# Test para reportar un usuario
+@patch('blueprints.likes.send_report', return_value={"success": True, "message": "User reported successfully."})
+def test_report_user(mock_send_report, client):
+    response = client.post('/reports/report', json={"reporter_id": 1, "reported_id": 2, "reason": "Spam"})
+    assert response.status_code == 200
+    assert response.get_json() == {"success": True, "message": "User reported successfully."}
+    mock_send_report.assert_called_once_with(1, 2, "Spam")
+
+# Test para bloquear un usuario
+@patch('blueprints.likes.block_user_account', return_value={"success": True, "message": "User blocked successfully."})
+def test_block_user(mock_block_user_account, client):
+    response = client.post('/reports/block', json={"blocker_id": 1, "blocked_id": 2})
+    assert response.status_code == 200
+    assert response.get_json() == {"success": True, "message": "User blocked successfully."}
+    mock_block_user_account.assert_called_once_with(1, 2)
+
+# Test para error de validación al enviar like
 def test_send_like_missing_params(client):
     response = client.post('/likes/send', json={"user_id": 1})
     assert response.status_code == 400
     assert response.get_json() == {"error": "Both user_id and liked_user_id are required."}
 
-# Test para manejar errores inesperados
+# Test para manejar errores inesperados en like
 @patch('blueprints.likes.send_like', side_effect=Exception("Unexpected Error"))
 def test_send_like_unexpected_error(mock_send_like, client):
     response = client.post('/likes/send', json={"user_id": 1, "liked_user_id": 2})
     assert response.status_code == 500
     assert response.get_json() == {"error": "An unexpected error occurred."}
+
+# Test para manejar errores inesperados en reporte
+@patch('blueprints.likes.send_report', side_effect=Exception("Unexpected Error"))
+def test_report_user_unexpected_error(mock_send_report, client):
+    response = client.post('/reports/report', json={"reporter_id": 1, "reported_id": 2, "reason": "Spam"})
+    assert response.status_code == 500
+    assert response.get_json() == {"error": "An unexpected error occurred."}
+
+# Test para manejar errores inesperados en bloqueo
+@patch('blueprints.likes.block_user_account', side_effect=Exception("Unexpected Error"))
+def test_block_user_unexpected_error(mock_block_user_account, client):
+    response = client.post('/reports/block', json={"blocker_id": 1, "blocked_id": 2})
+    assert response.status_code == 500
+    assert response.get_json() == {"error": "An unexpected error occurred."}
+
+
+
+
 
 
 
