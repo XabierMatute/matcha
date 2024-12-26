@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/04 14:58:54 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/21 13:33:04 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/26 14:13:59 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -75,8 +75,7 @@ flask_freeze :
 	docker compose -f $(DCYML) exec flask pip freeze
 
 flask_test :
-	docker compose -f $(DCYML) exec flask pytest
-
+	docker compose -f $(DCYML) exec flask env PYTHONPATH=/app pytest
 clean :
 	docker compose -f $(DCYML) down --volumes
 	@echo "$(RED)clean done...$(WHITE)"
