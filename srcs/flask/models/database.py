@@ -146,6 +146,24 @@ class Database:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             );
+            ''',
+            '''
+            CREATE TABLE IF NOT EXISTS reports (
+                id SERIAL PRIMARY KEY,
+                reporter_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                reported_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                reason TEXT NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            ''',
+            '''
+            CREATE TABLE IF NOT EXISTS blocks (
+                id SERIAL PRIMARY KEY,
+                blocker_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                blocked_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(blocker_id, blocked_id)
+            );
             '''
         ]
 
@@ -168,6 +186,7 @@ if __name__ == "__main__":
         logger.info("Database setup completed.")
     except Exception as e:
         logger.error(f"Database setup failed: {e}")
+
 
 
 

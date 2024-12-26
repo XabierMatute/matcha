@@ -143,7 +143,7 @@ def get_liked_users(user_id):
     '''
     try:
         results = execute_read_query(query, (user_id,))
-        return [row["liked_user_id"] for row in results]
+        return [row[0] for row in results]  # Ajuste aquí para índices basados en tu implementación
     except Exception as e:
         logger.error(f"Error while fetching liked users for user {user_id}: {e}")
         raise
@@ -168,7 +168,61 @@ def get_matches(user_id):
     '''
     try:
         results = execute_read_query(query, (user_id,))
-        return [row["match_id"] for row in results]
+        return [row[0] for row in results]  # Ajuste aquí para índices basados en tu implementación
     except Exception as e:
         logger.error(f"Error while fetching matches for user {user_id}: {e}")
         raise
+
+def report_user(reporter_id, reported_id, reason):
+    """
+    Registra un reporte de un usuario hacia otro.
+
+    Args:
+        reporter_id (int): ID del usuario que reporta.
+        reported_id (int): ID del usuario reportado.
+        reason (str): Razón del reporte.
+
+    Returns:
+        dict: Resultado de la operación.
+    """
+    validate_parameters(reporter_id, reported_id)
+
+    if not reason or not isinstance(reason, str):
+        raise ValueError("Reason must be a non-empty string.")
+
+    query = '''
+        INSERT INTO reports (reporter_id, reported_id, reason, timestamp)
+        VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
+    '''
+    try:
+        execute_write_query(query, (reporter_id, reported_id, reason))
+        return {"success": True, "message": "User reported successfully."}
+    except Exception as e:
+        logger.error(f"Error while reporting user {reported_id} by {reporter_id}: {e}")
+        raise DatabaseError("Error reporting user.") from e
+
+def block_user(blocker_id, blocked_id):
+    """
+    Bloquea a un usuario en la base de datos.
+
+    Args:
+        blocker_id (int): ID del usuario que bloquea.
+        blocked_id (int): ID del usuario bloqueado.
+
+    Returns:
+        dict: Resultado de la operación.
+    """
+    validate_parameters(blocker_id, blocked_id)
+
+    query = '''
+        INSERT INTO blocks (blocker_id, blocked_id, timestamp)
+        VALUES (%s, %s, CURRENT_TIMESTAMP)
+        ON CONFLICT DO NOTHING
+    '''
+    try:
+        execute_write_query(query, (blocker_id, blocked_id))
+        return {"success": True, "message": "User blocked successfully."}
+    except Exception as e:
+        logger.error(f"Error while blocking user {blocked_id} by {blocker_id}: {e}")
+        raise DatabaseError("Error blocking user.") from e
+

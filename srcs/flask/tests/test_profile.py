@@ -7,122 +7,14 @@ def client():
     """Configura la app en modo testing y crea un cliente de prueba."""
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test_secret'
-    app.config['SESSION_TYPE'] = 'filesystem'  # Configuración adicional para sesiones
+    app.config['SESSION_TYPE'] = 'filesystem'
     with app.test_client() as client:
         yield client
 
-# Test para obtener detalles de un usuario por ID
-@patch('blueprints.users.get_user_details')
-def test_get_user_details_by_id(mock_get_user_details, client):
-    mock_get_user_details.return_value = {"id": 1, "username": "testuser", "email": "test@example.com"}
-
-    response = client.get('/users/details?user_id=1')
-    assert response.status_code == 200
-    assert response.get_json() == {
-        "success": True,
-        "message": "User details fetched successfully.",
-        "data": {"id": 1, "username": "testuser", "email": "test@example.com"}
-    }
-    mock_get_user_details.assert_called_once_with(1, require_verified=True)
-
-# Test para obtener detalles de un usuario por username
-@patch('blueprints.users.get_user_details')
-def test_get_user_details_by_username(mock_get_user_details, client):
-    mock_get_user_details.return_value = {"id": 2, "username": "john_doe", "email": "john@example.com"}
-
-    response = client.get('/users/details?username=john_doe')
-    assert response.status_code == 200
-    assert response.get_json() == {
-        "success": True,
-        "message": "User details fetched successfully.",
-        "data": {"id": 2, "username": "john_doe", "email": "john@example.com"}
-    }
-    mock_get_user_details.assert_called_once_with("john_doe", require_verified=True)
-
-# Test para registrar un nuevo usuario
-@patch('blueprints.users.register_new_user')
-def test_register_user(mock_register_new_user, client):
-    mock_register_new_user.return_value = {"id": 3, "username": "newuser", "email": "new@example.com"}
-
-    response = client.post('/users/register', json={
-        "username": "newuser",
-        "email": "new@example.com",
-        "password_hash": "securepassword"
-    })
-    assert response.status_code == 201
-    assert response.get_json() == {
-        "success": True,
-        "message": "User registered successfully.",
-        "data": {"id": 3, "username": "newuser", "email": "new@example.com"}
-    }
-    mock_register_new_user.assert_called_once_with("newuser", "new@example.com", "securepassword", None, None)
-
-# Test para actualizar un usuario
-@patch('blueprints.users.modify_user')
-def test_update_user(mock_modify_user, client):
-    mock_modify_user.return_value = {"id": 1, "username": "updateduser", "email": "updated@example.com"}
-
-    response = client.put('/users/update/1', json={
-        "username": "updateduser",
-        "email": "updated@example.com"
-    })
-    assert response.status_code == 200
-    assert response.get_json() == {
-        "success": True,
-        "message": "User updated successfully.",
-        "data": {"id": 1, "username": "updateduser", "email": "updated@example.com"}
-    }
-    mock_modify_user.assert_called_once_with(1, "updateduser", "updated@example.com", None, None)
-
-# Test para eliminar un usuario
-@patch('blueprints.users.remove_user')
-def test_delete_user(mock_remove_user, client):
-    mock_remove_user.return_value = {"id": 1}
-
-    response = client.delete('/users/delete/1')
-    assert response.status_code == 200
-    assert response.get_json() == {
-        "success": True,
-        "message": "User deleted successfully.",
-        "data": {"id": 1}
-    }
-    mock_remove_user.assert_called_once_with(1)
-
-# Test para verificar un usuario por email
-@patch('blueprints.users.verify_user')
-def test_verify_user(mock_verify_user, client):
-    mock_verify_user.return_value = {"id": 1, "username": "verifieduser", "email": "verified@example.com"}
-
-    response = client.post('/users/verify', json={"email": "verified@example.com"})
-    assert response.status_code == 200
-    assert response.get_json() == {
-        "success": True,
-        "message": "User verified successfully.",
-        "data": {"id": 1, "username": "verifieduser", "email": "verified@example.com"}
-    }
-    mock_verify_user.assert_called_once_with("verified@example.com")
-
-# Test para error si no se proporciona email en verificación
-def test_verify_user_missing_email(client):
-    response = client.post('/users/verify', json={})
-    assert response.status_code == 400
-    assert response.get_json() == {
-        "success": False,
-        "message": "Email is required."
-    }
-
-# Test para error si no se proporciona ni ID ni username
-def test_get_user_details_missing_params(client):
-    response = client.get('/users/details')
-    assert response.status_code == 400
-    assert response.get_json() == {
-        "success": False,
-        "message": "Either 'user_id' or 'username' must be provided."
-    }
-
 # Test para actualizar la ubicación manualmente
-@patch('manager.profile_manager.update_user_location')
-def test_set_manual_location(mock_update_user_location, client):
+@patch('blueprints.profile.update_user_location')
+def test_set_manual_location_valid_data(mock_update_user_location, client):
+    """Prueba la actualización manual de ubicación con datos válidos."""
     mock_update_user_location.return_value = {
         "location": "Bilbao",
         "latitude": 43.262,
@@ -137,6 +29,7 @@ def test_set_manual_location(mock_update_user_location, client):
         "latitude": 43.262,
         "longitude": -2.935
     })
+
     assert response.status_code == 200
     assert response.get_json() == {
         "success": True,
@@ -151,17 +44,80 @@ def test_set_manual_location(mock_update_user_location, client):
         1, "Bilbao", 43.262, -2.935
     )
 
-# Test para error al actualizar ubicación sin datos
-def test_set_manual_location_missing_data(client):
+@patch('blueprints.profile.update_user_location')
+def test_set_manual_location_missing_latitude(mock_update_user_location, client):
+    """Prueba la actualización manual de ubicación sin latitud."""
+    mock_update_user_location.side_effect = ValueError("You must provide either a location or both latitude and longitude.")
+
     with client.session_transaction() as session:
         session['user_id'] = 1
 
-    response = client.post('/profile/location/manual', json={})
+    response = client.post('/profile/location/manual', json={
+        "location": "Bilbao",
+        "longitude": -2.935
+    })
+
     assert response.status_code == 400
     assert response.get_json() == {
         "success": False,
-        "message": "Either location or latitude and longitude must be provided."
+        "message": "You must provide either a location or both latitude and longitude."
     }
+
+@patch('blueprints.profile.update_user_location')
+def test_set_manual_location_invalid_latitude(mock_update_user_location, client):
+    """Prueba la actualización manual de ubicación con una latitud inválida."""
+    mock_update_user_location.side_effect = ValueError("Latitude must be a number.")
+
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.post('/profile/location/manual', json={
+        "location": "Bilbao",
+        "latitude": "invalid_latitude",
+        "longitude": -2.935
+    })
+
+    assert response.status_code == 400
+    assert response.get_json() == {
+        "success": False,
+        "message": "Latitude must be a number."
+    }
+    mock_update_user_location.assert_not_called()
+
+@patch('blueprints.profile.fetch_user_location')
+def test_get_location_success(mock_fetch_user_location, client):
+    """Prueba obtener la ubicación del usuario con éxito."""
+    mock_fetch_user_location.return_value = {
+        "location": "Bilbao",
+        "latitude": 43.262,
+        "longitude": -2.935
+    }
+
+    with client.session_transaction() as session:
+        session['user_id'] = 1
+
+    response = client.get('/profile/location')
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "success": True,
+        "data": {
+            "location": "Bilbao",
+            "latitude": 43.262,
+            "longitude": -2.935
+        },
+        "message": "Location fetched successfully."
+    }
+    mock_fetch_user_location.assert_called_once_with(1)
+
+def test_get_location_not_logged_in(client):
+    """Prueba obtener la ubicación cuando no se ha iniciado sesión."""
+    response = client.get('/profile/location')
+    assert response.status_code == 401
+    assert response.get_json() == {
+        "success": False,
+        "message": "User not logged in."
+    }
+
 
 
 

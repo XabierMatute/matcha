@@ -15,7 +15,7 @@ from flask import Flask
 
 # Importa todos los blueprints de la carpeta blueprints
 from blueprints.users import users_bp
-from blueprints.likes import likes_bp
+from blueprints.likes import likes_bp, reports_bp
 from blueprints.notifications import notifications_bp
 from blueprints.interests import interests_bp
 from blueprints.chat import chat_bp
@@ -55,6 +55,7 @@ def send_test_mail():
 # Registra todos los blueprints
 app.register_blueprint(users_bp)
 app.register_blueprint(likes_bp)
+app.register_blueprint(reports_bp)
 app.register_blueprint(notifications_bp)
 app.register_blueprint(interests_bp)
 app.register_blueprint(chat_bp)

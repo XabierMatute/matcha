@@ -1,4 +1,4 @@
-from models.likes_model import like_user, unlike_user, get_liked_users, get_matches
+from models.likes_model import like_user, unlike_user, get_liked_users, get_matches, report_user, block_user
 from models.notifications_model import create_notification
 import logging
 
@@ -90,5 +90,39 @@ def send_match_notifications(user_id, matched_user_id):
     """
     create_notification(user_id, "match", f"You matched with user {matched_user_id}!")
     create_notification(matched_user_id, "match", f"You matched with user {user_id}!")
+
+def send_report(reporter_id, reported_id, reason):
+    """
+    Gestiona el envío de un reporte.
+
+    Args:
+        reporter_id (int): ID del usuario que reporta.
+        reported_id (int): ID del usuario reportado.
+        reason (str): Razón del reporte.
+
+    Returns:
+        dict: Resultado del reporte.
+    """
+    if not reporter_id or not reported_id or not reason:
+        raise ValueError("All fields (reporter_id, reported_id, reason) are required.")
+
+    return report_user(reporter_id, reported_id, reason)
+
+def block_user_account(blocker_id, blocked_id):
+    """
+    Bloquea a un usuario y evita más interacciones.
+
+    Args:
+        blocker_id (int): ID del usuario que bloquea.
+        blocked_id (int): ID del usuario bloqueado.
+
+    Returns:
+        dict: Resultado del bloqueo.
+    """
+    if not blocker_id or not blocked_id:
+        raise ValueError("Both blocker_id and blocked_id are required.")
+
+    return block_user(blocker_id, blocked_id)
+
 
 

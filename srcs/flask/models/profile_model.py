@@ -2,13 +2,27 @@ from .database import Database
 import logging
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def validate_user_id(user_id):
+    """Valida que el ID del usuario sea un entero positivo."""
+    if not isinstance(user_id, int) or user_id <= 0:
+        raise ValueError("Invalid user ID. It must be a positive integer.")
+
+def validate_location_data(location, latitude, longitude):
+    """Valida los datos de ubicación."""
+    if location is not None and not isinstance(location, str):
+        raise ValueError("Location must be a string.")
+    if latitude is not None and not isinstance(latitude, (int, float)):
+        raise ValueError("Latitude must be a number.")
+    if longitude is not None and not isinstance(longitude, (int, float)):
+        raise ValueError("Longitude must be a number.")
 
 def get_profile_by_user_id(user_id):
     """
     Obtiene el perfil completo de un usuario por su ID.
     """
-    if not isinstance(user_id, int) or user_id <= 0:
-        raise ValueError("Invalid user ID. It must be a positive integer.")
+    validate_user_id(user_id)
 
     query = '''
         SELECT id, username, email, first_name, last_name, gender, sexual_preferences,
@@ -24,7 +38,6 @@ def get_profile_by_user_id(user_id):
                 if not profile:
                     raise ValueError("Profile not found for the given user ID.")
                 
-                # Estructurar el retorno
                 return {
                     "id": profile[0],
                     "username": profile[1],
@@ -42,16 +55,15 @@ def get_profile_by_user_id(user_id):
                     "is_active": profile[13],
                 }
     except Exception as e:
-        logging.error(f"Error fetching profile for user ID {user_id}: {e}")
-        raise Exception("Error fetching profile") from e
-
-
+        logger.error(f"Error fetching profile for user ID {user_id}: {e}")
+        raise Exception("Error fetching profile.") from e
 
 def update_profile(user_id, **fields):
     """
     Actualiza los datos del perfil de un usuario.
-    Solo se actualizan los campos que están presentes en fields.
     """
+    validate_user_id(user_id)
+
     valid_fields = ['biography', 'location', 'latitude', 'longitude', 'profile_picture']
     updates = []
     params = []
@@ -75,16 +87,17 @@ def update_profile(user_id, **fields):
                 updated_profile = cursor.fetchone()
                 if not updated_profile:
                     raise ValueError("Failed to update profile. User ID may not exist.")
-                return updated_profile
+                return dict(zip(["id"] + valid_fields, updated_profile))
     except Exception as e:
-        logging.error(f"Error updating profile for user ID {user_id}: {e}")
-        raise Exception("Error updating profile") from e
-
+        logger.error(f"Error updating profile for user ID {user_id}: {e}")
+        raise Exception("Error updating profile.") from e
 
 def get_location(user_id):
     """
     Obtiene la ubicación actual de un usuario.
     """
+    validate_user_id(user_id)
+
     query = "SELECT location, latitude, longitude FROM users WHERE id = %s"
     try:
         with Database.get_connection() as connection:
@@ -93,21 +106,27 @@ def get_location(user_id):
                 location = cursor.fetchone()
                 if not location:
                     raise ValueError("Location not found for the given user ID.")
-                return location
+                return {
+                    "location": location[0],
+                    "latitude": location[1],
+                    "longitude": location[2]
+                }
     except Exception as e:
-        logging.error(f"Error fetching location for user ID {user_id}: {e}")
-        raise Exception("Error fetching location") from e
-
+        logger.error(f"Error fetching location for user ID {user_id}: {e}")
+        raise Exception("Error fetching location.") from e
 
 def update_location(user_id, location, latitude, longitude):
     """
     Actualiza la ubicación de un usuario.
     """
+    validate_user_id(user_id)
+    validate_location_data(location, latitude, longitude)
+
     query = '''
         UPDATE users
         SET location = %s, latitude = %s, longitude = %s
         WHERE id = %s
-        RETURNING id, location, latitude, longitude
+        RETURNING location, latitude, longitude
     '''
     try:
         with Database.get_connection() as connection:
@@ -117,9 +136,13 @@ def update_location(user_id, location, latitude, longitude):
                 updated_location = cursor.fetchone()
                 if not updated_location:
                     raise ValueError("Failed to update location. User ID may not exist.")
-                return updated_location
+                return {
+                    "location": updated_location[0],
+                    "latitude": updated_location[1],
+                    "longitude": updated_location[2]
+                }
     except Exception as e:
-        logging.error(f"Error updating location for user ID {user_id}: {e}")
-        raise Exception("Error updating location") from e
+        logger.error(f"Error updating location for user ID {user_id}: {e}")
+        raise Exception("Error updating location.") from e
 
 
