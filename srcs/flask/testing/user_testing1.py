@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/09 18:00:03 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/19 18:56:38 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/26 16:29:53 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,7 +58,22 @@ def test_create_user():
     password_hash = "1234"
     birthdate = user["birthdate"]
     create_user(username, email, password_hash, birthdate)
-    return jsonify({"message": "User created.", "username": username, "email": email, "birthdate": birthdate})
+    return jsonify({"message": "User created.!!!!!!!!!!!!!!!!!!!", "username": username, "email": email, "birthdate555555555555": birthdate})
+
+@test_user_bp.route('/create_users', methods=['GET'])
+def test_create_users():
+    counter = 0
+    for i in range(500):
+        try:
+            user = fake.simple_profile()
+            username = user["username"]
+            email = user["mail"]
+            password_hash = "1234"
+            birthdate = user["birthdate"]
+            create_user(username, email, password_hash, birthdate)
+        except Exception as e:
+            print(e)
+    return jsonify({"message": "Users created.", "username": username, "email": email, "birthdate": birthdate})
     
 
 # Get a user by ID
