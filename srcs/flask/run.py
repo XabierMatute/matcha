@@ -15,21 +15,9 @@ from config import DatabaseConfig, MailConfig, SecretConfig
 from config import RunConfig as Config
 from flask import Flask
 
-<<<<<<< HEAD
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-=======
-# Importa todos los blueprints de la carpeta blueprints
-from blueprints.users import users_bp
-from blueprints.likes import likes_bp, reports_bp
-from blueprints.notifications import notifications_bp
-from blueprints.interests import interests_bp
-from blueprints.chat import chat_bp
-from blueprints.profile import profile_bp
-from blueprints.pictures import pictures_bp
-from models.database import Database
->>>>>>> contablas
 
 # Create the Flask application
 app = Flask(__name__)

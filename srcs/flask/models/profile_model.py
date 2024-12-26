@@ -18,6 +18,30 @@ def validate_location_data(location, latitude, longitude):
     if longitude is not None and not isinstance(longitude, (int, float)):
         raise ValueError("Longitude must be a number.")
 
+def create_profile(user_id):
+    """
+    Crea un perfil vacío para un usuario.
+    """
+    validate_user_id(user_id)
+
+    query = '''
+        INSERT INTO profiles (user_id)
+        VALUES (%s)
+        RETURNING user_id
+    '''
+    try:
+        with Database.get_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query, (user_id,))
+                connection.commit()
+                created_profile = cursor.fetchone()
+                if not created_profile:
+                    raise ValueError("Failed to create profile.")
+                return {"user_id": created_profile[0]}
+    except Exception as e:
+        logger.error(f"Error creating profile for user ID {user_id}: {e}")
+        raise Exception("Error creating profile.") from e
+
 def get_profile_by_user_id(user_id):
     """
     Obtiene el perfil completo de un usuario por su ID.
@@ -25,10 +49,9 @@ def get_profile_by_user_id(user_id):
     validate_user_id(user_id)
 
     query = '''
-        SELECT id, username, email, first_name, last_name, gender, sexual_preferences,
-               biography, fame_rating, profile_picture, location, latitude, longitude, is_active
-        FROM users
-        WHERE id = %s
+        SELECT user_id, biography, fame_rating, profile_picture, location, latitude, longitude, is_active
+        FROM profiles
+        WHERE user_id = %s
     '''
     try:
         with Database.get_connection() as connection:
@@ -39,20 +62,14 @@ def get_profile_by_user_id(user_id):
                     raise ValueError("Profile not found for the given user ID.")
                 
                 return {
-                    "id": profile[0],
-                    "username": profile[1],
-                    "email": profile[2],
-                    "first_name": profile[3],
-                    "last_name": profile[4],
-                    "gender": profile[5],
-                    "sexual_preferences": profile[6],
-                    "biography": profile[7],
-                    "fame_rating": profile[8],
-                    "profile_picture": profile[9],
-                    "location": profile[10],
-                    "latitude": profile[11],
-                    "longitude": profile[12],
-                    "is_active": profile[13],
+                    "user_id": profile[0],
+                    "biography": profile[1],
+                    "fame_rating": profile[2],
+                    "profile_picture": profile[3],
+                    "location": profile[4],
+                    "latitude": profile[5],
+                    "longitude": profile[6],
+                    "is_active": profile[7],
                 }
     except Exception as e:
         logger.error(f"Error fetching profile for user ID {user_id}: {e}")
@@ -76,7 +93,7 @@ def update_profile(user_id, **fields):
     if not updates:
         raise ValueError("No valid fields provided to update.")
 
-    query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s RETURNING id, {', '.join(valid_fields)}"
+    query = f"UPDATE profiles SET {', '.join(updates)} WHERE user_id = %s RETURNING user_id, {', '.join(valid_fields)}"
     params.append(user_id)
 
     try:
@@ -87,7 +104,7 @@ def update_profile(user_id, **fields):
                 updated_profile = cursor.fetchone()
                 if not updated_profile:
                     raise ValueError("Failed to update profile. User ID may not exist.")
-                return dict(zip(["id"] + valid_fields, updated_profile))
+                return dict(zip(["user_id"] + valid_fields, updated_profile))
     except Exception as e:
         logger.error(f"Error updating profile for user ID {user_id}: {e}")
         raise Exception("Error updating profile.") from e
@@ -98,7 +115,7 @@ def get_location(user_id):
     """
     validate_user_id(user_id)
 
-    query = "SELECT location, latitude, longitude FROM users WHERE id = %s"
+    query = "SELECT location, latitude, longitude FROM profiles WHERE user_id = %s"
     try:
         with Database.get_connection() as connection:
             with connection.cursor() as cursor:
@@ -123,9 +140,9 @@ def update_location(user_id, location, latitude, longitude):
     validate_location_data(location, latitude, longitude)
 
     query = '''
-        UPDATE users
+        UPDATE profiles
         SET location = %s, latitude = %s, longitude = %s
-        WHERE id = %s
+        WHERE user_id = %s
         RETURNING location, latitude, longitude
     '''
     try:
@@ -144,5 +161,6 @@ def update_location(user_id, location, latitude, longitude):
     except Exception as e:
         logger.error(f"Error updating location for user ID {user_id}: {e}")
         raise Exception("Error updating location.") from e
+
 
 

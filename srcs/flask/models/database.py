@@ -1,7 +1,6 @@
 import logging
 import psycopg
 from psycopg.rows import dict_row
-from psycopg import sql
 from config import DatabaseConfig as Config
 from typing import Tuple, Optional, Dict, Any, Union, List
 
@@ -79,7 +78,12 @@ class Database:
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(50) UNIQUE NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
+                password_hash TEXT NOT NULL
+            );
+            ''',
+            '''
+            CREATE TABLE IF NOT EXISTS profiles (
+                user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
                 first_name VARCHAR(50),
                 last_name VARCHAR(50),
                 birthdate DATE,
@@ -93,8 +97,7 @@ class Database:
                 longitude DOUBLE PRECISION,
                 is_active BOOLEAN DEFAULT FALSE,
                 last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_online BOOLEAN DEFAULT FALSE,
-                is_verified BOOLEAN DEFAULT FALSE
+                is_online BOOLEAN DEFAULT FALSE
             );
             ''',
             '''
@@ -141,10 +144,9 @@ class Database:
             '''
             CREATE TABLE IF NOT EXISTS pictures (
                 id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
                 image_id INTEGER NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             ''',
             '''
@@ -178,21 +180,6 @@ class Database:
             logger.error(f"Error during table creation: {e}")
             raise Exception("Error creating tables") from e
 
-    @staticmethod
-    def insert_multiple_users(users: List[Tuple[int, str]]):
-        """Inserta múltiples usuarios en la base de datos."""
-        query = sql.SQL("INSERT INTO users (id, name) VALUES {}").format(
-            sql.SQL(',').join(map(sql.Literal, users))
-        )
-        try:
-            with Database.get_connection() as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute(query)
-                    connection.commit()
-        except Exception as e:
-            logger.error(f"Error inserting multiple users: {e}")
-            raise Exception("Error inserting multiple users") from e
-
 
 # Llamar a create_tables() si se ejecuta directamente
 if __name__ == "__main__":
@@ -201,3 +188,4 @@ if __name__ == "__main__":
         logger.info("Database setup completed.")
     except Exception as e:
         logger.error(f"Database setup failed: {e}")
+

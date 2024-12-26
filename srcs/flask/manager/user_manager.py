@@ -20,8 +20,7 @@ def register_user(data: Dict) -> Dict:
     Registers a new user in the system.
     
     Args:
-        data (Dict): Dictionary with fields 'username', 'email', 'password',
-                     'birthdate', 'first_name', and 'last_name'.
+        data (Dict): Dictionary with fields 'username', 'email', and 'password'.
                      
     Returns:
         Dict: Registered user data.
@@ -61,12 +60,8 @@ def register_user(data: Dict) -> Dict:
         v = validate_email(mail)
         mail = v["email"]  # replace with normalized form
     except EmailNotValidError as e:
-        # email is not valid, exception message is human-readable
         logger.error("Invalid email: %s", mail)
-        if config.DEBUG:
-            logger.debug("Ignoring: %s", str(e))
-        else:
-            raise ValueError(f"Invalid email: {str(e)}")
+        raise ValueError(f"Invalid email: {str(e)}")
 
     if not data['password']:
         logger.error("No password provided.")
@@ -100,7 +95,7 @@ def authenticate_user(username: str, password: str) -> Dict:
         Dict: Authenticated user data.
         
     Raises:
-        ValueError: If the username/password are incorrect or the account is not verified.
+        ValueError: If the username/password are incorrect.
     """
     logger.info("Authenticating user: %s", username)
     user = get_user_by_username(username)
@@ -111,30 +106,7 @@ def authenticate_user(username: str, password: str) -> Dict:
         logger.error("Invalid password for user: %s", username)
         raise ValueError("Invalid password")
     logger.info("User authenticated successfully: %s", username)
-    logger.info("User data: %s", user)
     return user
-
-def update_user_profile(user_id: int, updates: Dict) -> Optional[Dict]:
-    """
-    Updates a user's profile data.
-    
-    Args:
-        user_id (int): ID of the user to update.
-        updates (Dict): Fields to update (username, email, first_name, last_name).
-        
-    Returns:
-        Optional[Dict]: Updated user data.
-        
-    Raises:
-        ValueError: If no valid fields are provided or the user does not exist.
-    """
-    logger.info("Updating user profile for user_id: %d with updates: %s", user_id, updates)
-    if not updates:
-        logger.error("No fields provided for update.")
-        raise ValueError("No fields provided for update.")
-    updated_user = update_user(user_id, **updates)
-    logger.info("User profile updated successfully: %s", updated_user)
-    return updated_user
 
 def delete_user_account(user_id: int) -> Optional[Dict]:
     """

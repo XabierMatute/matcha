@@ -84,10 +84,10 @@ def test_set_manual_location_invalid_latitude(mock_update_user_location, client)
     }
     mock_update_user_location.assert_not_called()
 
-@patch('blueprints.profile.fetch_user_location')
-def test_get_location_success(mock_fetch_user_location, client):
+@patch('blueprints.profile.get_user_location')
+def test_get_location_success(mock_get_user_location, client):
     """Prueba obtener la ubicación del usuario con éxito."""
-    mock_fetch_user_location.return_value = {
+    mock_get_user_location.return_value = {
         "location": "Bilbao",
         "latitude": 43.262,
         "longitude": -2.935
@@ -107,7 +107,7 @@ def test_get_location_success(mock_fetch_user_location, client):
         },
         "message": "Location fetched successfully."
     }
-    mock_fetch_user_location.assert_called_once_with(1)
+    mock_get_user_location.assert_called_once_with(1)
 
 def test_get_location_not_logged_in(client):
     """Prueba obtener la ubicación cuando no se ha iniciado sesión."""
@@ -117,6 +117,7 @@ def test_get_location_not_logged_in(client):
         "success": False,
         "message": "User not logged in."
     }
+
 
 
 

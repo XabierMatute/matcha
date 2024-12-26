@@ -1,99 +1,122 @@
+import logging
 from models.profile_model import (
     get_profile_by_user_id,
     update_profile,
     get_location,
-    update_location
+    update_location,
+    create_profile as create_profile_entry
 )
-import logging
+from typing import Dict
+from flask import current_app
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Obtener perfil completo
-def fetch_user_profile(user_id):
+def create_profile(user_id: int) -> Dict:
     """
-    Obtiene el perfil completo de un usuario.
-    """
-    if not isinstance(user_id, int) or user_id <= 0:
-        logger.warning("Invalid user ID provided for fetching profile.")
-        raise ValueError("User ID must be a positive integer.")
+    Creates an initial profile for a new user.
 
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        Dict: The created profile data.
+    """
+    logger.info("Creating profile for user_id: %d", user_id)
     try:
-        return get_profile_by_user_id(user_id)
-    except ValueError as ve:
-        logger.warning(f"Validation error while fetching profile: {ve}")
-        raise ValueError(str(ve))
+        profile = create_profile_entry(user_id)
+        logger.info("Profile created successfully: %s", profile)
+        return profile
     except Exception as e:
-        logger.error(f"Error fetching profile for user ID {user_id}: {e}")
-        raise Exception("Failed to fetch user profile.") from e
+        logger.error("Failed to create profile for user_id %d: %s", user_id, str(e))
+        raise Exception("Error creating profile") from e
 
-# Actualizar perfil
-def update_user_profile(user_id, data):
+def get_user_profile(user_id: int) -> Dict:
     """
-    Actualiza el perfil del usuario con los datos proporcionados.
+    Retrieves the profile data for a given user.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        Dict: The user's profile data.
     """
-    if not isinstance(user_id, int) or user_id <= 0:
-        logger.warning("Invalid user ID provided for updating profile.")
-        raise ValueError("User ID must be a positive integer.")
-
-    if not isinstance(data, dict) or not data:
-        logger.warning("Invalid data provided for updating profile.")
-        raise ValueError("Profile data must be a non-empty dictionary.")
-
+    logger.info("Fetching profile for user_id: %d", user_id)
     try:
-        return update_profile(user_id, **data)
-    except ValueError as ve:
-        logger.warning(f"Validation error while updating profile: {ve}")
-        raise ValueError(str(ve))
+        profile = get_profile_by_user_id(user_id)
+        if not profile:
+            logger.error("Profile not found for user_id: %d", user_id)
+            raise ValueError("Profile not found.")
+        logger.info("Profile fetched successfully: %s", profile)
+        return profile
     except Exception as e:
-        logger.error(f"Error updating profile for user ID {user_id}: {e}")
-        raise Exception("Failed to update user profile.") from e
+        logger.error("Failed to fetch profile for user_id %d: %s", user_id, str(e))
+        raise Exception("Error fetching profile") from e
 
-# Obtener ubicación
-def fetch_user_location(user_id):
+def update_user_profile(user_id: int, data: Dict) -> Dict:
     """
-    Obtiene la ubicación actual del usuario.
-    """
-    if not isinstance(user_id, int) or user_id <= 0:
-        logger.warning("Invalid user ID provided for fetching location.")
-        raise ValueError("User ID must be a positive integer.")
+    Updates the profile data for a user.
 
+    Args:
+        user_id (int): The ID of the user.
+        data (Dict): Profile fields to update.
+
+    Returns:
+        Dict: The updated profile data.
+    """
+    logger.info("Updating profile for user_id: %d with data: %s", user_id, data)
     try:
-        return get_location(user_id)
-    except ValueError as ve:
-        logger.warning(f"Validation error while fetching location: {ve}")
-        raise ValueError(str(ve))
+        updated_profile = update_profile(user_id, **data)
+        logger.info("Profile updated successfully: %s", updated_profile)
+        return updated_profile
     except Exception as e:
-        logger.error(f"Error fetching location for user ID {user_id}: {e}")
-        raise Exception("Failed to fetch user location.") from e
+        logger.error("Failed to update profile for user_id %d: %s", user_id, str(e))
+        raise Exception("Error updating profile") from e
 
-# Actualizar ubicación
-def update_user_location(user_id, location, latitude, longitude):
+def get_user_location(user_id: int) -> Dict:
     """
-    Actualiza la ubicación del usuario.
+    Retrieves the location data for a given user.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        Dict: The user's location data.
     """
-    if not isinstance(user_id, int) or user_id <= 0:
-        logger.warning("Invalid user ID provided for updating location.")
-        raise ValueError("User ID must be a positive integer.")
-
-    if location is not None and not isinstance(location, str):
-        logger.warning("Invalid location provided for updating location.")
-        raise ValueError("Location must be a string.")
-
-    if latitude is not None and not isinstance(latitude, (int, float)):
-        logger.warning("Invalid latitude provided for updating location.")
-        raise ValueError("Latitude must be a number.")
-
-    if longitude is not None and not isinstance(longitude, (int, float)):
-        logger.warning("Invalid longitude provided for updating location.")
-        raise ValueError("Longitude must be a number.")
-
+    logger.info("Fetching location for user_id: %d", user_id)
     try:
-        return update_location(user_id, location, latitude, longitude)
-    except ValueError as ve:
-        logger.warning(f"Validation error while updating location: {ve}")
-        raise ValueError(str(ve))
+        location = get_location(user_id)
+        if not location:
+            logger.error("Location not found for user_id: %d", user_id)
+            raise ValueError("Location not found.")
+        logger.info("Location fetched successfully: %s", location)
+        return location
     except Exception as e:
-        logger.error(f"Error updating location for user ID {user_id}: {e}")
-        raise Exception("Failed to update user location.") from e
+        logger.error("Failed to fetch location for user_id %d: %s", user_id, str(e))
+        raise Exception("Error fetching location") from e
+
+def update_user_location(user_id: int, location: str, latitude: float, longitude: float) -> Dict:
+    """
+    Updates the location data for a user.
+
+    Args:
+        user_id (int): The ID of the user.
+        location (str): New location.
+        latitude (float): Latitude of the location.
+        longitude (float): Longitude of the location.
+
+    Returns:
+        Dict: Updated location data.
+    """
+    logger.info("Updating location for user_id: %d", user_id)
+    try:
+        updated_location = update_location(user_id, location, latitude, longitude)
+        logger.info("Location updated successfully: %s", updated_location)
+        return updated_location
+    except Exception as e:
+        logger.error("Failed to update location for user_id %d: %s", user_id, str(e))
+        raise Exception("Error updating location") from e
+
 
 
