@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/27 13:44:17 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 18:10:48 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 18:48:12 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,11 +20,12 @@ from faker import Faker
 from flask import jsonify
 
 # Configurar el logger
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Crear una instancia de Faker
 fake = Faker()
+logging.getLogger('faker').setLevel(logging.WARNING)
 
 debug_bp = Blueprint('debug', __name__, url_prefix='/debug')
 

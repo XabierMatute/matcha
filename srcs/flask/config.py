@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:26:45 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 14:39:57 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 18:27:17 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ class RunConfig:
     HOST = '0.0.0.0'
     PORT = 5000
     DEBUG = DEBUG
+    LOGGING_LEVEL = 'DEBUG'
 
 class DatabaseConfig:
     ACTIVE = True
@@ -58,7 +59,7 @@ class CookieConfig:
 
 class BlueprintConfig:
     DEBUG = DEBUG
-    USERS = False
+    USERS = True
     LIKES = False
     NOTIFICATIONS = False
     INTERESTS = False

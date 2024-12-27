@@ -3,7 +3,7 @@
 # from datetime import datetime
 
 # # Configuración básica del logger
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # # Excepción personalizada para errores de base de datos

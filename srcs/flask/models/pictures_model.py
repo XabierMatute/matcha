@@ -1,7 +1,7 @@
 # from .database import Database
 # import logging
 
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # def validate_id(id_value, name="ID"):

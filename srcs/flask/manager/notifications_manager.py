@@ -9,7 +9,7 @@
 # from typing import List, Dict
 # import logging
 
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 
 # def validate_required_field(field, field_name: str):
 #     """Valida que un campo requerido no sea nulo o vacío."""

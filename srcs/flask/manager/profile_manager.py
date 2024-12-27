@@ -10,7 +10,7 @@
 # from flask import current_app
 
 # # Configure logging
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # def create_profile(user_id: int) -> Dict:

@@ -10,7 +10,7 @@
 # import logging
 
 # # Configuración del logger
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # interests_bp = Blueprint("interests", __name__, url_prefix="/interests")

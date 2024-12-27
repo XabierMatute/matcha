@@ -2,7 +2,7 @@
 # from models.notifications_model import create_notification
 # import logging
 
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # def send_like(user_id, liked_user_id):

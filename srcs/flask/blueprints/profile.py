@@ -8,7 +8,7 @@
 # import logging
 
 # # Configuración del logger
-# logging.basicConfig(level=logging.DEBUG)
+# # logging.basicConfig(level=logging.DEBUG)
 # logger = logging.getLogger(__name__)
 
 # profile_bp = Blueprint('profile', __name__, url_prefix='/profile')

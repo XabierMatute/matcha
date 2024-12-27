@@ -4,7 +4,7 @@ from psycopg.rows import dict_row
 from config import DatabaseConfig as Config
 from typing import Tuple, Optional, Dict, Any, Union, List
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Database:

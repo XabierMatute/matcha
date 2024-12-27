@@ -2,7 +2,7 @@ import logging
 from typing import Optional, Dict, Any
 from .database import Database
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_user_by_id(user_id: int) -> Optional[Dict[str, Any]]:

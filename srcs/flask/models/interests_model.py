@@ -2,7 +2,7 @@
 # import logging
 # from psycopg import sql
 
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # def create_interest(tag):

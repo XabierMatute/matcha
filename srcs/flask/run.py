@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 13:21:25 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 18:27:29 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ from config import RunConfig as Config
 from flask import Flask
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=Config.LOGGING_LEVEL)
 logger = logging.getLogger(__name__)
 
 # Create the Flask application

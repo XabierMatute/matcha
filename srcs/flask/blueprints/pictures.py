@@ -9,7 +9,7 @@
 # import logging
 
 # # Configuración del logger
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # pictures_bp = Blueprint("pictures", __name__, url_prefix="/pictures")

@@ -10,7 +10,7 @@
 # import logging
 
 # # Configuración del logger
-# logging.basicConfig(level=logging.INFO)
+# # logging.basicConfig(level=logging.INFO)
 # logger = logging.getLogger(__name__)
 
 # notifications_bp = Blueprint('notifications', __name__, url_prefix='/notifications')
