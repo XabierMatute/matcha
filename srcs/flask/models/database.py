@@ -8,11 +8,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Database:
-    """Clase para manejar la conexión, creación de tablas y consultas en la base de datos."""
+    """Class to handle database connection, table creation, and queries."""
 
     @staticmethod
     def validate_config():
-        """Valida que las variables de configuración estén definidas."""
+        """Validates that the configuration variables are defined."""
         required_vars = ["POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_HOST"]
         for var in required_vars:
             if not getattr(Config, var, None):
@@ -20,21 +20,20 @@ class Database:
 
     @staticmethod
     def get_connection():
-        """Obtiene una conexión a la base de datos."""
+        """Gets a connection to the database."""
         try:
             Database.validate_config()
 
-            if Config.DEBUG:
-                logger.debug(
-                    f"Connecting to database {Config.POSTGRES_DB} as {Config.POSTGRES_USER} at {Config.POSTGRES_HOST}"
-                )
+            logger.debug(
+                f"Connecting to database {Config.POSTGRES_DB} as {Config.POSTGRES_USER} at {Config.POSTGRES_HOST}"
+            )
 
             return psycopg.connect(
                 dbname=Config.POSTGRES_DB,
                 user=Config.POSTGRES_USER,
                 password=Config.POSTGRES_PASSWORD,
                 host=Config.POSTGRES_HOST,
-                row_factory=dict_row  # Devuelve resultados como diccionarios
+                row_factory=dict_row  # Returns results as dictionaries
             )
 
         except (psycopg.Error, ValueError) as e:
@@ -48,30 +47,30 @@ class Database:
         fetchone: bool = True
     ) -> Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]:
         """
-        Ejecuta una consulta en la base de datos y maneja el cursor.
+        Executes a query on the database and handles the cursor.
 
         Args:
-            query (str): Consulta SQL a ejecutar.
-            params (Tuple | List): Parámetros para la consulta SQL.
-            fetchone (bool): Si es True, devuelve una fila; de lo contrario, devuelve todas las filas.
+            query (str): SQL query to execute.
+            params (Tuple | List): Parameters for the SQL query.
+            fetchone (bool): If True, returns one row; otherwise, returns all rows.
 
         Returns:
-            Optional[Dict | List[Dict]]: Resultados de la consulta (si aplica).
+            Optional[Dict | List[Dict]]: Query results (if applicable).
         """
         try:
             with Database.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(query, params)
-                    if cursor.description:  # Solo intenta obtener resultados si la consulta devuelve algo
+                    if cursor.description:  # Only attempt to fetch results if the query returns something
                         return cursor.fetchone() if fetchone else cursor.fetchall()
-                    connection.commit()  # Confirma transacción en INSERT, UPDATE o DELETE.
+                    connection.commit()  # Commit transaction on INSERT, UPDATE, or DELETE.
         except Exception as e:
             logger.error(f"Error executing query: {query}, params: {params}, error: {e}")
             raise Exception("Database query error") from e
 
     @staticmethod
     def create_tables():
-        """Crea las tablas necesarias para la aplicación."""
+        """Creates the necessary tables for the application."""
         queries = [
             '''
             CREATE TABLE IF NOT EXISTS users (
@@ -181,11 +180,10 @@ class Database:
             raise Exception("Error creating tables") from e
 
 
-# Llamar a create_tables() si se ejecuta directamente
+# Call create_tables() if run directly
 if __name__ == "__main__":
     try:
         Database.create_tables()
         logger.info("Database setup completed.")
     except Exception as e:
         logger.error(f"Database setup failed: {e}")
-
