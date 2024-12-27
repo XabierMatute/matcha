@@ -6,7 +6,7 @@ import logging
 # from config import DEBUG
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
@@ -40,10 +40,17 @@ def register_form():
     logger.info("Accessed /register route")
     return render_template('register.html')
 
+@users_bp.route('/register', methods=['POST'])
+def register_user():
+    data = request.form
+    logger.debug(f"Received POST request to /register: {data}")
+    return data
+
 @users_bp.route('/login', methods=['GET'])
 def login_form():
     logger.info("Accessed /login route")
     return render_template('login.html')
+
 
 # @users_bp.route('/register', methods=['POST'])
 # def register_user_route():
