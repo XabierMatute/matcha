@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/09 18:00:03 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/26 16:29:53 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/26 17:56:27 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,8 +21,8 @@ def hi():
 #cleaning the user database
 @test_user_bp.route('/clean_database', methods=['GET'])
 def clean_database():
-    from models.user_model import execute_query
-    execute_query("DELETE FROM users")
+    from models.database import Database
+    Database.execute_query("DELETE FROM users")
     return jsonify({"message": "Database cleaned."})
     
 
@@ -187,7 +187,7 @@ def get_user_by_username_form():
 
 #manager testing
 
-from manager.user_manager import get_user_details, update_user_profile, delete_user_account, register_user
+from manager.user_manager import get_user_details, delete_user_account, register_user
 
 # register user
 # @test_user_bp.route('/register_user', methods=['GET'])
