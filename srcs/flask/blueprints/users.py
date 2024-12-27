@@ -48,18 +48,23 @@ def register_user_route():
         logger.error(f"Registration error: {e}")
         return jsonify({"success": False, "message": "Internal Server Error"}), 500
 
-@users_bp.route('/login', methods=['POST'])
+@users_bp.route('/login', methods=['GET', 'POST'])
 def login_user():
-    data = request.get_json()
-    try:
-        user = authenticate_user(data['username'], data['password'])
-        session['user_id'] = user['id']
-        return jsonify({"success": True, "message": "Login successful.", "user": user}), 200
-    except ValueError as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-    except Exception as e:
-        logger.error(f"Login error: {e}")
-        return jsonify({"success": False, "message": "Internal Server Error"}), 500
+    if request.method == 'GET':
+        return render_template('login.html')  # Renderiza el formulario de login
+
+    if request.method == 'POST':
+        data = request.get_json()
+        try:
+            user = authenticate_user(data['username'], data['password'])
+            session['user_id'] = user['id']
+            return jsonify({"success": True, "message": "Login successful.", "user": user}), 200
+        except ValueError as e:
+            return jsonify({"success": False, "message": str(e)}), 400
+        except Exception as e:
+            logger.error(f"Login error: {e}")
+            return jsonify({"success": False, "message": "Internal Server Error"}), 500
+
 
 @users_bp.route('/verify/<token>', methods=['GET'])
 def verify_user(token):
@@ -91,3 +96,6 @@ def delete_user(user_id):
         return jsonify({"success": False, "message": "Internal Server Error"}), 500
 
         return jsonify({"success": False, "message": "Failed to generate users.", "details": str(e)}), 500
+@users_bp.route('/register/form', methods=['GET'])
+def register_form():
+    return render_template('register.html')  # Renderiza el formulario de registro

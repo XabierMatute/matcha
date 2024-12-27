@@ -162,5 +162,28 @@ def update_location(user_id, location, latitude, longitude):
         logger.error(f"Error updating location for user ID {user_id}: {e}")
         raise Exception("Error updating location.") from e
 
+def get_location_from_ip(ip_address):
+    """
+    Obtiene la ubicación basada en la dirección IP.
+    """
+    import requests
+
+    try:
+        response = requests.get(f"https://ipinfo.io/{ip_address}/json")
+        if response.status_code == 200:
+            data = response.json()
+            location = data.get("city")
+            coordinates = data.get("loc", "").split(",")
+            latitude, longitude = None, None
+            if len(coordinates) == 2:
+                latitude, longitude = map(float, coordinates)
+            return {"location": location, "latitude": latitude, "longitude": longitude}
+        else:
+            raise ValueError("Failed to fetch location from IP.")
+    except Exception as e:
+        logger.error(f"Error fetching location from IP: {e}")
+        return {"location": None, "latitude": None, "longitude": None}
+
+
 
 

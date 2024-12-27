@@ -24,7 +24,7 @@ def test_set_manual_location_valid_data(mock_update_user_location, client):
     with client.session_transaction() as session:
         session['user_id'] = 1
 
-    response = client.post('/profile/location/manual', json={
+    response = client.post('/profile/location/update', json={
         "location": "Bilbao",
         "latitude": 43.262,
         "longitude": -2.935
@@ -52,7 +52,7 @@ def test_set_manual_location_missing_latitude(mock_update_user_location, client)
     with client.session_transaction() as session:
         session['user_id'] = 1
 
-    response = client.post('/profile/location/manual', json={
+    response = client.post('/profile/location/update', json={
         "location": "Bilbao",
         "longitude": -2.935
     })
@@ -71,7 +71,7 @@ def test_set_manual_location_invalid_latitude(mock_update_user_location, client)
     with client.session_transaction() as session:
         session['user_id'] = 1
 
-    response = client.post('/profile/location/manual', json={
+    response = client.post('/profile/location/update', json={
         "location": "Bilbao",
         "latitude": "invalid_latitude",
         "longitude": -2.935
