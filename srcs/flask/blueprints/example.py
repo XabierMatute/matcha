@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/20 15:32:20 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 12:14:53 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 12:18:42 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,12 +21,12 @@ def example():
 
 # esto seguramente no bva aqui
 
-# from utils.list_routes import list_routes as list_routex
-# from flask import current_app as app
+from utils.list_routes import list_routes as list_routex
+from flask import current_app as app
 
-# @example_bp.route("/")
-# def list_routes():
-#     return render_template('content.html', content=list_routex(app))
+@example_bp.route("/")
+def list_routes():
+    return render_template('content.html', content=list_routex(app))
 
 # from flask import redirect, url_for
 
