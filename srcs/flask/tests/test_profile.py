@@ -117,6 +117,118 @@
 #         "success": False,
 #         "message": "User not logged in."
 #     }
+import pytest
+from unittest.mock import patch, MagicMock
+from models.profile_model import create_profile, get_profile_by_user_id, update_profile, delete_profile
+
+# Mock data
+mock_user_id = 1
+mock_profile_data = {
+    "first_name": "John",
+    "last_name": "Doe",
+    "birthdate": "1990-01-01",
+    "gender": "Male",
+    "location": None,
+    "latitude": None,
+    "longitude": None,
+    "is_active": True,
+    "is_online": True
+}
+
+@patch('models.profile_model.Database.get_connection')
+@patch('models.profile_model.get_location_from_ip')
+def test_create_profile(mock_get_location_from_ip, mock_get_connection):
+    """Test creating a profile."""
+    mock_get_location_from_ip.return_value = {
+        "location": "Bilbao, Spain",
+        "latitude": 43.263,
+        "longitude": -2.935
+    }
+
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.return_value = {
+        "user_id": mock_user_id,
+        "first_name": "John",
+        "last_name": "Doe",
+        "birthdate": "1990-01-01",
+        "gender": "Male",
+        "location": "Bilbao, Spain",
+        "latitude": 43.263,
+        "longitude": -2.935,
+        "is_active": True,
+        "is_online": True
+    }
+
+    result = create_profile(mock_user_id, mock_profile_data, ip_address="8.8.8.8")
+
+    assert result["user_id"] == mock_user_id
+    assert result["location"] == "Bilbao, Spain"
+    mock_cursor.execute.assert_called_once()
+    mock_get_location_from_ip.assert_called_once_with("8.8.8.8")
+
+@patch('models.profile_model.Database.get_connection')
+def test_get_profile_by_user_id(mock_get_connection):
+    """Test fetching a profile by user ID."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.return_value = {
+        "user_id": mock_user_id,
+        "first_name": "John",
+        "last_name": "Doe",
+    }
+
+    result = get_profile_by_user_id(mock_user_id)
+
+    assert result["user_id"] == mock_user_id
+    assert result["first_name"] == "John"
+    mock_cursor.execute.assert_called_once_with("SELECT * FROM profiles WHERE user_id = %s", (mock_user_id,))
+
+@patch('models.profile_model.Database.get_connection')
+def test_update_profile(mock_get_connection):
+    """Test updating a profile."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    updated_data = {"first_name": "Jane", "is_online": False}
+    mock_cursor.fetchone.return_value = {
+        "user_id": mock_user_id,
+        "first_name": "Jane",
+        "is_online": False
+    }
+
+    result = update_profile(mock_user_id, updated_data)
+
+    assert result["user_id"] == mock_user_id
+    assert result["first_name"] == "Jane"
+    mock_cursor.execute.assert_called_once()
+
+@patch('models.profile_model.Database.get_connection')
+def test_delete_profile(mock_get_connection):
+    """Test deleting a profile."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.return_value = {"user_id": mock_user_id}
+
+    result = delete_profile(mock_user_id)
+
+    assert result["user_id"] == mock_user_id
+    mock_cursor.execute.assert_called_once()
+
+if __name__ == "__main__":
+    pytest.main(["-v", __file__])
+
 
 
 

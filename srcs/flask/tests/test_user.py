@@ -1,3 +1,5 @@
+
+
 # import pytest
 # from run import app
 # from unittest.mock import patch
@@ -153,6 +155,156 @@
 #     }
 #     mock_get_user_details.assert_called_once_with(username="verified_user", require_verified=True)
 
+import pytest
+from unittest.mock import patch, MagicMock
+from models.user_model import (
+    create_user,
+    get_user_by_id,
+    get_user_by_username,
+    get_user_by_email,
+    update_user_password,
+    update_user_email,
+    delete_user
+)
+
+# Mock data
+mock_username = "testuser"
+mock_email = "test@example.com"
+mock_new_email = "new_test@example.com"
+mock_password_hash = "hashed_password"
+mock_new_password_hash = "new_hashed_password"
+mock_user_id = 1
+
+@patch('models.user_model.Database.get_connection')
+def test_create_user_success(mock_get_connection):
+    """Test if a user is created successfully."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    # Simulate no username/email conflict and a successful insert
+    mock_cursor.fetchone.side_effect = [None, None, {"id": mock_user_id, "username": mock_username, "email": mock_email}]
+
+    result = create_user(mock_username, mock_email, mock_password_hash)
+
+    assert result["id"] == mock_user_id
+    assert result["username"] == mock_username
+    assert result["email"] == mock_email
+    assert mock_cursor.execute.call_count == 3
+
+@patch('models.user_model.Database.get_connection')
+def test_get_user_by_id(mock_get_connection):
+    """Test if a user is fetched by ID."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.return_value = {"id": mock_user_id, "username": mock_username, "email": mock_email}
+
+    result = get_user_by_id(mock_user_id)
+
+    assert result["id"] == mock_user_id
+    assert result["username"] == mock_username
+    assert result["email"] == mock_email
+    mock_cursor.execute.assert_called_once_with("SELECT id, username, email FROM users WHERE id = %s", (mock_user_id,))
+
+@patch('models.user_model.Database.get_connection')
+def test_get_user_by_username(mock_get_connection):
+    """Test if a user is fetched by username."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.return_value = {"id": mock_user_id, "username": mock_username, "email": mock_email}
+
+    result = get_user_by_username(mock_username)
+
+    assert result["id"] == mock_user_id
+    assert result["username"] == mock_username
+    assert result["email"] == mock_email
+    mock_cursor.execute.assert_called_once_with("SELECT id, username, email FROM users WHERE username = %s", (mock_username,))
+
+@patch('models.user_model.Database.get_connection')
+def test_get_user_by_email(mock_get_connection):
+    """Test if a user is fetched by email."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.return_value = {"id": mock_user_id, "username": mock_username, "email": mock_email}
+
+    result = get_user_by_email(mock_email)
+
+    assert result["id"] == mock_user_id
+    assert result["username"] == mock_username
+    assert result["email"] == mock_email
+    mock_cursor.execute.assert_called_once_with("SELECT id, username, email FROM users WHERE email = %s", (mock_email,))
+
+@patch('models.user_model.Database.get_connection')
+def test_update_user_password(mock_get_connection):
+    """Test if a user's password is updated successfully."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.side_effect = [
+        {"id": mock_user_id, "username": mock_username, "email": mock_email},
+        {"id": mock_user_id, "username": mock_username, "email": mock_email}
+    ]
+
+    result = update_user_password(mock_user_id, mock_new_password_hash)
+
+    assert result["id"] == mock_user_id
+    assert result["username"] == mock_username
+    assert result["email"] == mock_email
+    assert mock_cursor.execute.call_count == 2
+
+@patch('models.user_model.Database.get_connection')
+def test_update_user_email(mock_get_connection):
+    """Test if a user's email is updated successfully."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.side_effect = [
+        {"id": mock_user_id, "username": mock_username, "email": mock_email},
+        None,
+        {"id": mock_user_id, "username": mock_username, "email": mock_new_email}
+    ]
+
+    result = update_user_email(mock_user_id, mock_new_email)
+
+    assert result["id"] == mock_user_id
+    assert result["username"] == mock_username
+    assert result["email"] == mock_new_email
+    assert mock_cursor.execute.call_count == 3
+
+@patch('models.user_model.Database.get_connection')
+def test_delete_user(mock_get_connection):
+    """Test if a user is deleted successfully."""
+    mock_connection = MagicMock()
+    mock_cursor = MagicMock()
+    mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+    mock_get_connection.return_value.__enter__.return_value = mock_connection
+
+    mock_cursor.fetchone.side_effect = [
+        {"id": mock_user_id, "username": mock_username, "email": mock_email},
+        {"id": mock_user_id}
+    ]
+
+    result = delete_user(mock_user_id)
+
+    assert result["id"] == mock_user_id
+    assert mock_cursor.execute.call_count == 2
+
+if __name__ == "__main__":
+    pytest.main(["-v", __file__])
 
 
 

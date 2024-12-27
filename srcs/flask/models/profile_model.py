@@ -161,6 +161,112 @@
 #     except Exception as e:
 #         logger.error(f"Error updating location for user ID {user_id}: {e}")
 #         raise Exception("Error updating location.") from e
+import logging
+from typing import Optional, Dict, Any, List
+from .database import Database
+
+logger = logging.getLogger(__name__)
+
+def validate_location_data(location: Optional[str], latitude: Optional[float], longitude: Optional[float]):
+    """Valida que los datos de ubicación sean correctos."""
+    if location is not None and not isinstance(location, str):
+        raise ValueError("Location must be a string.")
+    if latitude is not None and not isinstance(latitude, (int, float)):
+        raise ValueError("Latitude must be a number.")
+    if longitude is not None and not isinstance(longitude, (int, float)):
+        raise ValueError("Longitude must be a number.")
+
+def get_location_from_ip(ip_address: str) -> Dict[str, Any]:
+    """
+    Simula obtener la ubicación geográfica basada en la IP.
+    (En producción, usar una API como ipstack o GeoIP).
+    """
+    logger.info(f"Fetching location for IP: {ip_address}")
+    # Simulación de datos para una IP
+    return {
+        "location": "Bilbao, Spain",
+        "latitude": 43.263,
+        "longitude": -2.935,
+    }
+
+def create_profile(user_id: int, profile_data: Dict[str, Any], ip_address: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Crea un perfil para un usuario.
+    Si no se proporciona ubicación, intenta obtenerla desde la IP.
+    """
+    logger.info(f"Creating profile for user_id={user_id}")
+    
+    location = profile_data.get("location")
+    latitude = profile_data.get("latitude")
+    longitude = profile_data.get("longitude")
+    
+    if not location and ip_address:
+        logger.info(f"No location provided. Fetching from IP {ip_address}.")
+        ip_location = get_location_from_ip(ip_address)
+        location = ip_location["location"]
+        latitude = ip_location["latitude"]
+        longitude = ip_location["longitude"]
+    
+    validate_location_data(location, latitude, longitude)
+    
+    query = '''
+    INSERT INTO profiles (user_id, first_name, last_name, birthdate, gender, sexual_preferences, biography, 
+                          fame_rating, profile_picture, location, latitude, longitude, is_active, last_seen, is_online)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP, %s)
+    RETURNING *
+    '''
+    params = (
+        user_id, 
+        profile_data.get("first_name"), 
+        profile_data.get("last_name"), 
+        profile_data.get("birthdate"), 
+        profile_data.get("gender"), 
+        profile_data.get("sexual_preferences"), 
+        profile_data.get("biography"), 
+        profile_data.get("fame_rating", 0.0), 
+        profile_data.get("profile_picture"), 
+        location, 
+        latitude, 
+        longitude, 
+        profile_data.get("is_active", False), 
+        profile_data.get("is_online", False)
+    )
+    return Database.execute_query(query, params)
+
+def get_profile_by_user_id(user_id: int) -> Optional[Dict[str, Any]]:
+    """
+    Recupera el perfil de un usuario.
+    """
+    logger.info(f"Fetching profile for user_id={user_id}")
+    query = "SELECT * FROM profiles WHERE user_id = %s"
+    return Database.execute_query(query, (user_id,))
+
+def update_profile(user_id: int, updated_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """
+    Actualiza los datos del perfil de un usuario.
+    """
+    logger.info(f"Updating profile for user_id={user_id}")
+
+    fields = []
+    params = []
+    for field, value in updated_data.items():
+        fields.append(f"{field} = %s")
+        params.append(value)
+
+    if not fields:
+        raise ValueError("No fields provided to update.")
+
+    params.append(user_id)
+    query = f"UPDATE profiles SET {', '.join(fields)} WHERE user_id = %s RETURNING *"
+    return Database.execute_query(query, tuple(params))
+
+def delete_profile(user_id: int) -> Optional[Dict[str, Any]]:
+    """
+    Elimina un perfil de usuario.
+    """
+    logger.info(f"Deleting profile for user_id={user_id}")
+    query = "DELETE FROM profiles WHERE user_id = %s RETURNING *"
+    return Database.execute_query(query, (user_id,))
 
 
 

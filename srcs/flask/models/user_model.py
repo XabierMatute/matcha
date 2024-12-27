@@ -11,7 +11,7 @@ def get_user_by_id(user_id: int) -> Optional[Dict[str, Any]]:
         raise ValueError("User ID must be a positive integer.")
     
     logger.info(f"Fetching user with ID {user_id}")
-    query = "SELECT * FROM users WHERE id = %s"
+    query = "SELECT id, username, email FROM users WHERE id = %s"
     return Database.execute_query(query, (user_id,))
 
 def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
@@ -20,7 +20,7 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
         raise ValueError("Username cannot be empty.")
     
     logger.info(f"Fetching user with username {username}")
-    query = "SELECT * FROM users WHERE username = %s"
+    query = "SELECT id, username, email FROM users WHERE username = %s"
     return Database.execute_query(query, (username,))
 
 def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
@@ -29,18 +29,7 @@ def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
         raise ValueError("Email cannot be empty.")
     
     logger.info(f"Fetching user with email {email}")
-    query = "SELECT * FROM users WHERE email = %s"
-    return Database.execute_query(query, (email,))
-
-def validate_user(email: str) -> Dict[str, Any]:
-    """Validates and verifies a user by their email."""
-    logger.info(f"Validating user with email {email}")
-    user = get_user_by_email(email)
-    if not user:
-        logger.error(f"No user found with email {email}")
-        raise ValueError("No user with this email exists.")
-    
-    query = "UPDATE users SET is_verified = TRUE WHERE email = %s RETURNING id, username, email"
+    query = "SELECT id, username, email FROM users WHERE email = %s"
     return Database.execute_query(query, (email,))
 
 def create_user(username: str, email: str, password_hash: str) -> Dict[str, Any]:
@@ -56,53 +45,43 @@ def create_user(username: str, email: str, password_hash: str) -> Dict[str, Any]
     
     query = '''
         INSERT INTO users (username, email, password_hash)
-        VALUES (%s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s)
         RETURNING id, username, email
     '''
     return Database.execute_query(query, (username, email, password_hash))
 
-# deprecated
-# def update_user(user_id: int, username: Optional[str] = None, email: Optional[str] = None,
-#                 first_name: Optional[str] = None, last_name: Optional[str] = None) -> Optional[Dict[str, Any]]:
-#     """Updates user data."""
-#     logger.info(f"Updating user with ID {user_id}")
-#     if not get_user_by_id(user_id):
-#         logger.error(f"User ID {user_id} does not exist.")
-#         raise ValueError("User ID does not exist.")
+def update_user_password(user_id: int, new_password_hash: str) -> Dict[str, Any]:
+    """Updates a user's password."""
+    logger.info(f"Updating password for user with ID {user_id}")
 
-#     updates = []
-#     params = []
-
-#     if username:
-#         updates.append("username = %s")
-#         params.append(username)
-#     if email:
-#         updates.append("email = %s")
-#         params.append(email)
-#     if first_name:
-#         updates.append("first_name = %s")
-#         params.append(first_name)
-#     if last_name:
-#         updates.append("last_name = %s")
-#         params.append(last_name)
-
-#     if not updates:
-#         raise ValueError("No fields provided to update.")
-
-#     query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s RETURNING id, username, email, first_name, last_name"
-#     params.append(user_id)
-
-#     return Database.execute_query(query, tuple(params))
-
-def delete_user(user_id: int) -> Optional[Dict[str, Any]]:
-    """Deletes a user by their ID."""
-    logger.info(f"Deleting user with ID {user_id}")
     if not get_user_by_id(user_id):
         logger.error(f"User ID {user_id} does not exist.")
         raise ValueError("User ID does not exist.")
+    
+    query = "UPDATE users SET password_hash = %s WHERE id = %s RETURNING id, username, email"
+    return Database.execute_query(query, (new_password_hash, user_id))
 
+def update_user_email(user_id: int, new_email: str) -> Dict[str, Any]:
+    """Updates a user's email."""
+    logger.info(f"Updating email for user with ID {user_id}")
+
+    if not get_user_by_id(user_id):
+        logger.error(f"User ID {user_id} does not exist.")
+        raise ValueError("User ID does not exist.")
+    if get_user_by_email(new_email):
+        logger.error(f"Email '{new_email}' already exists.")
+        raise ValueError("Email already exists.")
+    
+    query = "UPDATE users SET email = %s WHERE id = %s RETURNING id, username, email"
+    return Database.execute_query(query, (new_email, user_id))
+
+def delete_user(user_id: int) -> Dict[str, Any]:
+    """Deletes a user by their ID."""
+    logger.info(f"Deleting user with ID {user_id}")
+
+    if not get_user_by_id(user_id):
+        logger.error(f"User ID {user_id} does not exist.")
+        raise ValueError("User ID does not exist.")
+    
     query = "DELETE FROM users WHERE id = %s RETURNING id"
     return Database.execute_query(query, (user_id,))
-
-# TODO: Implement this functions:
-# a general update_user or update_user_password and update_user_email (username should not be updated, I think)
