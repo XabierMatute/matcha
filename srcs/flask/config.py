@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:26:45 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 13:02:28 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 14:39:57 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,10 +63,9 @@ class BlueprintConfig:
     NOTIFICATIONS = False
     INTERESTS = False
     CHAT = False
-    PROFILE = False
+    PROFILE = True
     PICTURES = False
     EXAMPLE = True
     CUSTOM_ERRORS = True
     USER_TESTING = False
     COOKIE_TESTING = False
-    DATABASE_TESTING = True

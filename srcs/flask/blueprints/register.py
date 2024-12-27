@@ -94,10 +94,14 @@ def register_to(master_bp):
         except Exception as e:
             logger.error(f"Error registering cookie testing blueprint: {e}")
 
-    if config.DATABASE_TESTING:
+    if config.DEBUG:
         try:
-            from testing.database_testing import test_database_bp
-            master_bp.register_blueprint(test_database_bp)
-            logger.info("Registered database testing blueprint.")
+            from testing.debug import debug_bp
+            master_bp.register_blueprint(debug_bp)
+            logger.info("Registered debug blueprint.")
+            from flask import redirect, url_for
+            @master_bp.route('/')
+            def redirect_to_list_routes():
+                return redirect(url_for('debug.serve_list_routes'))
         except Exception as e:
-            logger.error(f"Error registering database testing blueprint: {e}")
+            logger.error(f"Error registering debug blueprint: {e}")
