@@ -8,10 +8,19 @@ from models.profile_model import (
 )
 from typing import Dict
 from flask import current_app
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+__all__ = [
+    "get_user_profile",
+    "update_user_profile",
+    "get_user_location",
+    "update_user_location",
+    "get_location_from_ip"
+]
 
 def create_profile(user_id: int) -> Dict:
     """
@@ -117,6 +126,27 @@ def update_user_location(user_id: int, location: str, latitude: float, longitude
     except Exception as e:
         logger.error("Failed to update location for user_id %d: %s", user_id, str(e))
         raise Exception("Error updating location") from e
+
+def get_location_from_ip(ip_address):
+    """
+    Obtiene la ubicación basada en la dirección IP.
+    """
+    try:
+        response = requests.get(f"https://ipinfo.io/{ip_address}/json")
+        if response.status_code == 200:
+            data = response.json()
+            location = data.get("city")
+            coordinates = data.get("loc", "").split(",")
+            latitude, longitude = None, None
+            if len(coordinates) == 2:
+                latitude, longitude = map(float, coordinates)
+            return {"location": location, "latitude": latitude, "longitude": longitude}
+        else:
+            logger.error(f"Failed to fetch location for IP {ip_address}. Status code: {response.status_code}")
+            return {"location": None, "latitude": None, "longitude": None}
+    except Exception as e:
+        logger.error(f"Error fetching location for IP {ip_address}: {e}")
+        return {"location": None, "latitude": None, "longitude": None}
 
 
 

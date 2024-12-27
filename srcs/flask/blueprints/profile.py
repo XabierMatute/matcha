@@ -3,9 +3,11 @@ from manager.profile_manager import (
     get_user_profile,
     update_user_profile,
     get_user_location,
-    update_user_location
+    update_user_location,
+    get_location_from_ip
 )
 import logging
+import requests
 
 # Configuración del logger
 logging.basicConfig(level=logging.DEBUG)
@@ -114,5 +116,31 @@ def set_manual_location():
         logger.error(f"Error updating location for user ID {user_id}: {e}")
         return error_response("Failed to update user location.", 500)
 
+# Ruta para obtener la ubicación basada en IP
+@profile_bp.route('/location/ip', methods=['GET'])
+def get_location_by_ip():
+    """
+    Obtiene la ubicación basada en la dirección IP del cliente.
+    """
+    user_id = session.get('user_id')
+    if not user_id:
+        return error_response("User not logged in.", 401)
 
+    ip_address = request.remote_addr  # Obtiene la IP del cliente
+    logger.debug(f"Fetching location for IP: {ip_address}")
 
+    location_data = get_location_from_ip(ip_address)
+    if location_data["location"] is None:
+        return error_response("Failed to fetch location from IP.", 400)
+
+    try:
+        updated_location = update_user_location(
+            user_id,
+            location=location_data["location"],
+            latitude=location_data["latitude"],
+            longitude=location_data["longitude"]
+        )
+        return jsonify(success_response(data=updated_location, message="Location updated successfully.")), 200
+    except Exception as e:
+        logger.error(f"Error updating location for user ID {user_id}: {e}")
+        return error_response("Failed to update location.", 500)
