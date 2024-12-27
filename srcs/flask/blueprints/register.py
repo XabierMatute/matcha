@@ -1,52 +1,103 @@
+import logging
 from flask import Blueprint
 from config import BlueprintConfig as config
+
+logger = logging.getLogger(__name__)
 
 def register_to(master_bp):
 
     if config.USERS:
-        from .users import users_bp
-        master_bp.register_blueprint(users_bp)
+        try:
+            from .users import users_bp
+            master_bp.register_blueprint(users_bp)
+            logger.info("Registered users blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering users blueprint: {e}")
 
     if config.LIKES:
-        from .likes import likes_bp
-        master_bp.register_blueprint(likes_bp)
+        try:
+            from .likes import likes_bp
+            master_bp.register_blueprint(likes_bp)
+            logger.info("Registered likes blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering likes blueprint: {e}")
 
     if config.NOTIFICATIONS:
-        from .notifications import notifications_bp
-        master_bp.register_blueprint(notifications_bp)
+        try:
+            from .notifications import notifications_bp
+            master_bp.register_blueprint(notifications_bp)
+            logger.info("Registered notifications blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering notifications blueprint: {e}")
 
     if config.INTERESTS:
-        from .interests import interests_bp
-        master_bp.register_blueprint(interests_bp)
+        try:
+            from .interests import interests_bp
+            master_bp.register_blueprint(interests_bp)
+            logger.info("Registered interests blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering interests blueprint: {e}")
 
     if config.CHAT:
-        from .chat import chat_bp
-        master_bp.register_blueprint(chat_bp)
+        try:
+            from .chat import chat_bp
+            master_bp.register_blueprint(chat_bp)
+            logger.info("Registered chat blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering chat blueprint: {e}")
 
     if config.PROFILE:
-        from .profile import profile_bp
-        master_bp.register_blueprint(profile_bp)
+        try:
+            from .profile import profile_bp
+            master_bp.register_blueprint(profile_bp)
+            logger.info("Registered profile blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering profile blueprint: {e}")
 
     if config.PICTURES:
-        from .pictures import pictures_bp
-        master_bp.register_blueprint(pictures_bp)
+        try:
+            from .pictures import pictures_bp
+            master_bp.register_blueprint(pictures_bp)
+            logger.info("Registered pictures blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering pictures blueprint: {e}")
 
     if config.EXAMPLE:
-        from .example import example_bp
-        master_bp.register_blueprint(example_bp)
+        try:
+            from .example import example_bp
+            master_bp.register_blueprint(example_bp)
+            logger.info("Registered example blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering example blueprint: {e}")
 
     if config.CUSTOM_ERRORS:
-        from .custom_errors import error_bp
-        master_bp.register_blueprint(error_bp)
+        try:
+            from .custom_errors import error_bp
+            master_bp.register_blueprint(error_bp)
+            logger.info("Registered custom errors blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering custom errors blueprint: {e}")
 
     if config.USER_TESTING:
-        from testing.user_testing1 import test_user_bp
-        master_bp.register_blueprint(test_user_bp)
+        try:
+            from testing.user_testing1 import test_user_bp
+            master_bp.register_blueprint(test_user_bp)
+            logger.info("Registered user testing blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering user testing blueprint: {e}")
 
     if config.COOKIE_TESTING:
-        from testing.cookie_testing import test_cookie_bp
-        master_bp.register_blueprint(test_cookie_bp)
+        try:
+            from testing.cookie_testing import test_cookie_bp
+            master_bp.register_blueprint(test_cookie_bp)
+            logger.info("Registered cookie testing blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering cookie testing blueprint: {e}")
 
     if config.DATABASE_TESTING:
-        from testing.database_testing import test_database_bp
-        master_bp.register_blueprint(test_database_bp)
+        try:
+            from testing.database_testing import test_database_bp
+            master_bp.register_blueprint(test_database_bp)
+            logger.info("Registered database testing blueprint.")
+        except Exception as e:
+            logger.error(f"Error registering database testing blueprint: {e}")
