@@ -47,3 +47,6 @@ def register_to(master_bp):
         from testing.cookie_testing import test_cookie_bp
         master_bp.register_blueprint(test_cookie_bp)
 
+    if config.DATABASE_TESTING:
+        from testing.database_testing import test_database_bp
+        master_bp.register_blueprint(test_database_bp)
