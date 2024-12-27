@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for, current_app
-from flask_mail import Message
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-from manager.user_manager import register_user, authenticate_user, get_user_details, delete_user_account
+# from flask_mail import Message
+# from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+# from manager.user_manager import register_user, authenticate_user, get_user_details, delete_user_account
 import logging
-from config import DEBUG
+# from config import DEBUG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +34,16 @@ users_bp = Blueprint('users', __name__, url_prefix='/users')
 #     except Exception as e:
 #         logger.error(f"Failed to send verification email: {e}")
 #         raise Exception("Error sending verification email") from e
+
+@users_bp.route('/register', methods=['GET'])
+def register_form():
+    logger.info("Accessed /register route")
+    return render_template('register.html')
+
+@users_bp.route('/login', methods=['GET'])
+def login_form():
+    logger.info("Accessed /login route")
+    return render_template('login.html')
 
 # @users_bp.route('/register', methods=['POST'])
 # def register_user_route():
