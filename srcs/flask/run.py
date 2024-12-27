@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 13:08:35 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 13:18:56 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,8 +37,11 @@ if DatabaseConfig.ACTIVE:
 # Configurate the application
 if SecretConfig.ACTIVE:
     logger.debug("Configuring application...")
-    app.config.update(SecretConfig.config)
-    logger.info("Application configuration updated with SecretConfig.")
+    try:
+        app.config.update(SecretConfig.config)
+        logger.info("Application configuration updated with SecretConfig.")
+    except Exception as e:
+        logger.error(f"Error updating application configuration with SecretConfig: {e}")
 
 # Configurate the mail
 mail = None
