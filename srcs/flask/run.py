@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 12:59:37 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 13:08:35 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,7 @@ if MailConfig.ACTIVE:
     logger.debug("Configuring mail...")
     from flask_mail import Mail
     app.config.update(MailConfig.config)
-    mail = Mail(app)
+    mail = Mail(app) # TODO: Check if this is could be better, make mail_testing
     logger.info("Mail configuration updated and Mail instance created.")
 
 # Register the blueprints
