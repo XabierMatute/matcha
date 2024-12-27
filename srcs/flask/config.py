@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:26:45 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/21 12:23:16 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 12:05:31 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,14 +58,14 @@ class CookieConfig:
 
 class BlueprintConfig:
     DEBUG = DEBUG
-    USERS = True
-    LIKES = True
-    NOTIFICATIONS = True
-    INTERESTS = True
-    CHAT = True
-    PROFILE = True
-    PICTURES = True
+    USERS = False
+    LIKES = False
+    NOTIFICATIONS = False
+    INTERESTS = False
+    CHAT = False
+    PROFILE = False
+    PICTURES = False
     EXAMPLE = True
     CUSTOM_ERRORS = True
     USER_TESTING = False
-    COOKIE_TESTING = True
+    COOKIE_TESTING = False
