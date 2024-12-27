@@ -14,8 +14,8 @@
                     </li>
                     <li><a href="/logout" class="button logout-button">Logout</a></li>
                 {% else %}
-                    <li><a href="/login" class="button login-button">Login</a></li>
-                    <li><a href="/register" class="button register-button">Register</a></li>
+                    <li><a href="{{ url_for('users.login_form') }}" class="button login-button">Login</a></li>
+                    <li><a href="{{ url_for('users.register_form') }}" class="button register-button">Register</a></li>
                 {% endif %}
             </ul>
         </nav>
