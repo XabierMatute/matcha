@@ -179,6 +179,33 @@ class Database:
             logger.error(f"Error during table creation: {e}")
             raise Exception("Error creating tables") from e
 
+    @staticmethod
+    def drop_tables():
+        """Drops all tables in the database."""
+        queries = [
+            "DROP TABLE IF EXISTS blocks;",
+            "DROP TABLE IF EXISTS reports;",
+            "DROP TABLE IF EXISTS pictures;",
+            "DROP TABLE IF EXISTS chats;",
+            "DROP TABLE IF EXISTS user_interests;",
+            "DROP TABLE IF EXISTS interests;",
+            "DROP TABLE IF EXISTS notifications;",
+            "DROP TABLE IF EXISTS likes;",
+            "DROP TABLE IF EXISTS profiles;",
+            "DROP TABLE IF EXISTS users;"
+        ]
+
+        try:
+            with Database.get_connection() as connection:
+                with connection.cursor() as cursor:
+                    for query in queries:
+                        cursor.execute(query)
+                    connection.commit()
+                    logger.info("Tables dropped successfully.")
+        except psycopg.Error as e:
+            logger.error(f"Error dropping tables: {e}")
+            raise Exception("Error dropping tables") from e
+
 
 # Call create_tables() if run directly
 if __name__ == "__main__":
