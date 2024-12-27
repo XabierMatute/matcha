@@ -6,7 +6,7 @@
 #    By: xmatute- <xmatute-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/20 11:23:53 by xmatute-          #+#    #+#              #
-#    Updated: 2024/12/27 13:18:56 by xmatute-         ###   ########.fr        #
+#    Updated: 2024/12/27 13:20:43 by xmatute-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,6 +60,7 @@ logger.info("Blueprints registered to the application.")
 
 if __name__ == "__main__":
     # Run the application
-    logger.info(f"Starting the application on {Config.HOST}:{Config.PORT} with debug={Config.DEBUG}")
+    logger.debug(f"Starting the application on {Config.HOST}:{Config.PORT} with debug={Config.DEBUG}")
+    logger.info("Starting application...")
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
     logger.info("Application stopped.")
